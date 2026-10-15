@@ -74,10 +74,10 @@ curl https://api.cotizave.com/v1/fx/rates -H "X-API-Key: $COTIZAVE_API_KEY"
 | Brecha BCV vs paralelo o un P2P | `GET /v1/fx/spread?against=` | Todos |
 | Una cifra ponderada (BCV 30 % + paralelo 20 % + mediana P2P 50 %) | `GET /v1/fx/index` | Todos |
 | Tasa vigente en una fecha pasada / serie histórica | `GET /v1/fx/rates/:market/history` | Todos (profundidad según plan) |
-| Mejor mercado para cambiar un monto | `GET /v1/fx/route` | Escala |
+| Mejor mercado para cambiar un monto | `GET /v1/fx/route` | Profesional+ |
 | Compra/venta USD por banco (tabla del BCV) | `GET /v1/fx/bcv/banks` | Todos |
 | EUR, CNY, TRY, RUB oficiales del BCV | `GET /v1/fx/bcv/currencies` | Todos |
-| Catálogo de bancos venezolanos (código SUDEBAN) | `GET /v1/banks`, `GET /v1/banks/:code` | Todos |
+| Catálogo de bancos venezolanos (código SUDEBAN) | `GET /v1/banks`, `GET /v1/banks/:code` | Todos (si responde `403 endpoint_disabled`, no está habilitado) |
 
 Planes (nombre comercial → id que devuelve la API en `details.current_plan`):
 Gratis `free` · Inicio `lite` · Esencial `hobby` · Profesional `indie` · Escala `pro`.

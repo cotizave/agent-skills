@@ -273,8 +273,8 @@ Las fechas pasadas no cambian: cachéalas sin expiración.
 
 ## GET /v1/fx/route
 
-Mejor mercado ejecutable para un monto USD↔VES + alternativas ordenadas. **Solo plan
-Escala.**
+Mejor mercado ejecutable para un monto USD↔VES + alternativas ordenadas. **Desde el
+plan Profesional.**
 
 | Param | Req. | Default | Notas |
 |---|---|---|---|

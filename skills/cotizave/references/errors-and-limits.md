@@ -51,8 +51,8 @@ Cualquier otro `5xx` se trata igual que `500`: backoff + jitter, respetando
 | Gratis (`free`) | 1.500 | 2 | 5 | 14 días | — |
 | Inicio (`lite`) | 3.500 | 3 | 6 | 30 días | — |
 | Esencial (`hobby`) | 20.000 | 3 | 8 | 90 días | CSV/XML, `paypal`, `zelle` |
-| Profesional (`indie`) | 60.000 | 5 | 15 | 180 días | + `syklo`, `yadio`, `zoom`, `western_union`, `/route` |
-| Escala (`pro`) | 150.000 | 10 | 25 | 365 días | + `cash`, `cucuta`, `/bulk/convert` |
+| Profesional (`indie`) | 60.000 | 5 | 15 | 180 días | + `syklo`, `yadio`, `zoom`, `western_union` |
+| Escala (`pro`) | 150.000 | 10 | 25 | 365 días | + `cash`, `cucuta`, `/route`, `/bulk/convert` |
 
 Precios vigentes y planes mayores: https://cotizave.com/precios. Cada cuenta tiene 1
 API key; la cuota es por cuenta.

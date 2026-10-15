@@ -29,7 +29,8 @@ de verdad, cómo leer la frescura del dato y cómo manejar errores y límites.
 - Cache y frescura por mercado: [references/caching-and-freshness.md](references/caching-and-freshness.md)
 - Clientes de ejemplo: [TypeScript](references/examples/typescript.md) ·
   [Python](references/examples/python.md) · [PHP](references/examples/php.md) ·
-  [Go](references/examples/go.md)
+  [Go](references/examples/go.md) · [Java](references/examples/java.md) ·
+  [C# / .NET](references/examples/csharp.md)
 - Verificar una key: [scripts/check-key.sh](scripts/check-key.sh)
 
 ## Principios (no negociables)
@@ -158,8 +159,8 @@ llamada cada ~30 min. Polling cada 5 min ≈ 8.640/mes. Detalle en
 | Dato | Cadencia real | TTL sugerido en tu cache |
 |---|---|---|
 | Snapshot (`/rates`, `/convert`, `/index`, `/spread`) | se recalcula cada ~5 min | ≥ 5 min (más si tu cuota es chica) |
-| BCV `reference` / `eur_reference` | días hábiles, ~16:30 hora de Caracas, rige desde el siguiente día hábil | 30–60 min (lo que cambia es qué tasa *rige*, a medianoche de Caracas) |
-| `parallel` | hasta 3 veces por día hábil (≈ 9 am/1 pm/5 pm), 1 vez los fines de semana | 30–60 min |
+| BCV `reference` / `eur_reference` | días hábiles, con vigencia desde el siguiente día hábil | 30–60 min (lo que cambia es qué tasa *rige*) |
+| `parallel` | varias veces por día hábil, menos los fines de semana | 30–60 min |
 | P2P | ~5 min | 5 min |
 | `/bcv/banks`, `/bcv/currencies` | 1 vez al día | horas |
 | Histórico de fechas pasadas | inmutable | sin expiración |

@@ -78,7 +78,7 @@ skills/cotizave/
 │   ├── endpoints.md                 # todos los endpoints públicos
 │   ├── errors-and-limits.md         # errores, planes, cuotas y 429
 │   ├── caching-and-freshness.md     # cadencia de cada mercado y TTLs
-│   └── examples/                    # TypeScript, Python, PHP y Go
+│   └── examples/                    # TypeScript, Python, PHP, Go, Java y C#
 └── scripts/check-key.sh             # verifica COTIZAVE_API_KEY
 ```
 

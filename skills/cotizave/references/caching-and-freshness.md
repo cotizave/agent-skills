@@ -7,11 +7,10 @@ devuelve el mismo snapshot y gasta cuota. Pero cada fuente publica a su propio r
 
 | Market | Cuándo cambia de verdad | Umbral de `stale` |
 |---|---|---|
-| `reference`, `eur_reference` (BCV) | Días hábiles, en la tarde (~16:30 hora de Caracas), con **fecha valor** del siguiente día hábil | 132 h |
-| `parallel` | Hasta 3 veces por día hábil (≈ 9 am, 1 pm, 5 pm); fines de semana y feriados ≈ 1 vez (9 am) | 26 h |
+| `reference`, `eur_reference` (BCV) | Días hábiles, con **fecha valor** del siguiente día hábil | 132 h |
+| `parallel` | Varias veces por día hábil; menos en fines de semana y feriados | 26 h |
 | P2P (`binance`, `bybit`, `okx`, `bitget`, `mexc`, `bingx`, `saldo`) | Continuamente; Cotizave los toma cada ~5 min | 30 min |
-| `paypal`, `zelle` | Varias veces al día | 6 h |
-| `cash`, `cucuta` | Varias veces al día | 3 h |
+| Otros markets (`paypal`, `zelle`, `cash`, …) | Según la fuente | usa `stale_after_sec` / `stale` |
 | `/v1/fx/bcv/banks`, `/v1/fx/bcv/currencies` | 1 vez al día | — (mira `captured_at`) |
 
 Cuando una tasa trae `stale_after_sec`, ese es el umbral que aplica a ese market y
@@ -21,9 +20,8 @@ manda sobre esta tabla.
 
 - **`effective_date`** (solo BCV): `YYYY-MM-DD`, la fecha valor — el día desde el que
   rige la tasa, en el calendario de Caracas. La tasa publicada el viernes rige desde
-  el lunes; la del jueves rige viernes, sábado y domingo. En feriados largos
-  (Carnaval, Semana Santa) la misma tasa puede regir hasta 5 días: **es correcto, no
-  es un dato viejo**.
+  el lunes; la del jueves rige viernes, sábado y domingo. En feriados largos la
+  misma tasa puede regir varios días: **es correcto, no es un dato viejo**.
 - **`updated_at`**: en P2P/paralelo es el instante del dato. En BCV es la medianoche de
   Caracas de la fecha valor (`2026-10-14T04:00:00Z` = 14 de octubre 00:00 VET), así
   que restarlo contra "ahora" no mide nada útil.

@@ -101,4 +101,4 @@ Defectos que aparecieron **con** la skill:
 - `trigger-evals.json` todavía no se corrió: la activación solo se puede medir con la
   skill instalada en un agente real, no con subagentes a los que se les indica leerla.
 - El registro anterior declara uso de Claude. No hay evidencia reproducible para
-  ninguno de los agentes; OpenCode no se evaluó y Gemini CLI solo en descubrimiento.
+  ninguno de los agentes; Codex, Cursor, Copilot y OpenCode no se evaluaron.

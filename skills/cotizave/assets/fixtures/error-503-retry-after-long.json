@@ -1,0 +1,5 @@
+{
+  "status": 503,
+  "headers": { "Content-Type": "application/json", "Retry-After": "120" },
+  "body": { "code": "service_unavailable", "message": "Service temporarily unavailable." }
+}

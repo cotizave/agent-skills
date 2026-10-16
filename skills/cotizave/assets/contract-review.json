@@ -1,0 +1,47 @@
+{
+  "api_version": "v1",
+  "skill_version": "0.2.0",
+  "scope": "Revisión documental parcial de tasas, cuota y fallback; sin llamadas a la API autenticada. Hashes de HTML para identificar lo consultado, no snapshots ni certificado del backend.",
+  "sources": [
+    {
+      "url": "https://cotizave.com/docs/api/endpoints/get-rates",
+      "retrieved_at": "2026-10-16T02:50:40.937973+00:00",
+      "status": 200,
+      "sha256_html": "94f58d57a77998845e474cd58240c07d9281a515eecd53b91fc41376a765bd7f",
+      "etag": "\"d1683a0a50437568b31d3881596ae6b9\"",
+      "last_modified": null
+    },
+    {
+      "url": "https://cotizave.com/docs/api/endpoints/get-rate-by-market",
+      "retrieved_at": "2026-10-16T02:50:41.268637+00:00",
+      "status": 200,
+      "sha256_html": "21b5f609a0469c606e353350ffc8dc6dc53f710b03659140ef682feeb1bdee04",
+      "etag": "\"aae8ad0f4f42224c1e2a12371d5d4d48\"",
+      "last_modified": null
+    },
+    {
+      "url": "https://cotizave.com/docs/api/rate-limits",
+      "retrieved_at": "2026-10-16T02:50:41.575404+00:00",
+      "status": 200,
+      "sha256_html": "edf652402b3065f0ce57aee8c109584f37915a1df9083158745bbb9196e76e86",
+      "etag": "\"8d8ef92ca60df4f49f875639e34e8669\"",
+      "last_modified": null
+    },
+    {
+      "url": "https://cotizave.com/docs/guides/electronic-invoicing-bcv",
+      "retrieved_at": "2026-10-16T02:50:41.908639+00:00",
+      "status": 200,
+      "sha256_html": "0c4ea046c0689f40220f58fe62a0cd58aa0b22ef5cdbf5ff9f789fa12f47369c",
+      "etag": "\"21bc5fbd3481e02f725bd94b26750c7d\"",
+      "last_modified": null
+    },
+    {
+      "url": "https://cotizave.com/precios",
+      "retrieved_at": "2026-10-16T02:50:42.224374+00:00",
+      "status": 200,
+      "sha256_html": "1c50538882b7fc783499dab3924726d849797c4f96bc9ef73888c36f215d8de8",
+      "etag": "\"10c4cd4ad1ef8ac55e52ed73598e2410\"",
+      "last_modified": null
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "query": "Integra la tasa BCV de Cotizave en mi API de Express y cachéala",
+    "should_trigger": true
+  },
+  {
+    "query": "Mi script de Python que llama a api.cotizave.com recibe 402 feature_not_in_plan, ¿qué hago?",
+    "should_trigger": true
+  },
+  {
+    "query": "Crea un bot de Telegram en Go que responda el dólar paralelo y Binance P2P en bolívares usando COTIZAVE_API_KEY",
+    "should_trigger": true
+  },
+  {
+    "query": "Guarda en cada factura de mi sistema en Laravel la tasa BCV de Cotizave y su fecha valor",
+    "should_trigger": true
+  },
+  {
+    "query": "Add a USD to VES conversion endpoint to my FastAPI backend using the Cotizave API",
+    "should_trigger": true
+  },
+  {
+    "query": "Revisa este cliente de Kotlin para Cotizave: a veces recibe 429 y entra en bucle",
+    "should_trigger": true
+  },
+  {
+    "query": "Muestra el precio de mis productos en bolívares en mi tienda de Next.js",
+    "should_trigger": false
+  },
+  {
+    "query": "¿A cuánto está el dólar hoy en Venezuela?",
+    "should_trigger": false
+  },
+  {
+    "query": "Integra la API de Stripe para cobrar suscripciones en mi app de Django",
+    "should_trigger": false
+  },
+  {
+    "query": "Convierte euros a dólares en mi app usando la API del Banco Central Europeo",
+    "should_trigger": false
+  },
+  {
+    "query": "Escribe un cliente HTTP genérico en Rust con reintentos exponenciales",
+    "should_trigger": false
+  },
+  {
+    "query": "Configura un cache de sesiones en mi app de Express",
+    "should_trigger": false
+  },
+  {
+    "query": "Integra el BCV desde mi proveedor actual, sin usar Cotizave",
+    "should_trigger": false
+  },
+  {
+    "query": "Corrige una race condition en mi cola Go sin dependencias externas",
+    "should_trigger": false
+  },
+  {
+    "query": "Implementa autenticación en TypeScript para mi app, sin integrar tasas",
+    "should_trigger": false
+  },
+  {
+    "query": "Diseña una migración SQL de usuarios",
+    "should_trigger": false
+  },
+  {
+    "query": "Refactoriza esta función Python de fechas",
+    "should_trigger": false
+  },
+  {
+    "query": "Revisa la seguridad de este formulario PHP",
+    "should_trigger": false
+  },
+  {
+    "query": "Optimiza este algoritmo Rust de ordenación",
+    "should_trigger": false
+  },
+  {
+    "query": "Explica SOLID y KISS",
+    "should_trigger": false
+  },
+  {
+    "query": "Consulta Cotizave en el navegador y dime la tasa actual, no escribas código",
+    "should_trigger": false
+  },
+  {
+    "query": "Implement a C# Cotizave client using our existing IHttpClientFactory",
+    "should_trigger": true
+  }
+]

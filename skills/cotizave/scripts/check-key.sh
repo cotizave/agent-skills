@@ -1,95 +1,138 @@
 #!/usr/bin/env bash
-# check-key.sh — verifica que COTIZAVE_API_KEY funciona y muestra la cuota del plan.
-#
-# Uso:
-#   COTIZAVE_API_KEY=ctz_live_... ./check-key.sh
-#
-# Hace UNA llamada a GET /v1/fx/rates/reference (consume 1 request de la cuota).
-# Nunca imprime la key. Requiere curl; usa jq solo si está instalado.
-# Sale con 0 si la key es válida (2xx), distinto de 0 en cualquier otro caso.
-
+# Comprueba una key SOLO cuando el usuario pide ese diagnóstico. Consume una request.
+# Requisitos: bash 3.2+, curl 8.4+ (límite de bytes incluso sin Content-Length), jq.
+# COTIZAVE_API_KEY: se recorta whitespace exterior; nunca se muestra.
+# COTIZAVE_BASE_URL: origen oficial o loopback con la key ficticia ctz_live_test.
+# Códigos: 0 contrato válido; 1 HTTP/protocolo; 2 configuración; 3 transporte/límite.
+# No ejecutar con bash -x: el trazado del shell puede exponer credenciales.
+set +x
 set -euo pipefail
+umask 077
 
 BASE_URL="${COTIZAVE_BASE_URL:-https://api.cotizave.com}"
+BASE_URL="${BASE_URL%/}"
 ENDPOINT="/v1/fx/rates/reference"
+local_test=false
+case "$BASE_URL" in
+  https://api.cotizave.com|https://api.cotizave.com:443) ;;
+  *)
+    if [[ "$BASE_URL" =~ ^http://(localhost|127\.0\.0\.1)(:[0-9]+)?$ ]]; then
+      local_test=true
+    else
+      echo 'error: destino inválido; solo origen oficial o loopback para tests.' >&2
+      exit 2
+    fi
+    ;;
+esac
 
-if ! command -v curl >/dev/null 2>&1; then
-  echo "error: se necesita curl" >&2
+for tool in curl jq; do
+  if ! command -v "$tool" >/dev/null 2>&1; then
+    echo "error: se necesita ${tool}; no se envió ninguna solicitud." >&2
+    exit 2
+  fi
+done
+curl_version="$(curl -q --version | head -n 1)"
+if [[ "$curl_version" =~ ^curl\ ([0-9]+)\.([0-9]+)\. ]]; then
+  if (( BASH_REMATCH[1] < 8 || (BASH_REMATCH[1] == 8 && BASH_REMATCH[2] < 4) )); then
+    echo 'error: se necesita curl 8.4 o posterior para limitar el cuerpo descargado.' >&2
+    exit 2
+  fi
+else
+  echo 'error: no se pudo verificar la versión de curl.' >&2
   exit 2
 fi
 
 key="${COTIZAVE_API_KEY:-}"
-if [[ -z "$key" ]]; then
-  echo "error: la variable de entorno COTIZAVE_API_KEY no está definida." >&2
-  echo "       Créala en https://app.cotizave.com (API Keys) y expórtala:" >&2
-  echo "       export COTIZAVE_API_KEY=ctz_live_..." >&2
+unset COTIZAVE_API_KEY
+key="${key#"${key%%[![:space:]]*}"}"
+key="${key%"${key##*[![:space:]]}"}"
+if [[ -z "$key" || "$key" =~ [^A-Za-z0-9_] ]]; then
+  echo 'error: falta la key o contiene caracteres inválidos; no se envió.' >&2
   exit 2
 fi
-
-if [[ ! "$key" =~ ^ctz_live_[0-9A-Za-z]{38}$ ]]; then
-  echo "aviso: la key no tiene el formato esperado (ctz_live_ + 38 caracteres base62)." >&2
-  echo "       Revisa que no tenga espacios, comillas o saltos de línea. Se intenta igual." >&2
+if [[ "$local_test" == true ]]; then
+  if [[ "$key" != ctz_live_test ]]; then
+    echo 'error: loopback solo admite la key ficticia documentada.' >&2
+    exit 2
+  fi
+elif [[ ! "$key" =~ ^ctz_live_[0-9A-Za-z]{38}$ ]]; then
+  echo 'error: formato de key inválido; no se envió.' >&2
+  exit 2
 fi
 
 tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
-
-# La key viaja por stdin (-H @-) para que no aparezca en la lista de procesos.
+# -q debe ser el primer argumento: ignora curlrc (TLS, redirects, trace, URLs extra).
+# La key va por stdin, no por argv. No imprimir stderr ni cuerpos remotos sin filtrar.
+proxy_args=()
+if [[ "$local_test" == true ]]; then proxy_args=(--noproxy '*'); fi
 set +e
-status="$(printf 'X-API-Key: %s\n' "$key" | curl -sS \
-  --max-time 15 \
-  -H @- \
-  -H 'Accept: application/json' \
-  -D "$tmp/headers" \
-  -o "$tmp/body" \
-  -w '%{http_code}' \
-  "${BASE_URL}${ENDPOINT}")"
+status="$(printf 'X-API-Key: %s\n' "$key" | curl -q -sS \
+  --no-location --proto '=https,http' --connect-timeout 5 --max-time 15 \
+  --max-filesize 1048576 \
+  ${proxy_args[@]+"${proxy_args[@]}"} \
+  -H @- -H 'Accept: application/json' \
+  -D "$tmp/headers" -o "$tmp/body" -w '%{http_code}' \
+  "${BASE_URL}${ENDPOINT}" 2>/dev/null)"
 curl_rc=$?
 set -e
-
+unset key
 if [[ $curl_rc -ne 0 ]]; then
-  echo "error: no se pudo conectar con ${BASE_URL} (curl exit ${curl_rc})." >&2
+  echo "error: transporte o límite de respuesta (curl exit ${curl_rc}); no se reintentó." >&2
   exit 3
 fi
 
 header() {
-  # Búsqueda case-insensitive de un header en la respuesta.
-  grep -i "^$1:" "$tmp/headers" | tail -n 1 | cut -d':' -f2- | tr -d '\r' | sed 's/^ *//'
+  awk -v name="$1" '
+    BEGIN { name = tolower(name) ":" }
+    /^HTTP\// { value = ""; next }
+    { line = $0; sub(/\r$/, "", line)
+      if (tolower(substr(line, 1, length(name))) == name) {
+        value = substr(line, length(name) + 1); sub(/^[ \t]+/, "", value)
+      }
+    }
+    END { print value }' "$tmp/headers"
 }
 
-field() {
-  # Extrae un campo string/número de primer nivel del JSON (jq si existe).
-  if command -v jq >/dev/null 2>&1; then
-    jq -r --arg f "$1" '.[$f] // empty' "$tmp/body" 2>/dev/null
-  else
-    sed -n "s/.*\"$1\"[[:space:]]*:[[:space:]]*\"\{0,1\}\([^\",}]*\).*/\1/p" "$tmp/body" | head -n 1
-  fi
-}
-
+# Solo se muestran campos numéricos/fechas validados; ni message, code, Location
+# ni valores arbitrarios de headers: un upstream podría reflejar la credencial.
 echo "GET ${ENDPOINT} -> HTTP ${status}"
-echo "  X-RateLimit-Limit:     $(header X-RateLimit-Limit)"
-echo "  X-RateLimit-Remaining: $(header X-RateLimit-Remaining)"
-echo "  X-RateLimit-Reset:     $(header X-RateLimit-Reset)"
-
-if [[ "$status" =~ ^2 ]]; then
-  echo "OK: la key es válida. BCV mid=$(field mid) effective_date=$(field effective_date)"
-  exit 0
+for name in X-RateLimit-Limit X-RateLimit-Remaining; do
+  value="$(header "$name")"
+  if [[ "$value" =~ ^[0-9]{1,16}$ ]]; then echo "  ${name}: ${value}"; fi
+done
+value="$(header X-RateLimit-Reset)"
+if [[ "$value" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\.[0-9]+)?(Z|[+-][0-9]{2}:[0-9]{2})$ ]]; then
+  echo "  X-RateLimit-Reset: ${value}"
 fi
 
-code="$(field code)"
-message="$(field message)"
-echo "error: ${code:-sin código} — ${message:-sin mensaje}" >&2
+if [[ "$status" =~ ^2[0-9][0-9]$ ]]; then
+  if ! jq -e -s 'length == 1 and (.[0] | type == "object" and
+      .market == "reference" and (.mid | type == "number" and . > 0 and . < 1e308) and
+      (.effective_date | type == "string" and test("^[0-9]{4}-[0-9]{2}-[0-9]{2}$")))' \
+      "$tmp/body" >/dev/null 2>&1; then
+    echo 'error: respuesta exitosa sin el contrato esperado; key no verificada.' >&2
+    exit 1
+  fi
+  jq -r '"OK: key verificada. BCV mid=\(.mid) effective_date=\(.effective_date)"' "$tmp/body"
+  exit 0
+fi
 case "$status" in
-  401) echo "       Key inválida, mal copiada o revocada." >&2 ;;
-  402) echo "       Tu plan no incluye este recurso." >&2 ;;
-  403) echo "       Cuenta inactiva o recurso no disponible." >&2 ;;
+  3*) echo 'error: redirección rechazada; no se reenvió la key.' >&2 ;;
+  401) echo 'error: key ausente, inválida o revocada.' >&2 ;;
+  402) echo 'error: recurso no incluido en el plan.' >&2 ;;
+  403) echo 'error: acceso no permitido; revisa la cuenta.' >&2 ;;
   429)
     scope="$(header X-RateLimit-Scope)"
-    echo "       Rate limit (${scope:-?}). Retry-After: $(header Retry-After)s." >&2
-    if [[ "$scope" == "monthly" ]]; then
-      echo "       Cuota mensual agotada: no reintentes hasta X-RateLimit-Reset." >&2
+    if [[ -z "$scope" ]]; then
+      scope="$(jq -r 'if type == "object" then .details.kind // empty else empty end' "$tmp/body" 2>/dev/null || true)"
     fi
+    case "$scope" in
+      monthly) echo 'error: cuota mensual agotada; no reintentar hasta el reset.' >&2 ;;
+      burst) echo 'error: límite de ráfaga; espera antes de volver a llamar.' >&2 ;;
+      *) echo 'error: límite temporal; respeta Retry-After.' >&2 ;;
+    esac
     ;;
-  5*) echo "       Error del lado de Cotizave; reintenta más tarde." >&2 ;;
+  *) echo 'error: respuesta HTTP no exitosa; consulta el contrato de errores.' >&2 ;;
 esac
 exit 1

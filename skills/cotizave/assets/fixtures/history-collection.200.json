@@ -1,0 +1,16 @@
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json", "X-RateLimit-Limit": "20000", "X-RateLimit-Remaining": "19876", "X-RateLimit-Reset": "2026-11-03T00:00:00Z" },
+  "body": {
+    "market": "binance",
+    "from": "2026-10-01",
+    "to": "2026-10-03",
+    "granularity": "daily",
+    "count": 3,
+    "points": [
+      { "date": "2026-10-01", "rate": 995.2, "updated_at": "2026-10-01T23:55:04Z", "captured_at": "2026-10-01T23:55:10Z" },
+      { "date": "2026-10-02", "rate": 998.75, "updated_at": "2026-10-02T23:55:03Z", "captured_at": "2026-10-02T23:55:09Z" },
+      { "date": "2026-10-03", "rate": 1001.4, "updated_at": "2026-10-03T23:55:05Z", "captured_at": "2026-10-03T23:55:11Z" }
+    ]
+  }
+}

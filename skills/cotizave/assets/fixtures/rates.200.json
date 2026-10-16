@@ -1,0 +1,29 @@
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json", "X-RateLimit-Limit": "20000", "X-RateLimit-Remaining": "19876", "X-RateLimit-Reset": "2026-11-03T00:00:00Z" },
+  "body": {
+    "country": "VE",
+    "currency": "VES",
+    "base": "USD",
+    "rates": [
+      { "market": "reference", "type": "reference", "base": "USD", "mid": 877.9023, "updated_at": "2026-10-14T04:00:00Z", "effective_date": "2026-10-14" },
+      { "market": "eur_reference", "type": "reference", "base": "EUR", "mid": 982.75895071, "updated_at": "2026-10-14T04:00:00Z", "effective_date": "2026-10-14" },
+      { "market": "parallel", "type": "parallel", "base": "USD", "mid": 1009.697123, "updated_at": "2026-10-14T21:01:08Z" },
+      { "market": "binance", "type": "p2p", "base": "USD", "ask": 1012.4, "bid": 1010.7, "mid": 1011.55, "updated_at": "2026-10-15T03:30:10Z" },
+      { "market": "bybit", "type": "p2p", "base": "USD", "ask": 1013.1, "bid": 1009.9, "mid": 1011.5, "updated_at": "2026-10-15T03:30:10Z" },
+      { "market": "paypal", "type": "remittance", "base": "USD", "mid": 905.2, "updated_at": "2026-10-15T01:12:00Z" }
+    ],
+    "index": {
+      "value": 975.1234,
+      "version": "v1",
+      "as_of": "2026-10-15T03:31:30Z",
+      "weights": { "bcv": 0.3, "paralelo": 0.2, "p2p": 0.5 },
+      "components": { "bcv": 877.9023, "paralelo": 1009.697123, "p2p": 1011.55 },
+      "p2p_median": 1011.55,
+      "p2p_count": 7,
+      "flags": {},
+      "methodology_url": "https://cotizave.com/docs/cotizave-index"
+    },
+    "fetched_at": "2026-10-15T03:31:30Z"
+  }
+}

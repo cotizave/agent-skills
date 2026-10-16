@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Agent Skills oficiales para integrar la API de Cotizave (tasas de cambio de Venezuela: BCV, paralelo, P2P).",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "cotizave",
       "description": "Enseña a los agentes de código a integrar correctamente la API de Cotizave: endpoints, autenticación, cuotas, 429, cache y frescura de las tasas BCV, paralela y P2P.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "author": {
         "name": "Cotizave",
         "email": "support@cotizave.com"

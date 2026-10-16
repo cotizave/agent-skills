@@ -1,0 +1,5 @@
+{
+  "status": 401,
+  "headers": { "Content-Type": "application/json" },
+  "body": { "code": "invalid_api_key", "message": "API key is missing, invalid, or revoked." }
+}

@@ -2,15 +2,21 @@
 
 Base URL `https://api.cotizave.com`. Todos requieren `X-API-Key: $COTIZAVE_API_KEY`.
 Las respuestas de ejemplo están recortadas; los números son ilustrativos.
+Consulta la [evidencia del contrato](contract-evidence.md) para el alcance de la
+revisión pública y sus diferencias con ejemplos heredados.
 
 Reglas comunes:
 
-- Parámetros de query desconocidos → `400 unknown_parameter` (el `field` nombra el
-  parámetro y el `message` lista los aceptados).
+- `/convert`, `/spread`, `/route` y `/history` rechazan parámetros de query
+  desconocidos con `400 unknown_parameter` (el `field` nombra el parámetro y el
+  `message` lista los aceptados). El resto los ignora en silencio: no mandes
+  parámetros que no estén en esta referencia.
 - `?format=csv|xml` (o header `Accept: text/csv` / `application/xml`) funciona en
   todos estos endpoints desde el plan Esencial. Ver
   [errors-and-limits.md](errors-and-limits.md#formatos-csv-y-xml).
-- Los valores son `number` JSON (double). Redondea al mostrar.
+- Los valores son números JSON. Conserva precisión y aplica el redondeo del negocio
+  al fijar importes; el formato visual es independiente. Ver
+  [dinero y persistencia](integration-patterns.md#dinero-y-persistencia).
 - Todas las tasas expresan **VES por 1 unidad de la moneda base** (USD, salvo
   `eur_reference`, que es EUR).
 
@@ -24,20 +30,14 @@ Reglas comunes:
 [/v1/fx/rates/:market/history](#get-v1fxratesmarkethistory) ·
 [/v1/fx/route](#get-v1fxroute) ·
 [/v1/fx/bcv/banks](#get-v1fxbcvbanks) ·
-[/v1/fx/bcv/currencies](#get-v1fxbcvcurrencies) ·
-[/v1/banks](#get-v1banks) ·
-[/v1/banks/:code](#get-v1bankscode)
+[/v1/fx/bcv/currencies](#get-v1fxbcvcurrencies)
 
 ---
 
 ## GET /v1/fx/rates
 
 Snapshot completo: todas las tasas que tu plan incluye + Cotizave Index. Es el
-endpoint principal. **No acepta parámetros** (salvo `format`).
-
-```bash
-curl https://api.cotizave.com/v1/fx/rates -H "X-API-Key: $COTIZAVE_API_KEY"
-```
+endpoint principal. Sin parámetros (salvo `format`).
 
 ```json
 {
@@ -55,7 +55,7 @@ curl https://api.cotizave.com/v1/fx/rates -H "X-API-Key: $COTIZAVE_API_KEY"
       "mid": 1011.55, "updated_at": "2026-10-15T03:30:10Z" }
   ],
   "index": {
-    "value": 975.1234, "version": "v1", "as_of": "2026-10-15T03:31:30Z",
+    "value": 971.0851, "version": "v1", "as_of": "2026-10-15T03:31:30Z",
     "weights": { "bcv": 0.30, "paralelo": 0.20, "p2p": 0.50 },
     "components": { "bcv": 877.9023, "paralelo": 1009.6971, "p2p": 1011.55 },
     "p2p_median": 1011.55, "p2p_count": 7, "flags": {}
@@ -69,25 +69,22 @@ Campos de cada `rates[]`:
 | Campo | Notas |
 |---|---|
 | `market` | Identificador (ver la tabla de markets en SKILL.md). |
-| `type` | `reference`, `parallel`, `p2p`; los markets de pago también pueden ser `remittance`, `cash`, `exchange_house`. Trata valores desconocidos sin romper. |
-| `base` | `USD` o `EUR`. Puede faltar en respuestas antiguas: si falta, asume USD salvo en `eur_reference`. |
-| `ask` / `bid` | Solo cuando la fuente los da (paralelo, P2P). Omitidos en `reference`. |
+| `type` | `reference`, `parallel`, `p2p`; los markets de pago también pueden ser `remittance`, `cash`, `exchange_house`, entre otros. Trata valores desconocidos sin romper. |
+| `base` | `USD` o `EUR`. Puede faltar: si falta, asume USD salvo en `eur_reference`. |
+| `ask` / `bid` | Solo en los markets que publican compra y venta (paralelo, P2P). Omitidos en `reference`. |
 | `mid` | Siempre presente. Usa este. |
-| `updated_at` | ISO 8601. En `reference`/`eur_reference` es la fecha valor a medianoche de Caracas, **no** la hora en que se leyó. |
+| `updated_at` | ISO 8601 de actualización. No exijas una hora fija en BCV ni lo confundas con la descarga local; usa `effective_date` para fecha valor. |
 | `effective_date` | `YYYY-MM-DD`, solo en `reference`/`eur_reference`. Fecha valor. |
-| `stale_after_sec` | Opcional. Umbral de frescura propio del market, en segundos. |
+| `stale_after_sec` | Opcional. Umbral de frescura del market, en segundos; si viene, manda sobre cualquier umbral por defecto. |
 
 - El orden de `rates[]` no está garantizado: busca por `market`.
 - Los markets fuera de tu plan se omiten en silencio (aquí no hay 402).
-- Un P2P sin cotización en ese momento puede no aparecer.
+- Un P2P sin cotización en ese momento puede no aparecer, y pueden aparecer markets o
+  `type` nuevos: no valides contra una lista cerrada.
 
 ## GET /v1/fx/rates/:market
 
 Una sola tasa. Mismo objeto que un elemento de `rates[]`. Sin parámetros de query.
-
-```bash
-curl https://api.cotizave.com/v1/fx/rates/reference -H "X-API-Key: $COTIZAVE_API_KEY"
-```
 
 ```json
 { "market": "reference", "type": "reference", "base": "USD", "mid": 877.9023,
@@ -96,7 +93,7 @@ curl https://api.cotizave.com/v1/fx/rates/reference -H "X-API-Key: $COTIZAVE_API
 
 Errores: `404 resource_not_found` (market inexistente o ausente del snapshot),
 `402 feature_not_in_plan` (market gateado: `details.feature` = `remittance`,
-`extended_markets` o `cash_markets`).
+`extended_markets` o `cash_markets`, y `details.market`).
 
 Regla práctica de los docs: 1–2 tasas → este endpoint; más → `/v1/fx/rates`.
 
@@ -111,15 +108,6 @@ Convierte un monto. Todos los planes.
 | `amount` | sí | número > 0 y ≤ 1e12 |
 | `via` | no | cualquier market del snapshot. **Default: `reference` (BCV) para USD, `eur_reference` para EUR** |
 | `market` | no | alias de `via` (si vienen ambos, gana `via`) |
-
-```bash
-# Tasa oficial BCV (default)
-curl "https://api.cotizave.com/v1/fx/convert?from=USD&to=VES&amount=100" \
-  -H "X-API-Key: $COTIZAVE_API_KEY"
-# Precio de mercado
-curl "https://api.cotizave.com/v1/fx/convert?from=VES&to=USD&amount=200000&via=binance" \
-  -H "X-API-Key: $COTIZAVE_API_KEY"
-```
 
 ```json
 {
@@ -137,16 +125,21 @@ curl "https://api.cotizave.com/v1/fx/convert?from=VES&to=USD&amount=200000&via=b
 
 - `to.amount = amount × rate` si vas hacia VES; `amount / rate` si sales de VES.
 - `effective_date` solo con `reference`/`eur_reference`: archívala si facturas.
-- `staleness_sec` = edad en segundos; `stale` = superó el umbral de su fuente.
+- `staleness_sec` = edad en segundos; `stale` = superó el umbral de ese market.
 - `400 invalid_format` con `field: "via"` si el market cotiza en otra moneda
-  (p. ej. `eur_reference` con `from=USD`) o si pides VES→USD por `paypal`/`zelle`.
+  (p. ej. `eur_reference` con `from=USD`) o si pides VES→USD por un market de remesa
+  (`paypal`, `zelle`, `western_union`).
+- Otros errores: `400 missing_field` (falta `from` o `to`), `400 invalid_format`
+  (`amount` no numérico, ≤ 0 o > 1e12; monedas no soportadas o iguales),
+  `402 feature_not_in_plan` (`via` gateado), `404 resource_not_found` (`via` inexistente).
 - Si conviertes muchos montos por minuto, trae `/v1/fx/rates` una vez y multiplica tú.
 
 ## POST /v1/fx/bulk/convert
 
 Hasta 50 montos con **una** tasa, 1 unidad de cuota. **Solo plan Escala**
 (`402 feature_not_in_plan`, `details.feature: "bulk_convert"` en los demás). Límite
-adicional de 300 llamadas por hora (excederlo → `429`).
+adicional de 300 llamadas por hora: excederlo → `429 rate_limit_exceeded` **sin**
+`X-RateLimit-Scope` y con `Retry-After: 3600` (no reintentes antes).
 
 Body (JSON):
 
@@ -155,13 +148,7 @@ Body (JSON):
 | `from` | sí | `USD` o `VES` |
 | `to` | sí | `VES` o `USD`, distinto de `from` |
 | `amounts` | sí | `number[]`, de 1 a 50 elementos, cada uno > 0 y ≤ 1e12 |
-| `market` | no | default `reference` |
-
-```bash
-curl -X POST https://api.cotizave.com/v1/fx/bulk/convert \
-  -H "X-API-Key: $COTIZAVE_API_KEY" -H "Content-Type: application/json" \
-  -d '{"from":"USD","to":"VES","amounts":[100,250,500],"market":"parallel"}'
-```
+| `market` | no | default `reference`. Usa un market con base USD y, para VES→USD, nunca una remesa: **aquí la API no lo valida** (con `eur_reference` aplica la tasa EUR sin error) |
 
 ```json
 {
@@ -177,11 +164,14 @@ curl -X POST https://api.cotizave.com/v1/fx/bulk/convert \
 ```
 
 `results[i]` corresponde a `amounts[i]`. Headers: `X-RateLimit-Cost: 1`,
-`X-Bulk-Operations: <n>`. Más de 50 montos → `400 invalid_format`, `field: "amounts"`.
-
-> Nota: algunos snippets de la documentación web muestran un body con
-> `items: [{from,to,amount}]` y `via`. La tabla de parámetros de esa misma página y
-> el servidor usan `amounts` + `market`, que es lo que hay que enviar.
+`X-Bulk-Operations: <n>`, `X-Bulk-RateLimit-Limit` y `X-Bulk-RateLimit-Remaining`.
+Errores: más de 50 montos → `400 invalid_format` (`field: "amounts"`,
+`details: {max, got}`); lista vacía → `400 missing_field`; un monto ≤ 0 o > 1e12 →
+`400 invalid_format`; JSON inválido → `400 invalid_format`; `market` gateado → `402`;
+market sin cotización válida → `503`. **Los campos desconocidos del body se ignoran en
+silencio**: un `via` se descarta y se usa `reference`; `items` sin `amounts` → `400
+missing_field`. No existe `items` ni `via` en este endpoint: si ves ejemplos así, están
+desactualizados.
 
 ## GET /v1/fx/spread
 
@@ -192,10 +182,6 @@ Brecha entre BCV (`reference`) y otro market. Todos los planes.
 | `against` | `parallel` | `parallel`, cualquier P2P (`binance`, `bybit`, …) u otro market de tu plan; no `reference` |
 | `base` | `USD` | solo `USD` |
 
-```bash
-curl "https://api.cotizave.com/v1/fx/spread?against=binance" -H "X-API-Key: $COTIZAVE_API_KEY"
-```
-
 ```json
 {
   "reference": { "market": "reference", "value": 877.9023, "updated_at": "2026-10-14T04:00:00Z" },
@@ -205,8 +191,11 @@ curl "https://api.cotizave.com/v1/fx/spread?against=binance" -H "X-API-Key: $COT
 }
 ```
 
-`direction`: `higher` | `lower` | `equal`. Errores: `400 invalid_against`,
-`400 invalid_base`, `422 reference_unavailable`, `422 compared_unavailable`.
+`direction`: `higher` | `lower` | `equal`. Errores: `400 invalid_against` (market
+inexistente, `reference`, con base EUR **o ausente del snapshot en ese momento**, p. ej.
+un P2P que no está cotizando), `400 invalid_base`, `402 feature_not_in_plan` (market
+gateado), `422 reference_unavailable` / `422 compared_unavailable` (la tasa está pero
+sin un valor válido).
 
 ## GET /v1/fx/index
 
@@ -215,7 +204,7 @@ Todos los planes. Sin parámetros. También viene embebido en `/v1/fx/rates` (`i
 
 ```json
 {
-  "value": 975.1234, "version": "v1", "as_of": "2026-10-15T03:31:30Z",
+  "value": 971.0851, "version": "v1", "as_of": "2026-10-15T03:31:30Z",
   "weights": { "bcv": 0.30, "paralelo": 0.20, "p2p": 0.50 },
   "components": { "bcv": 877.9023, "paralelo": 1009.6971, "p2p": 1011.55 },
   "p2p_median": 1011.55, "p2p_count": 7,
@@ -230,30 +219,25 @@ redistribuye y `weights` cambia), `degraded` (< 4 exchanges P2P), `missing_sourc
 
 ## GET /v1/fx/rates/:market/history
 
-Histórico de un market. Todos los planes; **la profundidad depende del plan**: Gratis
-14 días · Inicio 30 · Esencial 90 · Profesional 180 · Escala 365.
+Histórico de un market. Todos los planes; **la profundidad depende del plan** (ver la
+columna "Histórico" en [errors-and-limits.md](errors-and-limits.md#planes-y-cuotas)).
 
-`:market`: `reference`, `parallel`, `binance`, `bybit`, `okx`, `bitget`, `mexc`,
-`bingx`, `saldo`.
+`:market`: cualquier market del catálogo (`reference`, `eur_reference`, `parallel`,
+los P2P…). Los gateados piden su feature (`402`). Con `?date=` y sin registros →
+`404`; en modo colección, un rango sin datos (o un market inexistente) responde `200`
+con `count: 0` y `points: []`: no asumas que hay datos.
 
 | Param | Modo | Notas |
 |---|---|---|
-| `date` | punto | `YYYY-MM-DD` (UTC). Devuelve **1 objeto**: el registro más cercano **en o antes** de esa fecha. No puede ser futura. |
-| `from`, `to` | colección | `YYYY-MM-DD`, inclusivos. Por defecto: desde lo más antiguo que permite tu plan hasta hoy. |
-| `granularity` | colección | `daily` (default, un cierre por día) o `raw` (cada captura, máx. 5.000 puntos → `truncated: true`). |
+| `date` | punto | `YYYY-MM-DD` (UTC). Devuelve **1 objeto**: el último registro capturado **en o antes** de esa fecha. No puede ser futura. |
+| `from`, `to` | colección | `YYYY-MM-DD`, inclusivos. Por defecto: desde lo más antiguo que permite tu plan hasta hoy. Un `to` futuro se recorta a hoy. |
+| `granularity` | colección | `daily` (default, un cierre por día) o `raw` (cada captura, máx. 5.000 puntos: se conservan los **más recientes**, `truncated: true` y el `from` de la respuesta pasa al primer punto devuelto). |
 
 Sin parámetros → colección con toda tu ventana de retención.
 
-```bash
-curl "https://api.cotizave.com/v1/fx/rates/reference/history?date=2026-10-04" \
-  -H "X-API-Key: $COTIZAVE_API_KEY"
-curl "https://api.cotizave.com/v1/fx/rates/binance/history?from=2026-10-01&to=2026-10-07" \
-  -H "X-API-Key: $COTIZAVE_API_KEY"
-```
-
 ```json
 { "market": "reference", "date": "2026-10-04", "rate": 870.12,
-  "updated_at": "2026-10-03T04:00:00Z", "captured_at": "2026-10-03T20:35:12Z" }
+  "updated_at": "2026-10-02T04:00:00Z", "captured_at": "2026-10-03T20:35:12Z" }
 ```
 
 ```json
@@ -266,27 +250,32 @@ curl "https://api.cotizave.com/v1/fx/rates/binance/history?from=2026-10-01&to=20
 }
 ```
 
+Para BCV, el `rate` de un día es la tasa que estaba publicada al capturarse: revisa
+su `updated_at` (fecha valor) antes de asumir que rige ese mismo día. En el ejemplo, el
+domingo 4 rige la tasa con fecha valor del viernes 2. `date` se interpreta en UTC,
+mientras que la fecha valor del BCV es del calendario de Caracas (UTC−4).
+
 Errores: `400 invalid_format` (fecha mal formada o futura, `from > to`, granularity
 inválida), `403 history_out_of_retention` (más vieja que lo que permite tu plan;
-`details.max_days`), `404 resource_not_found` (sin registros en o antes de esa fecha).
-Las fechas pasadas no cambian: cachéalas sin expiración.
+`details.max_days`), `404 resource_not_found` (sin registros en o antes de esa fecha),
+`503 service_unavailable` (histórico no disponible temporalmente), `504 query_timeout`
+(rango demasiado pesado: acótalo).
+Los datos de los últimos días pueden ajustarse: cachea a largo plazo solo las fechas
+con más de 3 días de antigüedad y revalida lo que incluya los últimos 3 días (TTL
+≤ 1 h).
 
 ## GET /v1/fx/route
 
 Mejor mercado ejecutable para un monto USD↔VES + alternativas ordenadas. **Solo plan
-Escala.**
+Escala**: en los demás → `402 feature_not_in_plan` con `details.feature: "route"`
+(Profesional tampoco lo incluye).
 
 | Param | Req. | Default | Notas |
 |---|---|---|---|
 | `from`, `to` | sí | — | `USD`/`VES` |
-| `amount` | sí | — | > 0 |
-| `direction` | no | `send` | `send` = maximizar VES recibidos; `receive` = pagar menos VES por USD |
+| `amount` | sí | — | > 0 y ≤ 1e12 |
+| `direction` | no | `send` | `send` = maximizar el monto de destino; `receive` = ordenar por el menor monto de destino |
 | `max_staleness` | no | `0` | segundos; `0` = sin filtro |
-
-```bash
-curl "https://api.cotizave.com/v1/fx/route?from=USD&to=VES&amount=1000&direction=send&max_staleness=1800" \
-  -H "X-API-Key: $COTIZAVE_API_KEY"
-```
 
 ```json
 {
@@ -301,9 +290,12 @@ curl "https://api.cotizave.com/v1/fx/route?from=USD&to=VES&amount=1000&direction
 }
 ```
 
-`skipped[].reason`: `not_executable` (el BCV no es un mercado), `currency_mismatch`
-(`eur_reference`), `no_quote`, `stale`, `feature_not_in_plan`. En CSV responde `406`
-(dos colecciones); usa JSON o XML.
+`skipped[].reason`: `not_executable` (referencias del BCV y casas de cambio no son un
+mercado), `currency_mismatch` (`eur_reference`), `feature_not_in_plan`,
+`one_way_market` (remesas en VES→USD), `no_quote`, `stale` (superó `max_staleness`).
+`skipped` se omite cuando está vacío.
+Si ningún market califica → `503 service_unavailable`. En CSV responde `406` (dos
+colecciones); usa JSON o XML.
 
 ## GET /v1/fx/bcv/banks
 
@@ -323,13 +315,13 @@ planes. Sin parámetros.
 ```
 
 - La lista de bancos **varía de un día a otro** (el BCV rota entidades): no asumas una
-  lista fija ni normalices nombres (`bank` es literal de la fuente).
-- `404 bcv_snapshot_unavailable` si todavía no hay snapshot.
+  lista fija ni normalices nombres (`bank` llega tal como lo publica el BCV).
+- `404 bcv_snapshot_unavailable` si la publicación del día todavía no está disponible.
 
 ## GET /v1/fx/bcv/currencies
 
 Tasas oficiales BCV de EUR, CNY, TRY y RUB (VES por unidad). USD no viene aquí (está
-en `/v1/fx/rates/reference`). Mismo snapshot diario que `/bcv/banks`. Todos los planes.
+en `/v1/fx/rates/reference`). Misma publicación diaria que `/bcv/banks`. Todos los planes.
 
 ```json
 {
@@ -342,40 +334,12 @@ en `/v1/fx/rates/reference`). Mismo snapshot diario que `/bcv/banks`. Todos los 
 
 Para contabilidad usa `reference_value_date` (fecha valor), no `captured_at`.
 
-## GET /v1/banks
-
-Catálogo de bancos venezolanos. Todos los planes. Param opcional `q` (filtra por
-nombre, sin distinguir mayúsculas). Header de respuesta `X-Data-Source: normadata.io`.
-
-```bash
-curl "https://api.cotizave.com/v1/banks?q=banesco" -H "X-API-Key: $COTIZAVE_API_KEY"
-```
-
-```json
-{ "banks": [ { "code": "0134", "name": "Banesco", "type": "private" } ], "total": 1 }
-```
-
-`type`: `public` | `private`.
-
-Si `/v1/banks*` responde `403 endpoint_disabled`, las utilidades de Venezuela están
-deshabilitadas temporalmente: no es un problema de tu key ni de tu plan; no
-reintentes en bucle.
-
-## GET /v1/banks/:code
-
-Un banco por su código SUDEBAN de 4 dígitos (los primeros 4 de una cuenta de 20).
-
-```json
-{ "code": "0134", "name": "Banesco", "type": "private" }
-```
-
-Errores: `400 invalid_format` (no son 4 dígitos), `404 bank_not_found`.
-
 ---
 
 ## Fuera de esta referencia
 
-Existen otras utilidades de Venezuela (validación de RIF y de cuenta bancaria,
-feriados y días hábiles) que **no** forman parte de la referencia pública de la API y
-pueden no estar habilitadas para tu cuenta (responden `403 endpoint_disabled`). No las
-uses sin confirmar antes en https://cotizave.com/docs o con support@cotizave.com.
+Existen otras utilidades de Venezuela (catálogo de bancos, validación de RIF y de
+cuenta bancaria, feriados y días hábiles) que **no** forman parte de la referencia
+pública de la API y pueden no estar habilitadas para tu cuenta (responden
+`403 endpoint_disabled`). No las uses sin confirmar antes en
+https://cotizave.com/docs o con support@cotizave.com.

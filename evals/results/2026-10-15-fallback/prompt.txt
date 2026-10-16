@@ -1,0 +1,3 @@
+Mi backend Node muestra tasas de Cotizave y fija facturas BCV. Ya usa transporte inyectado, cache en memoria y reloj inyectado. Implementa un cliente pequeño que conserve último dato bueno ante caída, respete cuota mensual y cancelación y recupere al volver el servicio. Si falla BCV tengo parallel en cache: decide el comportamiento correcto.
+
+Restricciones de evaluación: trabajar exclusivamente en /private/tmp/cotizave-fallback-eval-20261015; usar skills/cotizave/SKILL.md y referencias pertinentes; sin red, credenciales ni otros agentes; ejecutar tests deterministas con fixtures del paquete; no modificar repositorio ni leer evals/expected answers; no distribuir como cliente oficial.

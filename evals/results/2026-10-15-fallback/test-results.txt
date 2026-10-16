@@ -1,0 +1,28 @@
+✔ fallback same market, metadata, bounded retries and recovery (2.652334ms)
+✔ display limit inclusive and expired value unavailable (0.859ms)
+✔ empty cache cannot invent a rate (0.381917ms)
+✔ invalid response preserves last good snapshot then recovers (0.445209ms)
+✔ monthly blocks all markets until exact reset and resumes (0.611625ms)
+✔ parallel alone cannot replace missing BCV for display or invoice (0.190125ms)
+✔ unproven BCV cannot fix invoice; required provenance retained when attested (0.334541ms)
+✔ abort before call and during transport never returns cached success; recovery (0.387709ms)
+✔ concurrent consumers share refresh and cancellation is individual (0.1865ms)
+✔ credential errors surface rather than hiding behind fallback (0.404625ms)
+✔ burst waits, no-scope blocks, excessive wait is never shortened (0.630458ms)
+✔ cancel during backoff sends no retry (0.266417ms)
+✔ hanging transport is bounded by attempt deadline (0.139291ms)
+✔ monthly with absent reset suspends calls for operator review (0.165708ms)
+✔ ancient upstream value is inadmissible even when downloaded and refreshed now (0.342375ms)
+✔ same old upstream rate does not gain a new fallback lifetime on refresh (0.230625ms)
+✔ BCV fallback defaults to deny despite numeric tolerance and recent download (0.186666ms)
+✔ BCV display admissibility never grants invoice validity (0.126084ms)
+✔ different base cannot satisfy USD request or be used for a USD BCV invoice (0.325958ms)
+✔ fresh HTTP response with stale origin cannot falsely clear degraded state (0.368292ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 71.876125

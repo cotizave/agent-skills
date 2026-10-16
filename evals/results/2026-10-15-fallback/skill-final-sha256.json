@@ -1,0 +1,33 @@
+{
+  "scope": "Estado final; no representa la primera lectura del agente",
+  "files": {
+    "SKILL.md": "f600136fb2a62d4d318fc764d0a3e39c04b3e29033df582582f3035e3fb2e733",
+    "assets/contract-review.json": "f7daa5d8e085d257f7666d65ee681d8f852a90f8c0852a49c2d8565304c8b3b7",
+    "assets/fixtures/README.md": "af028b7b30ff7b8e5641a1b48cc7b18f9ce1074ad22767e19f4454bf72d1a68d",
+    "assets/fixtures/bulk-convert.200.json": "3111b28a9d46a59ba960f0e649fa0b53ffdae3097f34b8620e248b8fe9a7039f",
+    "assets/fixtures/convert.200.json": "e8723115f31bd71a0332e2483a69d5fc9fc6e827362231c73f7cb650b53a171d",
+    "assets/fixtures/error-400-unknown-parameter.json": "1db599b0f5ae891e75f35027b604c2b7d86195faa635390b099077e2d238fec2",
+    "assets/fixtures/error-401-invalid-api-key.json": "3f98bf3ac8905bb679291d75384a353090f6fea75f69943a54fcbf5823e6b216",
+    "assets/fixtures/error-402-feature-not-in-plan.json": "0b005fa99c3fbcf24b6c17eefb0f09a963339c0c248f399fb139054b76a4957c",
+    "assets/fixtures/error-429-burst-scope-in-body.json": "cc1c8329041d66b54301268150fe87facae00f5d4983c4e2e1f760758b0a76a8",
+    "assets/fixtures/error-429-burst.json": "cc84159d1cd83c1b20b5f684067c9c419949b44448bd27727df733f8b62f0b28",
+    "assets/fixtures/error-429-monthly.json": "058d1c762e535f16eb8efa1f79a7486de31986bdfd1c4fbc1a7f76dc5f2d3f85",
+    "assets/fixtures/error-429-no-scope.json": "d1028e0d2a6c9ee387a0fe80279b7b8f40b99b4e7a8c4f4f1870a993a50de15c",
+    "assets/fixtures/error-500-internal.json": "fd5c57ef83fa523a6e4882df90c013e9965a302bd6b6a597bdcddf35a2f841c4",
+    "assets/fixtures/error-503-retry-after-long.json": "3be6b903cdf90ea4ed2789c7a3001723ad5f4159442616f2e910b0bb9d052b34",
+    "assets/fixtures/error-503-service-unavailable.json": "9f764fb29f52babb8aae7ada050c61bc68de7190747ba5c270c675b44562b65c",
+    "assets/fixtures/history-collection.200.json": "549c919d8a2db19bf8654cd2662a3c5cf7e45fc1aab38459034b047fbf66ac87",
+    "assets/fixtures/history-point.200.json": "84feefbbfd4e28717a64d2a8d788d274f05b44fd3d4e034984d007802823e077",
+    "assets/fixtures/malformed.200.json": "31a4cafe5481116f640a1e10ded7633b4e6476cf6433c93e843cb85626134911",
+    "assets/fixtures/rate-eur-reference-no-base.200.json": "b1e482953b9710c975f36bf5f7ff1616a7139492827b5eba1f55ec51d4975209",
+    "assets/fixtures/rate-reference.200.json": "2f9faa7b52b2a69d3f5098ca330403eac28e982753755b2fe7143010dd0c0793",
+    "assets/fixtures/rates.200.json": "6884e0edc9b3409c341b721b174cdc785b945b2839ab3df826c6b80a7bdbc7b0",
+    "assets/fixtures/redirect-302.json": "44153ef58d0e7cb94579233233c7f03c6ca87ea2904d320a4660bbf7680a7646",
+    "references/caching-and-freshness.md": "bedfbe94cd234662fd7f13daf92aca83e95253a61e6d4aef942cfd7cc71da0eb",
+    "references/contract-evidence.md": "54bd6d9c21122c3e693f0d3a6d67db49e585615f87c8c8c3f9fe4da111d40b1b",
+    "references/endpoints.md": "40adc9e80324b07273265dc703cd572ca72f3b72c5252b2e8896bc966e70d661",
+    "references/errors-and-limits.md": "2be185ed68a723fdce5a94b3773f2e4f4531576438083d47d964d0d3f17a4427",
+    "references/integration-patterns.md": "8bd84833c9aac0b48562cb0cf4e439ee86551a908b95c0eeeb68fdd237584962",
+    "scripts/check-key.sh": "36c61785f0257026eb4af61f5cfa00d085a464c5034f57119ec7c2d5bce439fa"
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "status": 402,
+  "headers": { "Content-Type": "application/json" },
+  "body": { "code": "feature_not_in_plan", "message": "This feature ('bulk_convert') requires a plan upgrade.", "details": { "feature": "bulk_convert", "current_plan": "indie" } }
+}

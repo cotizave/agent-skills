@@ -1,0 +1,44 @@
+{
+  "review_date": "2026-10-16",
+  "scope": "Inspección del código local del proveedor y tests con transporte local; no certifica el despliegue de producción.",
+  "backend_revision": "440149a52a0d4c69c36ce0805c72723b9ae2dc1e",
+  "runtime": "go1.25.11 darwin/arm64",
+  "source_sha256": {
+    "market_freshness": "2ccd3d8a222d62925035e4b70c604de733b5b674b0df8fddc1acd6e62fc34223",
+    "snapshot_retention": "b44aabcda58470caf6eb5009dccfc41a3f7ac538babe53fa2f5c04499a7485de",
+    "bcv_value_date": "33956863530c378516d3b146f4b377b8c01898a25d03180e134eb809dc764989",
+    "quota_accounting": "3be01c29259677a2ba2883725543d60f749fa76768b672c85f7280ae25384098",
+    "bulk_limit": "40d5ccba4b98e91bce3805efa119096e2b479b5c1d8f74da8a7856765fd1a631",
+    "market_specific_threshold": "d78e24b073cfd6e8f0904c40b857f4cae43d81645323e9a8763d7f8bb201f71c"
+  },
+  "verification": {
+    "passed_including_subtests": 43,
+    "failed": 0,
+    "packages": 3,
+    "raw_output_sha256": "5444086dc6f34c48cfe9ad537ca969a32475f113014435270b772db0208874d7"
+  },
+  "confirmed_by_code": {
+    "stale_hours": {
+      "reference": 132,
+      "parallel": 26,
+      "p2p": 0.5,
+      "remittance_default": 6,
+      "cash": 3,
+      "exchange_house": 26,
+      "western_union_override": 26
+    },
+    "bulk_calls_per_hour": 300,
+    "quota_excluded_statuses": [
+      401,
+      402,
+      403,
+      429
+    ],
+    "quota_excludes_all_5xx": true,
+    "global_ten_minute_eviction": false
+  },
+  "limits": [
+    "El tope bulk y los estados 406/422 se comprobaron por lectura de código, no por tests nuevos.",
+    "La salida cruda se conserva fuera del paquete público; los hashes identifican el material revisado."
+  ]
+}

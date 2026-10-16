@@ -1,0 +1,15 @@
+{
+  "status": 429,
+  "headers": {
+    "Content-Type": "application/json",
+    "Retry-After": "1",
+    "X-RateLimit-Scope": "burst",
+    "X-RateLimit-Retry-After-Ms": "40",
+    "X-RateLimit-Limit-Second": "3",
+    "X-RateLimit-Burst": "8",
+    "X-RateLimit-Limit": "20000",
+    "X-RateLimit-Remaining": "19875",
+    "X-RateLimit-Reset": "2026-11-03T00:00:00Z"
+  },
+  "body": { "code": "rate_limit_exceeded", "message": "Rate limit reached (8 req/burst, 3 req/seg sostenido). Retry in 1s.", "details": { "retry_after": 1, "retry_after_ms": 40, "kind": "burst" } }
+}

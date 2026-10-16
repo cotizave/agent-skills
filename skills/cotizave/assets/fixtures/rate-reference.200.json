@@ -1,0 +1,5 @@
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json", "X-RateLimit-Limit": "20000", "X-RateLimit-Remaining": "19876", "X-RateLimit-Reset": "2026-11-03T00:00:00Z" },
+  "body": { "market": "reference", "type": "reference", "base": "USD", "mid": 877.9023, "updated_at": "2026-10-14T04:00:00Z", "effective_date": "2026-10-14" }
+}

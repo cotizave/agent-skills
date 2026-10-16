@@ -1,0 +1,5 @@
+{
+  "status": 302,
+  "headers": { "Location": "http://127.0.0.1:9/reemplazado-por-el-test", "Content-Type": "text/plain" },
+  "raw": "Found"
+}

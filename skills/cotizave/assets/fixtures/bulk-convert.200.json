@@ -1,0 +1,17 @@
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json", "X-RateLimit-Cost": "1", "X-Bulk-Operations": "3", "X-Bulk-RateLimit-Limit": "300", "X-Bulk-RateLimit-Remaining": "299", "X-RateLimit-Limit": "150000", "X-RateLimit-Remaining": "149001", "X-RateLimit-Reset": "2026-11-03T00:00:00Z" },
+  "body": {
+    "rate": 1009.697123,
+    "market": "parallel",
+    "type": "parallel",
+    "updated_at": "2026-10-14T21:01:08Z",
+    "results": [
+      { "amount": 100, "result": 100969.71 },
+      { "amount": 250, "result": 252424.28 },
+      { "amount": 500, "result": 504848.56 }
+    ],
+    "total_in": 850,
+    "total_out": 858242.55
+  }
+}

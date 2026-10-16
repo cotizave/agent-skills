@@ -324,9 +324,6 @@ and 429 handling, caching and freshness semantics.
 claude plugin marketplace add cotizave/agent-skills
 claude plugin install cotizave@cotizave-agent-skills
 
-# Any agent (skills CLI)
-npx skills add cotizave/agent-skills
-
 # GitHub Copilot
 gh skill install cotizave/agent-skills cotizave
 ```

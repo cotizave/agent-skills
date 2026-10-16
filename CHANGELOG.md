@@ -6,6 +6,15 @@ La versión de la skill es independiente de la versión de la API (`/v1`).
 
 ## [Unreleased]
 
+### Changed
+
+- Agentes documentados: Claude Code, Codex, Gemini CLI y OpenCode. Cursor y GitHub
+  Copilot salen de la documentación; `gh skill install` deja de recomendarse.
+- Gemini CLI: instalación con `gemini skills install` y descubrimiento verificado
+  en `.agents/skills` y `.gemini/skills` (requiere carpeta de confianza).
+- Claude Code y Codex: descubrimiento y activación implícita verificados con un
+  prompt positivo y uno negativo cada uno.
+
 ## [0.2.0] - 2026-10-15
 
 Versión preparada localmente; todavía no publicada.

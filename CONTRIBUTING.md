@@ -42,7 +42,7 @@ la cubre y repite la comparación. Ver [evals/README.md](evals/README.md).
 
 [Conventional Commits](https://www.conventionalcommits.org/es/v1.0.0/), en español:
 `fix(skill): /route es solo Escala`, `feat(skill): trampa de feriados del BCV`,
-`docs(readme): instalación en Cursor`.
+`docs(readme): instalación en Gemini CLI`.
 
 ## Límites de las validaciones
 

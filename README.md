@@ -1,7 +1,7 @@
 # Cotizave Agent Skills
 
-Skill oficial para que los agentes de código (Claude Code, OpenAI Codex, Cursor,
-GitHub Copilot, OpenCode y cualquier herramienta compatible con el estándar abierto
+Skill oficial para que los agentes de código (Claude Code, OpenAI Codex, Gemini CLI,
+OpenCode y cualquier herramienta compatible con el estándar abierto
 [Agent Skills](https://agentskills.io)) integren la
 [API de Cotizave](https://cotizave.com/docs) **correctamente**: tasa BCV oficial,
 dólar paralelo, Binance y otros P2P, conversiones a bolívares, histórico, cuotas y
@@ -49,8 +49,9 @@ usa `claude plugin marketplace add .` en lugar del comando de GitHub, y después
 el mismo `claude plugin install`. Elige la fuente local o GitHub para este
 marketplace; ambos tienen el mismo nombre. [Guía oficial de Claude Code](https://code.claude.com/docs/en/discover-plugins).
 
-### Codex (skill local)
+### Codex y Gemini CLI (carpeta `.agents/skills`)
 
+Codex y Gemini CLI leen la misma carpeta, así que una copia sirve para los dos.
 Desde la raíz de este repositorio, instala la carpeta completa para tu usuario:
 
 ```bash
@@ -69,31 +70,31 @@ $cotizave Integra la tasa BCV en mi backend usando Cotizave.
 ```
 
 Codex descubre las skills de esas rutas; si no aparece, abre una sesión nueva.
-La copia local permite probarla antes de subir el repositorio. Para instalarla
-desde GitHub también puedes usar el CLI `skills` de la sección siguiente.
-[Rutas de skills en la documentación oficial de OpenAI](https://developers.openai.com/codex/skills).
+[Skills en la documentación oficial de OpenAI](https://learn.chatgpt.com/docs/build-skills).
+
+Gemini CLI también puede instalarla desde GitHub con su propio comando:
+
+```bash
+gemini skills install https://github.com/cotizave/agent-skills --path skills/cotizave --scope workspace
+gemini skills list
+```
+
+Gemini solo carga skills de proyecto en carpetas marcadas como de confianza; si
+`gemini skills list` no la muestra, confirma la confianza de la carpeta y repite.
+Al activarse pide confirmación una vez por sesión.
+[Skills en la documentación oficial de Gemini CLI](https://geminicli.com/docs/cli/skills/).
 
 ### Cualquier agente, con el CLI `skills`
 
 ```bash
-npx skills add cotizave/agent-skills                 # pregunta a qué agentes instalar
-npx skills add cotizave/agent-skills -a claude-code  # o: codex, cursor, github-copilot, opencode
-npx skills add cotizave/agent-skills -g              # a nivel usuario, no del proyecto
+npx skills add cotizave/agent-skills                        # pregunta a qué agentes instalar
+npx skills add cotizave/agent-skills -a codex -a claude-code  # o: gemini-cli, opencode
+npx skills add cotizave/agent-skills -g                     # a nivel usuario, no del proyecto
 ```
 
-CLI de [vercel-labs/skills](https://github.com/vercel-labs/skills). En proyecto instala en
-`.claude/skills/` para Claude Code y en `.agents/skills/` para los demás.
-
-### GitHub Copilot, con `gh`
-
-```bash
-gh skill install cotizave/agent-skills cotizave                  # proyecto, para Copilot
-gh skill install cotizave/agent-skills cotizave --scope user     # a nivel usuario
-gh skill install cotizave/agent-skills cotizave --agent opencode # u otro agente
-```
-
-`gh skill` está en *public preview* (requiere una versión reciente de `gh`). En proyecto
-instala en `.agents/skills/`, que Copilot, Cursor, Codex y OpenCode leen.
+CLI de [vercel-labs/skills](https://github.com/vercel-labs/skills). En proyecto copia a
+`.agents/skills/` y enlaza `.claude/skills/` a esa copia; con `--copy` hace copias
+independientes, que conviene si el proyecto se mueve entre máquinas.
 
 ### Manual
 
@@ -111,8 +112,7 @@ cp -R agent-skills/skills/cotizave .claude/skills/   # ajusta el destino según 
 |---|---|---|
 | Claude Code | `.claude/skills/cotizave` | `~/.claude/skills/cotizave` |
 | OpenAI Codex | `.agents/skills/cotizave` | `~/.agents/skills/cotizave` |
-| Cursor | `.agents/skills/cotizave` o `.cursor/skills/cotizave` (también lee `.claude/skills`) | `~/.agents/skills/cotizave` o `~/.cursor/skills/cotizave` |
-| GitHub Copilot | `.github/skills/cotizave` (también lee `.claude/skills` y `.agents/skills`) | `~/.copilot/skills/cotizave` o `~/.agents/skills/cotizave` |
+| Gemini CLI | `.agents/skills/cotizave` o `.gemini/skills/cotizave` | `~/.agents/skills/cotizave` o `~/.gemini/skills/cotizave` |
 | OpenCode | `.opencode/skills/cotizave` (también lee `.claude/skills` y `.agents/skills`) | `~/.config/opencode/skills/cotizave` |
 
 Mantén una fuente de contenido en `skills/cotizave`. El instalador debe adaptarla
@@ -133,8 +133,7 @@ implícita depende del agente y todavía debe evaluarse; también puedes invocar
 |---|---|
 | Claude Code | `/cotizave` (instalada como plugin: `/cotizave:cotizave`) |
 | OpenAI Codex | `$cotizave` o desde `/skills` |
-| Cursor | `/cotizave` en el chat del agente |
-| GitHub Copilot (VS Code, CLI) | `/cotizave` |
+| Gemini CLI | automática por descripción, con confirmación; `/skills list` para verla |
 | OpenCode | la carga con su herramienta `skill` cuando la tarea coincide |
 
 ### Prompts para probar
@@ -180,7 +179,7 @@ COTIZAVE_API_KEY=ctz_live_...
 ## Compatibilidad
 
 Rutas y comandos verificados contra la documentación oficial de cada herramienta el
-2026-10-15; los agentes cambian rápido, así que ante la duda manda su documentación.
+2026-10-16; los agentes cambian rápido, así que ante la duda manda su documentación.
 
 La skill usa solo campos del [estándar](https://agentskills.io/specification)
 (`name`, `description`, `license`, `metadata`), sin extensiones propias de ningún
@@ -188,11 +187,10 @@ agente, y una única copia del contenido en `skills/cotizave/`.
 
 | Agente | Formato `SKILL.md` | Descubrimiento | Instalación | Probado en este repo |
 |---|---|---|---|---|
-| Claude Code | Sí | Automático + `/cotizave` | Plugin, `npx skills`, manual | Manifiesto validado con Claude Code 2.1.301; activación implícita no evaluada |
-| OpenAI Codex | Sí | Automático + `$cotizave` | `npx skills`, manual | Copia manual y descubrimiento con CLI 0.160.0; activación implícita no evaluada |
-| Cursor | Sí | Automático + `/cotizave` | `npx skills`, manual | Solo documentación |
-| GitHub Copilot (cloud agent, CLI, VS Code, JetBrains) | Sí | Automático + `/cotizave` | `gh skill install`, `npx skills`, manual | Solo documentación |
-| OpenCode | Sí | Automático (herramienta `skill`) | `npx skills`, `gh skill install --agent opencode`, manual | Solo documentación |
+| Claude Code | Sí | Automático + `/cotizave` | Plugin, `npx skills`, manual | 2.1.301: plugin instalado desde GitHub, descubrimiento y activación implícita con un prompt positivo y uno negativo (1 corrida) |
+| OpenAI Codex | Sí | Automático + `$cotizave` | `npx skills`, manual | 0.160.0: descubrimiento por `skills/list` y activación implícita con un prompt positivo y uno negativo (1 corrida) |
+| Gemini CLI | Sí | Automático, con confirmación | `gemini skills install`, `npx skills`, manual | 0.64.0: instalación desde GitHub y descubrimiento en `.agents/skills` y `.gemini/skills`; activación no evaluada |
+| OpenCode | Sí | Automático (herramienta `skill`) | `npx skills`, manual | Solo documentación |
 
 ## Versiones
 
@@ -260,8 +258,8 @@ publica los cambios; no forman parte de la instalación de la skill.
    `CHANGELOG.md` y su fecha si corresponde. No recrees un tag ya publicado.
 
 Con el repositorio accesible, comparte los comandos de instalación de arriba.
-Claude Code lo instala desde el marketplace del propio repositorio; Codex puede
-descubrir la carpeta instalada. Publicar el repositorio no lo incluye
+Claude Code lo instala desde el marketplace del propio repositorio; Codex y Gemini
+CLI descubren la carpeta instalada. Publicar el repositorio no lo incluye
 automáticamente en los catálogos oficiales de las plataformas.
 
 Para actualizar una instalación de Claude Code desde GitHub:
@@ -313,7 +311,7 @@ Documentación de la API: https://cotizave.com/docs · Soporte: support@cotizave
 ## In English
 
 Official [Agent Skill](https://agentskills.io) that teaches AI coding agents (Claude
-Code, OpenAI Codex, Cursor, GitHub Copilot, OpenCode, …) how to integrate the
+Code, OpenAI Codex, Gemini CLI, OpenCode, …) how to integrate the
 [Cotizave API](https://cotizave.com/docs) — Venezuelan exchange rates (BCV official
 rate, parallel dollar, Binance and other P2P markets, USD/EUR ↔ VES conversion,
 history and BCV per-bank rates) — with correct auth, quota
@@ -324,12 +322,12 @@ and 429 handling, caching and freshness semantics.
 claude plugin marketplace add cotizave/agent-skills
 claude plugin install cotizave@cotizave-agent-skills
 
-# GitHub Copilot
-gh skill install cotizave/agent-skills cotizave
+# Gemini CLI
+gemini skills install https://github.com/cotizave/agent-skills --path skills/cotizave --scope workspace
 ```
 
 Manual install: copy `skills/cotizave` into your agent's skills directory
-(`.claude/skills/` for Claude Code; `.agents/skills/` for Codex, Cursor, Copilot and
+(`.claude/skills/` for Claude Code; `.agents/skills/` for Codex, Gemini CLI and
 OpenCode). Set your key as a server-side environment variable
 `COTIZAVE_API_KEY`; never ship it to a browser. The skill content is written in
 Spanish, the language of most Cotizave users; agents apply it regardless of the

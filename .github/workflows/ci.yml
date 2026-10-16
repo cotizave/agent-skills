@@ -28,6 +28,21 @@ jobs:
       - run: node --test scripts/*.test.mjs
       - run: node scripts/smoke-install.mjs
 
+  skills-ref:
+    name: Validador oficial Agent Skills (skills-ref)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - run: pip install --quiet "git+https://github.com/agentskills/agentskills.git#subdirectory=skills-ref"
+      - run: skills-ref validate skills/cotizave
+      - run: skills-ref read-properties skills/cotizave
+
   shellcheck:
     name: ShellCheck
     runs-on: ubuntu-latest

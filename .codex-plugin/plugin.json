@@ -1,0 +1,25 @@
+{
+  "name": "cotizave",
+  "version": "0.2.0",
+  "description": "Integra correctamente la API de Cotizave (tasas de cambio de Venezuela: BCV, paralelo, P2P): endpoints, autenticación, cuotas, 429, cache y frescura.",
+  "author": {
+    "name": "Cotizave",
+    "email": "support@cotizave.com",
+    "url": "https://cotizave.com"
+  },
+  "homepage": "https://cotizave.com/docs",
+  "repository": "https://github.com/cotizave/agent-skills",
+  "license": "MIT",
+  "keywords": ["venezuela", "bcv", "exchange-rates", "ves", "bolivar", "p2p", "api"],
+  "skills": "./skills",
+  "interface": {
+    "displayName": "Cotizave",
+    "shortDescription": "Integra la API de tasas de cambio de Venezuela",
+    "longDescription": "Enseña al agente a consumir la API de Cotizave en cualquier lenguaje: qué endpoint usar, cómo leer la frescura (fecha valor del BCV), cómo manejar 402/429 y cuotas, y cómo cachear sin exponer la API key.",
+    "developerName": "Cotizave",
+    "category": "Developer Tools",
+    "capabilities": ["Read"],
+    "websiteURL": "https://cotizave.com",
+    "defaultPrompt": "Usa $cotizave para integrar, revisar o depurar código que consume api.cotizave.com."
+  }
+}

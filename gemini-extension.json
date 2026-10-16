@@ -1,0 +1,5 @@
+{
+  "name": "cotizave",
+  "version": "0.2.0",
+  "description": "Integra correctamente la API de Cotizave (tasas de cambio de Venezuela: BCV, paralelo, P2P): endpoints, autenticación, cuotas, 429, cache y frescura."
+}

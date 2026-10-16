@@ -1,0 +1,15 @@
+title = "cotizave/agent-skills"
+
+[extend]
+useDefault = true
+
+# Manifiestos de verificación: contienen hashes SHA-256 de archivos y páginas,
+# no credenciales. Un nombre de archivo como "error-401-invalid-api-key.json"
+# junto a un hex de 64 caracteres dispara la regla generic-api-key.
+[[allowlists]]
+description = "Hashes SHA-256 en manifiestos de evidencia"
+paths = [
+  '''evals/results/[^/]+/skill-final-sha256\.json$''',
+  '''skills/cotizave/assets/contract-review\.json$''',
+  '''skills/cotizave/assets/backend-contract-review\.json$''',
+]

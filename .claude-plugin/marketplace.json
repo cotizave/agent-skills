@@ -5,25 +5,35 @@
     "email": "support@cotizave.com"
   },
   "metadata": {
-    "description": "Agent Skills oficiales para integrar la API de Cotizave (tasas de cambio de Venezuela: BCV, paralelo, P2P).",
-    "version": "0.2.0"
+    "description": "Official agent skill for Cotizave V2 multi-country FX API and V1 Venezuela.",
+    "version": "0.3.0"
   },
   "plugins": [
     {
       "name": "cotizave",
-      "description": "Enseña a los agentes de código a integrar correctamente la API de Cotizave: endpoints, autenticación, cuotas, 429, cache y frescura de las tasas BCV, paralela y P2P.",
-      "version": "0.2.0",
+      "description": "Integrate Cotizave V2 multi-country FX rates and preserve V1 Venezuela clients.",
+      "version": "0.3.0",
       "author": {
         "name": "Cotizave",
         "email": "support@cotizave.com"
       },
-      "homepage": "https://cotizave.com/docs",
+      "homepage": "https://docs.cotizave.com",
       "license": "MIT",
-      "keywords": ["venezuela", "bcv", "exchange-rates", "ves", "bolivar", "p2p", "api"],
+      "keywords": [
+        "cotizave",
+        "foreign-exchange-api",
+        "currency-conversion",
+        "historical-exchange-rates",
+        "multi-country-fx",
+        "bcv",
+        "colombia-trm"
+      ],
       "category": "development",
       "source": "./",
       "strict": false,
-      "skills": ["./skills/cotizave"]
+      "skills": [
+        "./skills/cotizave"
+      ]
     }
   ]
 }

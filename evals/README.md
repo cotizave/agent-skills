@@ -102,3 +102,7 @@ Defectos que aparecieron **con** la skill:
   skill instalada en un agente real, no con subagentes a los que se les indica leerla.
 - El registro anterior declara uso de Claude. No hay evidencia reproducible para
   ninguno de los agentes; Codex, Cursor, Copilot y OpenCode no se evaluaron.
+
+## V2 evaluation status
+
+The V2 cases in `evals.json` and activation cases in `trigger-evals.json` are prompts and grading criteria, not recorded model results. Run the same frozen project fixtures and prompts with no skill, the V1-era skill at tag/commit 0.2.0, and this skill. Record agent name, version, settings, skill revision, outputs, compilation/tests, contract accuracy, credential handling, capability selection and false activations. Do not compare scores without preserving these artifacts. Local static validation only checks scenario shape.

@@ -86,5 +86,25 @@
   {
     "query": "Implement a C# Cotizave client using our existing IHttpClientFactory",
     "should_trigger": true
+  },
+  {
+    "query": "Integrate Cotizave V2 rates for Australia in my Go API",
+    "should_trigger": true
+  },
+  {
+    "query": "Migra mi cliente Cotizave V1 a V2 sin romper el contrato público",
+    "should_trigger": true
+  },
+  {
+    "query": "Add Colombia TRM with Cotizave to my TypeScript backend",
+    "should_trigger": true
+  },
+  {
+    "query": "Show Australian exchange rates in my app using our existing provider",
+    "should_trigger": false
+  },
+  {
+    "query": "What is the USD/COP exchange rate today?",
+    "should_trigger": false
   }
 ]

@@ -1,0 +1,19 @@
+# Audit and contract evidence — 2026-10-29
+
+| Severity | Evidence | Impact | Resolution |
+|---|---|---|---|
+| Critical | SKILL.md said all routes were V1 and non-VES pairs were unsupported. Official V2 introduction and endpoints document multiple countries. | New integrations could select the wrong API or reject supported use cases. | V2-first skill and modular V2 contract; preserve V1 reference. |
+| High | README, plugin descriptions and eval prompts centered on V1/VE. | Poor activation and wrong defaults for global use. | Update metadata, README and V2 scenarios. |
+| High | Public plans page counts Pro fewer than Free IDs for several countries while prose says higher plans inherit all IDs. | A static plan matrix could falsely reject access. | Do not encode counts; query actual permission and log contradiction. |
+| Medium | `/v2/countries` and `/markets` have plan gates, so a universal discovery algorithm would fail on Free. | Free integrations could stop before reading rates. | Use public coverage plus country rates; use catalogues only with permission. |
+| Medium | V2 Free omits metadata available to paid plans; some VE rows are descriptors without price. | Parsing could mistake absent fields for zero or availability. | Document optional fields and test responses without price. |
+| Medium | Existing evals are primarily V1 and not an executable model comparison. | No evidence of improvement on V2 code generation. | Add V2/activation scenarios and preserve comparison protocol; no scores claimed. |
+| Low | README contains unpublished-repository setup instructions. | Confusing installation. | Replace with shorter public repository guide. |
+
+## Evidence levels
+
+- **Documented:** [V2 endpoint reference](https://docs.cotizave.com/api/v2/endpoints.md), [plans](https://docs.cotizave.com/api/v2/plans.md), [migration](https://docs.cotizave.com/api/v2/migration.md), [coverage](https://docs.cotizave.com/api/v2/coverage.md), and official Markdown index pages fetched 2026-10-29. Official global site lists several markets as “In progress” while docs list published IDs. A registered ID is not proof of a live quote.
+- **Code and tests:** Existing V1 backend evidence in `skills/cotizave/assets/backend-contract-review.json` records an earlier local revision and 43 passed tests. No V2 backend source was accessed in this audit.
+- **Production:** No authenticated calls, key usage or quota consumption; no production behavior confirmed.
+- **Unverified announcements:** Event delivery and other product features appear on global marketing pages. Consult the relevant official guide before implementing signatures or events.
+- **Contradictions:** The [plans page](https://docs.cotizave.com/api/v2/plans.md) table reports Pro counts below Free for AR/CO/PE/MX/AU/ES, conflicting with its inheritance claim. The global site calls those markets “In progress” while V2 coverage calls their IDs published. Resolve by inspecting backend entitlement/market registry and testing an authorized account or obtaining a corrected public document. Until then, distinguish registered coverage from current availability.

@@ -1,5 +1,7 @@
 # Cache y frescura
 
+> The route-specific examples below describe V1 Venezuela. For new V2 integrations, use [V2 routes](api-v2.md) and adapt country, rate ID, permissions and source freshness. Do not carry V1 plan TTLs or market defaults into another country.
+
 ## Cada cuánto cambia el dato
 
 Las tasas que devuelve la API cambian, como mucho, cada pocos minutos: pedirlas más

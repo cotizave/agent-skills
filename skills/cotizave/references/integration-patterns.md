@@ -1,5 +1,7 @@
 # Patrones de integración (cualquier lenguaje)
 
+> The route-specific examples below describe V1 Venezuela. For new V2 integrations, use [V2 routes](api-v2.md) and adapt country, rate ID, permissions and source freshness. Do not carry V1 plan TTLs or market defaults into another country.
+
 Esta referencia enseña a consumir Cotizave dentro del proyecto existente. El contrato
 HTTP está en [endpoints.md](endpoints.md); no prescribe frameworks, ORM, bases de
 datos ni un estilo de clases. Adapta las decisiones al runtime y sus convenciones.

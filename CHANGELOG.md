@@ -6,6 +6,12 @@ La versión de la skill es independiente de la versión de la API (`/v1`).
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-29
+
+- V2 multi-country integration guidance, discovery, plan-aware routes and V1 migration reference.
+- Global activation metadata, installation guide and V2 evaluation scenarios.
+- Audit evidence and unresolved public documentation contradictions.
+
 ## [0.2.0] - 2026-10-15
 
 Versión preparada localmente; todavía no publicada.

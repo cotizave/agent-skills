@@ -225,6 +225,45 @@
         "Si no hay respaldo admisible, falla explícitamente sin inventar una tasa",
         "Propone pruebas locales de ausencia de respaldo, vencimiento y recuperación sin llamadas de producción"
       ]
+    },
+    {
+      "id": "v2-colombia-trm",
+      "prompt": "Integrate Colombia TRM from Cotizave V2 in my TypeScript server. We use the Free plan.",
+      "expectations": [
+        "Uses GET /v2/fx/CO/rates or the returned co-trm ID, with server-side X-API-Key",
+        "Does not require Pro /v2/countries or Growth /markets for Free discovery",
+        "Treats quote and plan metadata as optional on Free",
+        "Distinguishes effective_date from updated_at and handles absent observations"
+      ]
+    },
+    {
+      "id": "v2-australia-go",
+      "prompt": "Build a Go backend endpoint showing an Australian rate from Cotizave V2 with cancellation and cache.",
+      "expectations": [
+        "Discovers a canonical ID from country coverage or /v2/fx/AU/rates; does not invent it",
+        "Keeps the key server-side, sets timeout and propagates cancellation",
+        "Does not assume an Australian parallel or P2P rate",
+        "Handles 402, 404, 503 and 429 separately"
+      ]
+    },
+    {
+      "id": "v2-python-bulk",
+      "prompt": "Write a Python Cotizave V2 bulk conversion adapter for e-commerce prices.",
+      "expectations": [
+        "Uses POST /v2/fx/convert with conversions array of 1 to 50 items and accounts for Pro gate",
+        "Inspects each results entry for conversion or error even on 200",
+        "Preserves applied rate ID and timestamps, uses decimal rounding for persisted prices",
+        "Does not retry uncertain POST outcomes automatically"
+      ]
+    },
+    {
+      "id": "v1-preserve",
+      "prompt": "My existing V1 Cotizave client works. Add caching to reduce quota without changing its public results.",
+      "expectations": [
+        "Preserves V1 routes and response shape; does not silently migrate to V2",
+        "Isolates authenticated cache by account and includes version and representation",
+        "Uses source freshness rather than treating a 304 as a fresh observation"
+      ]
     }
   ]
 }

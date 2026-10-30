@@ -24,9 +24,35 @@ claude plugin install cotizave@cotizave-agent-skills
 
 The package includes a Codex plugin manifest and an extension manifest for another agent. Their presence does not certify runtime discovery; see [audit evidence](AUDIT.md). Manual skill installation is the portable path. The [Agent Skills specification](https://agentskills.io/specification) defines the common format.
 
-## Codex verification
+## OpenAI Codex: install and use
 
-The repository includes a Codex discovery check. With Codex CLI installed, run `node scripts/smoke-install.mjs --codex`. It installs an isolated copy under a temporary `.agents/skills/cotizave` folder and queries Codex `skills/list`; it does not start a model turn or alter your personal skills. This passed locally with `codex-cli 0.163.0` on 2026-10-29. It verifies discovery and package paths, not automatic activation or generated-code quality. The `.codex-plugin/plugin.json` manifest points to `./skills` for plugin distribution; the manual `.agents/skills` install works independently.
+Install the complete folder; `SKILL.md` alone is insufficient because it links to references and test assets. The commands below run from a checkout of this repository. To get one, run `git clone https://github.com/cotizave/agent-skills.git` and `cd agent-skills`.
+
+**For one project:** replace `/path/to/your-project` with its actual path.
+
+```sh
+mkdir -p /path/to/your-project/.agents/skills/cotizave
+cp -R skills/cotizave/. /path/to/your-project/.agents/skills/cotizave/
+```
+
+**For your user account:**
+
+```sh
+mkdir -p ~/.agents/skills/cotizave
+cp -R skills/cotizave/. ~/.agents/skills/cotizave/
+```
+
+Start a new Codex session in the project. Invoke the skill explicitly with a prompt such as:
+
+```text
+$cotizave Integrate Cotizave V2 Colombia TRM into my backend. Keep the API key on the server and handle unavailable rates.
+```
+
+For an existing V1 client, say so: `$cotizave Review my existing V1 integration; preserve its routes and response shape.` Codex may also select the skill automatically when the task clearly names Cotizave. If it does not, use `$cotizave` and check that the installed folder contains `SKILL.md` and `references/`.
+
+To update, pull this repository and recopy the complete folder into the same destination. Review local changes to an installed copy before replacing it; remove files retired by a newer release. To uninstall, remove only the installed `cotizave` folder from the project or user path shown above.
+
+**Verify discovery:** from this repository, run `node scripts/smoke-install.mjs --codex` with Codex CLI installed. The script copies the skill to an isolated temporary project and queries Codex `skills/list`; it does not alter your personal installation or start a model turn. It passed locally with `codex-cli 0.163.0` on 2026-10-29. Discovery does not measure automatic activation or generated-code quality. The [Codex skill documentation](https://learn.chatgpt.com/docs/build-skills) describes the skill format; the [Codex plugin documentation](https://developers.openai.com/plugins/build/plugins) covers the optional `.codex-plugin/plugin.json` manifest.
 
 ## Use
 

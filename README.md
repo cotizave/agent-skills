@@ -16,6 +16,22 @@ npx skills add cotizave/agent-skills
 
 Select the agent and the `cotizave` skill when prompted. For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested with an isolated project; the installed copy retained its references and fixtures. The CLI is maintained by [vercel-labs/skills](https://github.com/vercel-labs/skills).
 
+The skill has a [public skills.sh page](https://skills.sh/cotizave/agent-skills/cotizave). Its leaderboard uses installations made through the skills CLI; appearing there is separate from approval by an agent vendor.
+
+### GitHub Copilot via GitHub CLI
+
+With [GitHub CLI 2.90.0 or newer](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills), install the skill in your project:
+
+```sh
+gh skill preview cotizave/agent-skills cotizave
+gh skill install cotizave/agent-skills cotizave --agent github-copilot --scope project
+test -f .agents/skills/cotizave/SKILL.md
+```
+
+Use `--scope user` instead of `--scope project` for a personal install. GitHub CLI placed the tested project install in `.agents/skills/cotizave`, with its references and fixtures. For Copilot cloud agent or code review, commit that folder to the project repository so it is available in the remote checkout. Ask Copilot, for example, “Use the Cotizave skill to integrate Colombia TRM into this Python backend.” Copilot selects relevant skills from the prompt and their descriptions; inspect the agent's response to confirm it followed the Cotizave contract. Run `gh skill update cotizave` to update an installed copy, or `gh skill update --dry-run` to check without changing files. To uninstall a project copy, remove `.agents/skills/cotizave` from that project.
+
+The GitHub CLI skill commands are in public preview. [Direct installation](https://cli.github.com/manual/gh_skill_install) works independently of GitHub Code Search indexing or a GitHub Release. `gh skill search cotizave` may take time to find a new repository; a GitHub Release is not a separate Copilot marketplace approval.
+
 ### Claude Code marketplace
 
 ```sh
@@ -38,7 +54,7 @@ Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotiza
 
 From a checkout of this repository, copy the *whole* `skills/cotizave` folder, including references and assets. For one project, copy to `.agents/skills/cotizave` (Codex and compatible agents) or `.claude/skills/cotizave` (Claude Code). For a user-wide Codex install, copy to `~/.agents/skills/cotizave`. Verify with `node scripts/smoke-install.mjs --codex` from this repository; it uses a temporary project and starts no model turn. Remove the installed folder to uninstall a manual copy.
 
-The [Agent Skills specification](https://agentskills.io/specification) defines the common format. Marketplace installation through this repository is distinct from approval in any platform's official directory.
+The [Agent Skills specification](https://agentskills.io/specification) defines the common format. Repository and CLI installation are distinct from approval in any platform's official directory.
 
 ## Use
 

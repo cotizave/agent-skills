@@ -19,6 +19,8 @@ Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md
 | Business days | `GET /v2/holidays/{CC}/business-days` | Basic; required `days` 0–3650, optional `from`. |
 | Stable references | `GET /v2/crypto`, `GET /v2/crypto/{id}` | Individual details need Growth; these USD references cannot be used as local-currency `via`. |
 
+For countries other than Venezuela, the maintainer confirms that Free can request every published rate; published access does not guarantee a current observation. Venezuela retains per-rate restrictions. Verify the account response because legacy entitlements may differ.
+
 Free rate fields are not the Growth schema: `id`, `market`, `type`, `mid`, `updated_at` are the core of an available rate; `base`, `effective_date`, `bid`, `ask` and `stale_after_sec` depend on source and legacy rules. Basic adds identity/freshness fields; Growth adds descriptions, tags and analysis, some nullable. A restricted VE row can be an ID-only descriptor without price. `fetched_at` is the collection retrieval time; `updated_at` is source time; `effective_date` is value date. See [plan matrix](https://docs.cotizave.com/api/v2/plans.md) before consuming optional fields.
 
 See the official [conversion](https://docs.cotizave.com/api/v2/convert.md), [history](https://docs.cotizave.com/api/v2/history.md), [reference data](https://docs.cotizave.com/api/v2/reference-data.md) and [advanced operations](https://docs.cotizave.com/api/v2/advanced.md) pages for full response schemas. Never infer a response from an illustrative example.

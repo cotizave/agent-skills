@@ -6,7 +6,7 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
-## [0.3.0] - 2026-10-29
+## [0.3.0] - 2026-10-30
 
 - Document tested GitHub Copilot installation and distinguish GitHub CLI release
   publication from directory approval and the alternative tag workflow.

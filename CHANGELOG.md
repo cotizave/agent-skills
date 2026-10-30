@@ -8,6 +8,8 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [0.3.0] - 2026-10-29
 
+- Remove the optional API-key diagnostic from the distributed skill; integrations
+  still use server-side authentication under the consuming application's control.
 - Prepare portable plugin package, Claude manifest, official brand assets and deterministic release ZIP.
 - Add cross-platform validation, V2 synthetic fixtures and more evaluation scenarios.
 

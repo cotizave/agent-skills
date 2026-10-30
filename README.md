@@ -48,18 +48,14 @@ Store `COTIZAVE_API_KEY` only on a trusted server or secret manager. Never put i
 
 ### Data handling
 
-Installing or invoking the skill does not automatically send project files, chat
-content, or credentials to Cotizave. The skill has no connector, telemetry, or
-background process. Its optional `skills/cotizave/scripts/check-key.sh` diagnostic
-runs only when the user requests it. It reads `COTIZAVE_API_KEY` from the local
-environment and sends one authenticated rate request to
-`https://api.cotizave.com`; it does not print the key. Do not run it with a
-credential you do not intend to use with Cotizave. Applications built with this
-skill make their own Cotizave API calls under the application's control.
+Installing or invoking the skill does not send project files, chat content, or
+credentials to Cotizave. The skill has no connector, telemetry, background
+process, or API-key diagnostic. It does not read or store personal data. An
+application built using its instructions makes Cotizave API calls only under
+the application's control; its developer supplies a server-side API key.
 Cotizave's [privacy policy](https://global.cotizave.com/legal/privacy) says
 individual API request logs, including IP address and request metadata, are
-deleted within three days. The plugin does not read or store names, email
-addresses, or customer records, and is not intended for users under 18.
+deleted within three days. The plugin is not intended for users under 18.
 
 ## Validation and contribution
 

@@ -52,8 +52,7 @@ un mapa `metadata` de strings. Rechaza duplicados y sintaxis no soportada. Es un
 convención del repositorio, no una restricción del estándar Agent Skills. Para
 validar otras formas YAML, usa además el validador oficial en un entorno que ya lo tenga.
 
-Los tests de `check-key.sh` usan exclusivamente loopback y credenciales ficticias;
-requieren Bash, curl 8.4+ y jq. Los tests de scripts no prueban el comportamiento de
-un agente. Las fixtures son ejemplos de contrato, no capturas certificadas de producción.
+Los tests de scripts no prueban el comportamiento de un agente. Las fixtures
+son ejemplos de contrato, no capturas certificadas de producción.
 Los hashes de términos no publicables detectan errores editoriales, no protegen
 secretos de baja entropía; no los uses como mecanismo de confidencialidad.

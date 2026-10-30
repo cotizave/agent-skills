@@ -2,7 +2,7 @@
 
 The next SemVer release is `0.3.0`: `v0.2.0` is the latest Git tag, and V2 global support is a minor feature addition. Manifest and skill versions are synchronized. The 0.3.0 changelog entry includes the packaging changes; the Git tag and release remain unpublished.
 
-Build locally with `node scripts/validate.mjs`, `node --test scripts/*.test.mjs`, `node scripts/smoke-install.mjs --codex`, `claude plugin validate . --strict` and `python3 scripts/package-release.py`. The generated `dist/cotizave-plugin-0.3.0.zip` is ignored by Git and includes the portable plugin manifest, compatibility overlays, official site imagery, skill and all its references. Inspect its contents and hash before upload. A successful build does not certify a directory listing.
+Build locally with `node scripts/validate.mjs`, `node --test scripts/*.test.mjs`, `node scripts/smoke-install.mjs --codex`, `claude plugin validate . --strict` and `python3 scripts/package-release.py`. The generated `dist/cotizave-plugin-0.3.0.zip` is ignored by Git and includes the portable plugin manifest, compatibility overlays, official site imagery, skill and all its references. Inspect its contents and hash before upload. A version tag triggers CI and, only after all four jobs pass, uploads the ZIP plus SHA256SUMS as a workflow artifact. This does not create a GitHub Release or submit to a directory. A successful build does not certify a directory listing.
 
 | Platform | Local state | Official directory |
 |---|---|---|

@@ -309,6 +309,16 @@
         "Does not interpret absent or null values as zero",
         "Does not require a plan upgrade to read available base rate fields"
       ]
+    },
+    {
+      "id": "v2-au-plan-shapes",
+      "prompt": "Review Cotizave V2 AU rates returned for Free and Basic: the same rate IDs appear, but Basic adds quote, available, stale and staleness_sec, and stale_after_sec differs. Make my parser safe across plans.",
+      "expectations": [
+        "Keeps the same canonical IDs across plan-specific representations",
+        "Treats quote, available, stale, staleness_sec and bid/ask as optional where appropriate",
+        "Uses the stale_after_sec in each response instead of hardcoding one threshold for the ID",
+        "Does not infer that missing registered IDs are inaccessible solely because they are absent from /rates"
+      ]
     }
   ]
 }

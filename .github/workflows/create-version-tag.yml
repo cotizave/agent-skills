@@ -1,0 +1,59 @@
+name: Create version tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Version to tag, matching plugin.json (for example 0.3.0)
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  tag:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_VERSION: ${{ inputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Verify version and successful CI for this commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_VERSION" =~ ^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]]
+          actual=$(node -p "require('./plugin.json').version")
+          test "$RELEASE_VERSION" = "$actual"
+          node scripts/validate.mjs
+          gh run list --repo "$GITHUB_REPOSITORY" --workflow ci.yml --commit "$GITHUB_SHA" --limit 20 --json conclusion \
+            | jq -e 'any(.[]; .conclusion == "success")' >/dev/null
+          head_sha=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/master" --jq '.object.sha')
+          test "$head_sha" = "$GITHUB_SHA"
+          if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/v$RELEASE_VERSION" >/dev/null 2>&1; then
+            echo "Version tag already exists" >&2
+            exit 1
+          fi
+      - name: Build and checksum package
+        run: |
+          python3 scripts/package-release.py
+          cd dist
+          sha256sum cotizave-plugin-*.zip > SHA256SUMS
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: cotizave-plugin-v${{ inputs.version }}
+          path: |
+            dist/cotizave-plugin-*.zip
+            dist/SHA256SUMS
+          if-no-files-found: error
+      - name: Create tag
+        run: |
+          gh api --method POST "repos/$GITHUB_REPOSITORY/git/refs" \
+            -f ref="refs/tags/v$RELEASE_VERSION" -f sha="$GITHUB_SHA" >/dev/null
+          echo "Created v$RELEASE_VERSION at $GITHUB_SHA"

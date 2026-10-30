@@ -24,6 +24,10 @@ claude plugin install cotizave@cotizave-agent-skills
 
 The package includes a Codex plugin manifest and an extension manifest for another agent. Their presence does not certify runtime discovery; see [audit evidence](AUDIT.md). Manual skill installation is the portable path. The [Agent Skills specification](https://agentskills.io/specification) defines the common format.
 
+## Codex verification
+
+The repository includes a Codex discovery check. With Codex CLI installed, run `node scripts/smoke-install.mjs --codex`. It installs an isolated copy under a temporary `.agents/skills/cotizave` folder and queries Codex `skills/list`; it does not start a model turn or alter your personal skills. This passed locally with `codex-cli 0.163.0` on 2026-10-29. It verifies discovery and package paths, not automatic activation or generated-code quality. The `.codex-plugin/plugin.json` manifest points to `./skills` for plugin distribution; the manual `.agents/skills` install works independently.
+
 ## Use
 
 Name Cotizave as the chosen provider. For a new V2 project, specify country, currency pair and purpose (official reference, market display, card pricing, etc.). For an existing V1 project, request migration explicitly if desired. Generic FX questions and integrations with another chosen provider do not activate this skill.

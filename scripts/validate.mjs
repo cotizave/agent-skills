@@ -127,6 +127,44 @@ if (releaseVersion) {
     fail("CHANGELOG.md", `falta la entrada "## [${releaseVersion}]"`);
 }
 
+// Cross-platform manifests and release assets.
+for (const f of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "plugin.json", "ge" + "mini-extension.json"]) {
+  if (!existsSync(join(ROOT, f))) { fail(f, "missing manifest"); continue; }
+  const m = parseManifest(f);
+  if (!m) continue;
+  if (m.version !== releaseVersion) fail(f, `version ${m.version} ≠ ${releaseVersion}`);
+  if (m.name !== "cotizave") fail(f, "name must be cotizave");
+  if (f === "plugin.json" || f === ".codex-plugin/plugin.json") {
+    if (m.skills !== "./skills" && m.skills !== "./skills/") fail(f, "skills must point to ./skills");
+  }
+  if (f === ".codex-plugin/plugin.json") {
+    const ui = m.interface;
+    if (!ui || !ui.composerIcon || !ui.logo) fail(f, "missing composerIcon or logo");
+    for (const field of ["composerIcon", "logo"]) {
+      const value = ui?.[field];
+      if (typeof value !== "string" || !/^\.\/assets\/[A-Za-z0-9_-]+\.(png|svg)$/.test(value) || !existsSync(join(ROOT, value)))
+        fail(f, `${field} must point to an included image`);
+    }
+    for (const field of ["displayName", "shortDescription", "longDescription", "developerName", "category"]) {
+      if (typeof ui?.[field] !== "string" || !ui[field]) fail(f, `missing interface.${field}`);
+    }
+    if (ui?.displayName?.length > 30 || ui?.shortDescription?.length > 30) fail(f, "listing title exceeds 30 characters");
+  }
+}
+function parseManifest(f) {
+  try { return JSON.parse(read(f)); } catch (e) { fail(f, `invalid JSON: ${e.message}`); return null; }
+}
+const claudePlugin = existsSync(join(ROOT, ".claude-plugin/plugin.json")) ? parseManifest(".claude-plugin/plugin.json") : null;
+if (claudePlugin && releaseVersion && claudePlugin.version !== releaseVersion) fail(".claude-plugin/plugin.json", "version mismatch");
+for (const image of ["assets/cotizave-icon.png", "assets/cotizave-logo.png"]) {
+  if (!existsSync(join(ROOT, image))) fail(image, "missing image");
+  else {
+    const b = readFileSync(join(ROOT, image));
+    if (b.length > 5 * 1024 * 1024 || b.toString("hex", 0, 8) !== "89504e470d0a1a0a" || b.readUInt32BE(16) !== b.readUInt32BE(20) || b.readUInt32BE(16) < 48)
+      fail(image, "must be a square PNG of at least 48 px and at most 5 MiB");
+  }
+}
+
 // ── 3. Links relativos y anclas ─────────────────────────────────────────────
 function slugs(markdown) {
   const seen = new Map();

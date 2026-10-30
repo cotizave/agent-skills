@@ -264,6 +264,51 @@
         "Isolates authenticated cache by account and includes version and representation",
         "Uses source freshness rather than treating a 304 as a fresh observation"
       ]
+    },
+    {
+      "id": "v2-peru-node",
+      "prompt": "Add Cotizave V2 Peru exchange rates to my Node.js backend. Choose the rate for displayed prices after checking coverage.",
+      "expectations": [
+        "Queries /v2/fx/PE/rates and selects an ID returned by Cotizave",
+        "Does not assume a single universal Peru rate or fabricate an ID",
+        "Keeps the key server-side and handles absent current observations"
+      ]
+    },
+    {
+      "id": "v2-mexico-history",
+      "prompt": "Use Cotizave V2 to retrieve a Mexican rate on a historical date.",
+      "expectations": [
+        "Uses /v2/fx/MX/rates/{id}/history with date=YYYY-MM-DD",
+        "Discovers the ID and checks history availability and plan retention",
+        "Does not invent missing points or confuse effective_date with fetched_at"
+      ]
+    },
+    {
+      "id": "v2-unknown-id",
+      "prompt": "My Cotizave V2 request for au-made-up-rate returns 404. Fix the integration.",
+      "expectations": [
+        "Does not treat the invented ID as a valid published rate",
+        "Discovers canonical IDs from /v2/fx/AU/rates or current coverage",
+        "Separates unknown ID from 402 permission and 503 unavailable observation"
+      ]
+    },
+    {
+      "id": "v2-burst-429",
+      "prompt": "My Cotizave V2 Go client gets 429 burst. Implement bounded retries.",
+      "expectations": [
+        "Respects Retry-After or server retry delay and total deadline",
+        "Uses bounded exponential backoff with jitter and cancellation",
+        "Does not retry permanent 401 or 402 responses"
+      ]
+    },
+    {
+      "id": "v2-optional-fields",
+      "prompt": "My Free-plan Cotizave V2 client crashes when quote, bid or ask are missing. Fix it.",
+      "expectations": [
+        "Treats plan-dependent and source-dependent fields as optional",
+        "Does not interpret absent or null values as zero",
+        "Does not require a plan upgrade to read available base rate fields"
+      ]
     }
   ]
 }

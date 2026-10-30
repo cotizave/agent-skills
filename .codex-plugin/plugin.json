@@ -21,7 +21,7 @@
   "skills": "./skills",
   "interface": {
     "displayName": "Cotizave",
-    "shortDescription": "Integrate Cotizave multi-country FX API",
+    "shortDescription": "Integrate Cotizave FX API",
     "longDescription": "Guides V2 rate discovery, conversion, history, permissions and secure server integration while preserving V1 clients.",
     "developerName": "Cotizave",
     "category": "Developer Tools",
@@ -29,6 +29,13 @@
       "Read"
     ],
     "websiteURL": "https://cotizave.com",
-    "defaultPrompt": "Usa $cotizave para integrar, revisar o depurar código que consume api.cotizave.com."
+    "defaultPrompt": [
+      "Use $cotizave to integrate Cotizave V2 rates in my backend."
+    ],
+    "composerIcon": "./assets/cotizave-icon.png",
+    "logo": "./assets/cotizave-logo.png",
+    "supportURL": "https://global.cotizave.com/contact",
+    "privacyPolicyURL": "https://global.cotizave.com/legal/privacy",
+    "termsOfServiceURL": "https://global.cotizave.com/legal/terms"
   }
 }

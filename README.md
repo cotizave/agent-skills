@@ -69,3 +69,33 @@ node scripts/smoke-install.mjs
 ```
 
 [Evaluation scenarios](evals/README.md) include activation and implementation prompts. Model comparisons require an actual agent run; static validation does not measure generated code quality. Read [CONTRIBUTING.md](CONTRIBUTING.md), [AUDIT.md](AUDIT.md), and [CHANGELOG.md](CHANGELOG.md). License: [MIT](LICENSE).
+
+## Install from skills.sh CLI
+
+The independent `skills` CLI discovered this repository's `cotizave` skill through
+`npx skills add cotizave/agent-skills --list`. A GitHub-source installation
+into an isolated Codex project also succeeded; it tested the currently published
+repository revision, not this uncommitted release candidate. To install it into a project with
+Codex, run:
+
+```sh
+npx skills add cotizave/agent-skills -a codex -s cotizave --copy
+```
+
+This CLI is maintained by [vercel-labs/skills](https://github.com/vercel-labs/skills).
+Its discovery of a GitHub repository does not establish a skills.sh ranking or
+any official directory approval. A clean isolated local install was tested with
+`--copy` and retained the references and fixtures.
+
+## Release authenticity and support
+
+Review the repository and [Git tags](https://github.com/cotizave/agent-skills/tags)
+before installing; a Git tag identifies a source revision, while directory listings
+have their own approval processes. Obtain an application API key from
+[the Cotizave dashboard](https://app.cotizave.com) only after installing; the skill
+needs no credential to install. Report integration or package issues through
+[GitHub issues](https://github.com/cotizave/agent-skills/issues). Product support:
+[support@cotizave.com](mailto:support@cotizave.com).
+
+See [release preparation](RELEASE.md) for local package checks and the current
+platform verification state.

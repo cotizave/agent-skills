@@ -1,0 +1,23 @@
+{
+  "name": "cotizave",
+  "version": "0.3.0",
+  "description": "Integrate Cotizave V2 multi-country FX API and V1 Venezuela.",
+  "author": {
+    "name": "Cotizave",
+    "email": "support@cotizave.com",
+    "url": "https://cotizave.com"
+  },
+  "homepage": "https://cotizave.com/docs",
+  "repository": "https://github.com/cotizave/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "cotizave",
+    "foreign-exchange-api",
+    "currency-conversion",
+    "historical-rates",
+    "bcv",
+    "trm"
+  ],
+  "skills": "./skills",
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json"
+}

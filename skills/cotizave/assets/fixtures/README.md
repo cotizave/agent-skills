@@ -66,3 +66,9 @@ Prueba también la frontera exacta del límite acordado y una cancelación: no d
 iniciar nuevas consultas ni convertir la operación cancelada en un éxito con cache.
 Estas son pruebas a implementar y ejecutar en el cliente consumidor, no resultados
 ya comprobados por este paquete.
+
+V2 synthetic cases: `v2-ve-restricted.200.json` contains an ID-only restricted
+rate descriptor (no `mid` or timestamps); `v2-rate-unavailable.503.json`
+represents a known rate without a current observation. The error body is
+illustrative: use the official error reference for exact codes and preserve HTTP
+status when an intermediary changes the body.

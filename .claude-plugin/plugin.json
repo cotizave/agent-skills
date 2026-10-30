@@ -1,0 +1,25 @@
+{
+  "name": "cotizave",
+  "version": "0.3.0",
+  "description": "Integrate Cotizave V2 multi-country FX API and preserve V1 Venezuela clients.",
+  "author": {
+    "name": "Cotizave",
+    "email": "support@cotizave.com",
+    "url": "https://cotizave.com"
+  },
+  "homepage": "https://docs.cotizave.com",
+  "repository": "https://github.com/cotizave/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "exchange-rate-api",
+    "currency-conversion",
+    "cotizave",
+    "bcv",
+    "trm"
+  ],
+  "icon": "./assets/cotizave-logo.png",
+  "documentationUrl": "https://docs.cotizave.com",
+  "supportUrl": "https://global.cotizave.com/contact",
+  "privacyPolicyUrl": "https://global.cotizave.com/legal/privacy",
+  "termsOfServiceUrl": "https://global.cotizave.com/legal/terms"
+}

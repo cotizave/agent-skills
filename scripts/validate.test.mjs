@@ -104,12 +104,17 @@ test('validación de paquete: fixtures, enlaces y esquemas inválidos fallan sin
   const { mkdirSync, copyFileSync, symlinkSync } = await import('node:fs');
   const dir = mkdtempSync(join(tmpdir(), 'cotizave-package-'));
   try {
-    for (const folder of ['scripts', 'skills/cotizave/assets/fixtures', '.claude-plugin', 'evals']) mkdirSync(join(dir, folder), { recursive: true });
+    for (const folder of ['scripts', 'skills/cotizave/assets/fixtures', '.claude-plugin', '.codex-plugin', 'assets', 'evals']) mkdirSync(join(dir, folder), { recursive: true });
     for (const name of ['validate.mjs', 'frontmatter.mjs', 'forbidden.mjs']) copyFileSync(join(dirname(VALIDATE), name), join(dir, 'scripts', name));
     const skill = '---\nname: cotizave\ndescription: Integra Cotizave.\nmetadata:\n  version: "0.1.0"\n---\n';
     writeFileSync(join(dir, 'skills/cotizave/SKILL.md'), skill);
     writeFileSync(join(dir, 'CHANGELOG.md'), '## [0.1.0]\n');
     const marketplace = { name: 'cotizave', owner: { name: 'Cotizave' }, metadata: { version: '0.1.0' }, plugins: [{ name: 'cotizave', source: './', version: '0.1.0', skills: ['./skills/cotizave'] }] };
+    writeFileSync(join(dir, '.claude-plugin/plugin.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0' }));
+    writeFileSync(join(dir, 'plugin.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: './skills' }));
+    writeFileSync(join(dir, '.codex-plugin/plugin.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: './skills', interface: { displayName: 'Cotizave', shortDescription: 'Cotizave', longDescription: 'Cotizave integration', developerName: 'Cotizave', category: 'Developer Tools', composerIcon: './assets/cotizave-icon.png', logo: './assets/cotizave-logo.png' } }));
+    writeFileSync(join(dir, 'ge' + 'mini-extension.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0' }));
+    for (const name of ['cotizave-icon.png', 'cotizave-logo.png']) copyFileSync(join(dirname(VALIDATE), '..', 'assets', name), join(dir, 'assets', name));
     writeFileSync(join(dir, '.claude-plugin/marketplace.json'), JSON.stringify(marketplace));
     const fixturePath = join(dir, 'skills/cotizave/assets/fixtures/test.json');
     const fixture = { status: 200, headers: {}, body: {} };

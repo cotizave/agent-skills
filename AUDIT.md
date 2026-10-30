@@ -17,3 +17,17 @@
 - **Production:** No authenticated calls, key usage or quota consumption; no production behavior confirmed.
 - **Unverified announcements:** Event delivery and other product features appear on global marketing pages. Consult the relevant official guide before implementing signatures or events.
 - **Contradictions:** The [plans page](https://docs.cotizave.com/api/v2/plans.md) table reports Pro counts below Free for AR/CO/PE/MX/AU/ES, conflicting with its inheritance claim. The global site calls those markets “In progress” while V2 coverage calls their IDs published. Resolve by inspecting backend entitlement/market registry and testing an authorized account or obtaining a corrected public document. Until then, distinguish registered coverage from current availability.
+
+## Release-candidate audit of the current checkout
+
+| Severity | Location | Problem and evidence | Correction | Status |
+|---|---|---|---|---|
+| BLOCKER | `.claude-plugin/` | No plugin manifest before this review; directory submission metadata and standalone validation were incomplete. | Added plugin manifest; changed marketplace strict mode to permit the manifest and marketplace skill path together. | Fixed locally; `claude plugin validate . --strict` passed. |
+| HIGH | Repository root, `.codex-plugin/` | No portable plugin manifest or square listing assets. OpenAI's current packaging guide recommends root `plugin.json`; submission reference requires logo and composer icon for Codex. | Added portable identity, official site image assets and listing paths. | Package prepared; directory upload/review unverified. |
+| HIGH | `scripts/validate.mjs` | Only Claude marketplace and skill versions were checked. | Added cross-manifest version, route, listing and image checks. | Fixed locally. |
+| HIGH | `.github/workflows/ci.yml` | `skills-ref` installed from a mutable Git HEAD and no release ZIP was tested. | Pinned source revision and added deterministic ZIP build/CRC verification. | Fixed locally; remote CI not run. |
+| MEDIUM | `evals/` | V2 scenarios omitted Peru, Mexico, unknown ID and optional fields; prompt expectations had no model run. | Added scenarios and preserved NOT RUN status for model results. | Scenario structure validated; model quality remains unmeasured. |
+| MEDIUM | `skills/cotizave/assets/fixtures/` | Only V1 response examples existed. | Added V2 synthetic restricted descriptor and temporary unavailability examples. | Structural validation passed; no live API call. |
+| LOW | `README.md` | No direct skills.sh install path or release authenticity guidance. | Added tested CLI path and release checklist. | Local install verified; public index position unverified. |
+
+Current official sources: [V2 endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [plans](https://docs.cotizave.com/api/v2/plans.md), [Claude manifest](https://code.claude.com/docs/en/plugins/manifest-reference), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), and [OpenAI submission](https://developers.openai.com/plugins/deploy/submission). The contradictions noted above remain unresolved in the published V2 plans/coverage material. Neither a registered ID nor a synthetic fixture proves a live observation.

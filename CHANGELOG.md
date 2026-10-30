@@ -2,11 +2,14 @@
 
 Todos los cambios relevantes de la skill se documentan aquí. El formato sigue
 [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y la versión, [SemVer](https://semver.org/lang/es/).
-La versión de la skill es independiente de la versión de la API (`/v1`).
+La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
 ## [0.3.0] - 2026-10-29
+
+- Prepare portable plugin package, Claude manifest, official brand assets and deterministic release ZIP.
+- Add cross-platform validation, V2 synthetic fixtures and more evaluation scenarios.
 
 - V2 multi-country integration guidance, discovery, plan-aware routes and V1 migration reference.
 - Global activation metadata, installation guide and V2 evaluation scenarios.
@@ -14,7 +17,7 @@ La versión de la skill es independiente de la versión de la API (`/v1`).
 
 ## [0.2.0] - 2026-10-15
 
-Versión preparada localmente; todavía no publicada.
+Versión publicada como tag `v0.2.0`.
 
 ### Added
 

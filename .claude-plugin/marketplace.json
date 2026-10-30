@@ -30,7 +30,7 @@
       ],
       "category": "development",
       "source": "./",
-      "strict": false,
+      "strict": true,
       "skills": [
         "./skills/cotizave"
       ]

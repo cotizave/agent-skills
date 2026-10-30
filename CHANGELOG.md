@@ -10,6 +10,7 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 - Document tested GitHub Copilot installation and distinguish GitHub CLI release
   publication from directory approval and the alternative tag workflow.
+- Clarify the quick start and that skills.sh needs no package upload or submission.
 - Remove the optional API-key diagnostic from the distributed skill; integrations
   still use server-side authentication under the consuming application's control.
 - Prepare portable plugin package, Claude manifest, official brand assets and deterministic release ZIP.

@@ -4,19 +4,23 @@ Official [Agent Skill](https://agentskills.io) for integrating the [Cotizave API
 
 For example: “Integrate Colombia TRM from Cotizave V2 into my Python backend.” The agent should discover the country's canonical rate ID, use a server-side `X-API-Key`, account for optional Free-plan fields, and keep the source and effective date with the applied rate.
 
-## Install
+## Quick start
 
-### Agent Skills / skills.sh CLI
-
-The simplest project install for Codex, Cursor, Copilot and other supported agents is:
+Run this in your application repository, then choose your coding agent and the `cotizave` skill when prompted:
 
 ```sh
 npx skills add cotizave/agent-skills
 ```
 
-Select the agent and the `cotizave` skill when prompted. For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested with an isolated project; the installed copy retained its references and fixtures. The CLI is maintained by [vercel-labs/skills](https://github.com/vercel-labs/skills).
+Then ask the agent: **“Use the Cotizave skill to integrate Colombia TRM into my Python backend.”** Name the country, currency pair and purpose when relevant. For an existing Venezuela V1 client, ask for migration explicitly if you want it.
 
-The skill has a [public skills.sh page](https://skills.sh/cotizave/agent-skills/cotizave). Its leaderboard uses installations made through the skills CLI; appearing there is separate from approval by an agent vendor.
+`skills.sh` is a website, not a script you run or a place where maintainers upload a package. Its [Cotizave page](https://skills.sh/cotizave/agent-skills/cotizave) is already live. The command above uses the [skills CLI](https://github.com/vercel-labs/skills) to install files from this public GitHub repository. According to the [skills.sh FAQ](https://www.skills.sh/docs/faq), listings come from installs with that CLI; there is no separate submission step. The page does not imply approval by an agent vendor.
+
+For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested in an isolated project; the copy retained its references and fixtures. Use `npx skills list` to inspect installed skills, `npx skills check` to check for updates, and `npx skills remove cotizave` to uninstall a skills CLI copy. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for global installs and other agents.
+
+**Current distribution status:** skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+
+## Other installation routes
 
 ### GitHub Copilot via GitHub CLI
 
@@ -32,23 +36,23 @@ Use `--scope user` instead of `--scope project` for a personal install. GitHub C
 
 The GitHub CLI skill commands are in public preview. [Direct installation](https://cli.github.com/manual/gh_skill_install) works independently of GitHub Code Search indexing or a GitHub Release. `gh skill search cotizave` may take time to find a new repository; a GitHub Release is not a separate Copilot marketplace approval.
 
-### Claude Code marketplace
+### Claude Code: repository marketplace
 
 ```sh
 claude plugin marketplace add cotizave/agent-skills
 claude plugin install cotizave@cotizave-agent-skills
 ```
 
-Restart Claude Code, then invoke `/cotizave:cotizave` or ask it to integrate Cotizave. To update, use `claude plugin marketplace update cotizave-agent-skills` and `claude plugin update cotizave@cotizave-agent-skills`. The repository marketplace and plugin manifest pass `claude plugin validate . --strict`; this does not imply inclusion in Anthropic's directory.
+Restart Claude Code, then invoke `/cotizave:cotizave` or ask it to integrate Cotizave. To update, use `claude plugin marketplace update cotizave-agent-skills` and `claude plugin update cotizave@cotizave-agent-skills`. This installs from Cotizave's GitHub repository marketplace. The separate Anthropic directory submission is pending security review.
 
-### Codex plugin marketplace
+### Codex: repository marketplace
 
 ```sh
 codex plugin marketplace add cotizave/agent-skills
 codex plugin add cotizave@cotizave-agent-skills
 ```
 
-Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotizave V2 Colombia TRM into my backend.` Use `codex plugin list` to inspect the installed version. To update, run `codex plugin marketplace upgrade cotizave-agent-skills` and restart Codex; this refreshed an installed local plugin from 0.2.0 to 0.3.0 in Codex CLI 0.163.0. To uninstall, run `codex plugin remove cotizave@cotizave-agent-skills`. Codex also discovered the skill in an isolated `.agents/skills` install. Repository marketplace installation does not imply approval in the ChatGPT plugin directory.
+Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotizave V2 Colombia TRM into my backend.` Use `codex plugin list` to inspect the installed version. To update, run `codex plugin marketplace upgrade cotizave-agent-skills` and restart Codex; this refreshed an installed local plugin from 0.2.0 to 0.3.0 in Codex CLI 0.163.0. To uninstall, run `codex plugin remove cotizave@cotizave-agent-skills`. Codex also discovered the skill in an isolated `.agents/skills` install. This repository marketplace works independently of the ChatGPT plugin directory, where Cotizave has not been submitted.
 
 ### Manual fallback
 

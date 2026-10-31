@@ -1,5 +1,5 @@
 {
   "name": "cotizave",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Integrate Cotizave V2 multi-country FX API and V1 Venezuela."
 }

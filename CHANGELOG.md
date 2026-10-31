@@ -6,6 +6,8 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.2] - 2026-10-31
+
 ### Changed
 
 - Clarify the boundary between published V2 country-rate routes and conversion-only
@@ -115,7 +117,8 @@ Versión publicada como tag `v0.2.0`.
 - `check-key.sh`: no termina con código 5 ante un cuerpo no JSON y lee solo el último
   bloque de headers.
 
-[Unreleased]: https://github.com/cotizave/agent-skills/compare/v0.3.1...HEAD
+[Unreleased]: https://github.com/cotizave/agent-skills/compare/v0.3.2...HEAD
+[0.3.2]: https://github.com/cotizave/agent-skills/compare/v0.3.1...v0.3.2
 [0.3.1]: https://github.com/cotizave/agent-skills/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/cotizave/agent-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/cotizave/agent-skills/compare/v0.1.0...v0.2.0

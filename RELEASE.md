@@ -1,4 +1,10 @@
-# Release 0.3.1
+# Release 0.3.2
+
+[`v0.3.2`](https://github.com/cotizave/agent-skills/releases/tag/v0.3.2) updates V2 discovery guidance for the 29 published countries and separates country-rate routes from currencies that are available only for conversion. It points integrations to the current coverage catalogue and marks older V1 contract evidence as historical. The documentation source lists 137 registered IDs in those countries; registration does not guarantee a current observation or production deployment. The skill includes no static country or rate list. This patch does not change the Cotizave API version or vendor-directory submission status. Model-driven evaluations remain unrun.
+
+The release package is the deterministic `cotizave-plugin-0.3.2.zip` with `SHA256SUMS` attached to the GitHub Release. Its SHA-256 is `5567d3581783dbc765496da3fd2ccdcc7f0aa7a0dcf5a3257ea26a9ca17ceb5a`. Local validation, Node tests, isolated Codex discovery, Claude strict validation, GitHub skill dry-run and ZIP/CRC checks passed. skills.sh reads the GitHub repository through CLI installations; there is no separate package upload or submission for this patch.
+
+## Previous release: 0.3.1
 
 [`v0.3.1`](https://github.com/cotizave/agent-skills/releases/tag/v0.3.1) packages the V1 to V2 migration guidance, canonical VE market mapping, paired synthetic rate fixtures, a partial-bulk fixture and migration evaluation prompts. It is a patch release of the skill; the Cotizave API version is independent. Local validation, Node tests, isolated Codex installation, Claude strict plugin validation, GitHub skill dry-run and ZIP/CRC checks passed. The portable ZIP SHA-256 is `ef6483b380cac7aeb45f3437b16d72b6c987c08536c15eb058e5bc685391eb8a`. Model-driven migration evaluations remain unrun and are not claimed as proof of real-project compatibility. This GitHub release does not change vendor-directory submission status.
 
@@ -17,7 +23,7 @@ Build locally with `node scripts/validate.mjs`, `node --test scripts/*.test.mjs`
 | Cursor, OpenCode | Standard folder documented; no clean runtime test in this review | Not verified |
 | Google CLI extension | Extension manifest present; runtime installation not tested | Gallery indexing not verified |
 
-The remaining publication decisions are separate: wait for Anthropic's review; submit the ZIP to OpenAI only if publisher identity and directory listing are desired. No action on skills.sh is needed. The GitHub repository description still describes Venezuela only; change it manually if desired. Suggested description: “Official Cotizave Agent Skill for multi-country exchange rate API integration, currency conversion and V1 Venezuela compatibility.” The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
+The remaining publication decisions are separate: wait for Anthropic's review; submit the ZIP to OpenAI only if publisher identity and directory listing are desired. No action on skills.sh is needed. The GitHub repository description should describe multi-country V2 integration and V1 Venezuela compatibility. The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
 
 No MCP server is needed for this instruction-only skill. No model comparison was run for this candidate; `evals/` contains scenarios and criteria, not claimed scores.
 

@@ -20,7 +20,7 @@ For an existing integration, ask: **“Use the Cotizave skill to migrate this pr
 
 For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested in an isolated project; the copy retained its references and fixtures. Use `npx skills list` to inspect installed skills, `npx skills check` to check for updates, and `npx skills remove cotizave` to uninstall a skills CLI copy. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for global installs and other agents.
 
-**Current distribution status:** [v0.3.1 GitHub Release](https://github.com/cotizave/agent-skills/releases/tag/v0.3.1) and skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+**Current distribution status:** [v0.3.2 GitHub Release](https://github.com/cotizave/agent-skills/releases/tag/v0.3.2) and skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
 
 ## Other installation routes
 

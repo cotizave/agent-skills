@@ -257,6 +257,47 @@
       ]
     },
     {
+      "id": "v1-to-v2-existing-client",
+      "prompt": "Migra mi integración actual de Cotizave V1 a V2 en este proyecto sin cambiar el contrato que reciben mis clientes. Usa el lenguaje y framework que ya tiene el repositorio.",
+      "expectations": [
+        "Inspecciona llamadas V1, consumidores, respuestas públicas, fixtures y pruebas antes de editar; no exige que el usuario le entregue un mapeo de rutas o IDs",
+        "Sustituye las operaciones usadas por rutas V2 correctas y usa IDs canónicos devueltos o documentados, sin construirlos desde market",
+        "Adapta la respuesta V2 a los tipos y contratos existentes cuando haga falta; distingue ausencia de precio, campos opcionales y fechas de fuente, valor y descarga",
+        "Comprueba permisos e histórico por operación; maneja errores por elemento del bulk aunque el HTTP sea 200 y conserva en V1 las operaciones sin equivalente idéntico cuando corresponda",
+        "Ejecuta pruebas locales de regresión con mocks o fixtures, sin credenciales ni cuota de producción, y comunica qué comportamiento quedó verificado"
+      ]
+    },
+    {
+      "id": "v1-to-v2-bulk-partial",
+      "prompt": "Migra mi adaptador Cotizave V1 de conversión por lote a V2. Mis clientes esperan una respuesta de éxito total o un error; no pueden recibir un lote medio exitoso como éxito.",
+      "expectations": [
+        "Usa POST /v2/fx/convert con el formato V2 o el cuerpo V1 admitido para migración y comprueba que la cuenta tenga acceso Pro",
+        "Lee cada results[index] y distingue conversion de error aunque HTTP sea 200; conserva el contrato de éxito total o error de la aplicación",
+        "No reutiliza por accidente la forma plana de results V1 ni los totales V1 como si fueran campos V2",
+        "No reintenta automáticamente un POST de resultado incierto y prueba un lote parcialmente fallido con fixture local"
+      ]
+    },
+    {
+      "id": "v1-to-v2-persisted-invoices",
+      "prompt": "Mi backend guarda facturas con market de Cotizave V1 y su tasa aplicada. Migra la integración a V2 sin cambiar importes ni perder la posibilidad de leer facturas viejas.",
+      "expectations": [
+        "Inspecciona el esquema, lectores y escritores actuales antes de modificar datos persistidos",
+        "Conserva market y tasa aplicados de facturas antiguas, añade o mapea el ID V2 de forma compatible y no recalcula importes históricos",
+        "Distingue updated_at, effective_date y fetched_at, y mantiene la regla de redondeo del negocio",
+        "Prueba lectura de registros anteriores y nuevos y una recuperación sin pérdida; no rellena tasas o fechas pasadas con valores actuales"
+      ]
+    },
+    {
+      "id": "v1-to-v2-history-semantics",
+      "prompt": "Migra mi cliente de histórico Cotizave V1 a V2. El sistema consulta fechas sin publicación y usa granularity=raw para auditar capturas antiguas.",
+      "expectations": [
+        "Reconoce que V1 date puede devolver la última captura en o antes de la fecha y que V2 puede devolver 404 para una fecha sin observación; no sustituye un punto silenciosamente",
+        "Usa el ID V2 canónico y los parámetros correctos de /v2/fx/ve/rates/{id}/history",
+        "Maneja la paginación raw con next_cursor opaco y el mismo ID/rango; no interpreta una página como toda la serie",
+        "Comprueba retención, disponibilidad y las diferencias entre updated_at y fetched_at con pruebas locales"
+      ]
+    },
+    {
       "id": "v1-preserve",
       "prompt": "My existing V1 Cotizave client works. Add caching to reduce quota without changing its public results.",
       "expectations": [

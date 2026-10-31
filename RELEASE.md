@@ -1,4 +1,8 @@
-# Release 0.3.0
+# Release 0.3.1
+
+[`v0.3.1`](https://github.com/cotizave/agent-skills/releases/tag/v0.3.1) packages the V1 to V2 migration guidance, canonical VE market mapping, paired synthetic rate fixtures, a partial-bulk fixture and migration evaluation prompts. It is a patch release of the skill; the Cotizave API version is independent. Local validation, Node tests, isolated Codex installation, Claude strict plugin validation, GitHub skill dry-run and ZIP/CRC checks passed. The portable ZIP SHA-256 is `ef6483b380cac7aeb45f3437b16d72b6c987c08536c15eb058e5bc685391eb8a`. Model-driven migration evaluations remain unrun and are not claimed as proof of real-project compatibility. This GitHub release does not change vendor-directory submission status.
+
+## Previous release: 0.3.0
 
 [`v0.3.0`](https://github.com/cotizave/agent-skills/releases/tag/v0.3.0) was published on 2026-10-30 from commit `ff9dab2d54381d5829f81e0431a56fa4ca7cbcd1`. V2 global support is a minor feature addition. The tag's skill and manifest versions are synchronized. The GitHub Release includes the portable ZIP and `SHA256SUMS`; its ZIP SHA-256 is `e44abd97fcd2e5f37a41f2d1a287b7a14d2e6e861f912ef2a17c343caf0cce5f`.
 

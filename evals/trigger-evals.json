@@ -96,6 +96,10 @@
     "should_trigger": true
   },
   {
+    "query": "Actualiza a V2 las llamadas a Cotizave de mi sistema Laravel y conserva las facturas anteriores",
+    "should_trigger": true
+  },
+  {
     "query": "Add Colombia TRM with Cotizave to my TypeScript backend",
     "should_trigger": true
   },

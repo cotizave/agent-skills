@@ -6,6 +6,18 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-10-31
+
+### Changed
+
+- Expand the language-independent V1 to V2 migration procedure with contract
+  preservation, market ID mapping, history and bulk differences, persisted data,
+  cache isolation, account permissions, local verification and rollback.
+- Add paired synthetic VE rate fixtures, a V2 partial-bulk fixture and migration
+  evaluation scenarios for existing clients, invoices, history and bulk conversion.
+- Show a direct migration request in the README so users need not prepare a route
+  mapping or share an API key in chat.
+
 ## [0.3.0] - 2026-10-30
 
 - Document tested GitHub Copilot installation and distinguish GitHub CLI release
@@ -96,6 +108,8 @@ Versión publicada como tag `v0.2.0`.
 - `check-key.sh`: no termina con código 5 ante un cuerpo no JSON y lee solo el último
   bloque de headers.
 
-[Unreleased]: https://github.com/cotizave/agent-skills/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/cotizave/agent-skills/compare/v0.3.1...HEAD
+[0.3.1]: https://github.com/cotizave/agent-skills/compare/v0.3.0...v0.3.1
+[0.3.0]: https://github.com/cotizave/agent-skills/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/cotizave/agent-skills/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/cotizave/agent-skills/releases/tag/v0.1.0

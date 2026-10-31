@@ -10,7 +10,7 @@ description: >-
 license: MIT
 metadata:
   author: cotizave
-  version: "0.3.0"
+  version: "0.3.1"
 ---
 
 # Cotizave integration
@@ -32,6 +32,7 @@ Use V2 for a new integration. Preserve V1 in existing consumers unless migration
 ## Workflow
 
 1. Inspect the existing project, provider, API version, currency pair, country, use case and tests. Do not change another provider or silently migrate V1.
+   When V1 to V2 migration is requested, follow the [migration procedure](references/migration-v1-v2.md): find every V1 call and consumer, implement a V2 adapter in the project's language and conventions, preserve its public behavior where required, and run focused regression tests. Infer routine choices from the code; ask only for a business rule the code cannot establish.
 2. For V2, determine whether the value must be an official reference, indicative market value, card rate, P2P or executable offer. Discover country coverage and IDs from Cotizave. Never manufacture an ID by concatenating a country and market name. Check the source's base/quote, conversion directions, availability and account permission. Missing observations are possible even for registered IDs.
 3. Read the relevant contract reference and current official docs when route, fields or permissions matter. Distinguish documented behavior from tested code and production observations. If sources disagree, report the conflict and avoid claiming an unverified value.
 4. Implement with the project's HTTP client and conventions. Keep the key on a trusted server, out of URLs and logs. Validate inputs; use TLS, bounded response sizes, timeouts, cancellation and controlled redirects. Preserve structured errors. Add only the dependencies and cache infrastructure justified by the use case.

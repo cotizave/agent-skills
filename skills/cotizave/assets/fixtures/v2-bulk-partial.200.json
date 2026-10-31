@@ -1,0 +1,32 @@
+{
+  "status": 200,
+  "headers": { "Content-Type": "application/json", "Cache-Control": "private, no-store", "X-Bulk-Operations": "2" },
+  "body": {
+    "count": 2,
+    "succeeded": 1,
+    "failed": 1,
+    "results": [
+      {
+        "index": 0,
+        "conversion": {
+          "from": { "currency": "USD", "amount": 100 },
+          "to": { "currency": "VES", "amount": 100969.71 },
+          "rate": 1009.697123,
+          "via": "ve-paralelo",
+          "market": "parallel",
+          "type": "parallel",
+          "updated_at": "2026-10-14T21:01:08Z",
+          "stale": false,
+          "staleness_sec": 60
+        }
+      },
+      {
+        "index": 1,
+        "error": {
+          "code": "invalid_format",
+          "message": "Illustrative item error"
+        }
+      }
+    ]
+  }
+}

@@ -72,3 +72,12 @@ rate descriptor (no `mid` or timestamps); `v2-rate-unavailable.503.json`
 represents a known rate without a current observation. The error body is
 illustrative: use the official error reference for exact codes and preserve HTTP
 status when an intermediary changes the body.
+
+For V1 to V2 migration, compare `rates.200.json` with
+`v2-ve-rates-migration.200.json`: the selected VE prices, markets, value dates and
+source times match in this synthetic pair, while V2 adds canonical IDs and may
+return fewer rows. Do not compare entire JSON bodies or require all V1 rows in V2.
+`v2-bulk-partial.200.json` exercises a valid HTTP 200 with one conversion and one
+item error. Treat its amounts and error text as illustrative; check the indexed
+per-item structure and prevent a partial success from being reported as a wholly
+successful V1-style result.

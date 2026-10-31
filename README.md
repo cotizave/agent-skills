@@ -14,11 +14,13 @@ npx skills add cotizave/agent-skills
 
 Then ask the agent: **“Use the Cotizave skill to integrate Colombia TRM into my Python backend.”** Name the country, currency pair and purpose when relevant. For an existing Venezuela V1 client, ask for migration explicitly if you want it.
 
+For an existing integration, ask: **“Use the Cotizave skill to migrate this project's V1 integration to V2 while preserving the responses my clients use.”** The agent should inspect the code, choose the matching V2 routes and IDs, adapt the project in its current language, and run local regression tests. It should identify any V1 operation with no identical V2 response and report account-specific access that local tests cannot verify. You do not need to prepare a route mapping or supply an API key in chat; see the [migration procedure](skills/cotizave/references/migration-v1-v2.md).
+
 `skills.sh` is a website, not a script you run or a place where maintainers upload a package. Its [Cotizave page](https://skills.sh/cotizave/agent-skills/cotizave) is already live. The command above uses the [skills CLI](https://github.com/vercel-labs/skills) to install files from this public GitHub repository. According to the [skills.sh FAQ](https://www.skills.sh/docs/faq), listings come from installs with that CLI; there is no separate submission step. The page does not imply approval by an agent vendor.
 
 For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested in an isolated project; the copy retained its references and fixtures. Use `npx skills list` to inspect installed skills, `npx skills check` to check for updates, and `npx skills remove cotizave` to uninstall a skills CLI copy. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for global installs and other agents.
 
-**Current distribution status:** [v0.3.0 GitHub Release](https://github.com/cotizave/agent-skills/releases/tag/v0.3.0) and skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+**Current distribution status:** [v0.3.1 GitHub Release](https://github.com/cotizave/agent-skills/releases/tag/v0.3.1) and skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
 
 ## Other installation routes
 

@@ -6,6 +6,13 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+### Changed
+
+- Clarify the boundary between published V2 country-rate routes and conversion-only
+  currency support, and direct rate discovery to the current coverage catalogue.
+- Mark the contract-evidence reference as a historical V1 review and record the
+  2026-10-31 documentation-source correction without claiming production deployment.
+
 ## [0.3.1] - 2026-10-31
 
 ### Changed

@@ -1,5 +1,13 @@
 # Audit and contract evidence — 2026-10-29
 
+## Follow-up — 2026-10-31
+
+The documentation source now lists the maintainer-selected 29 published V2 countries
+and 137 registered IDs, with matching Spanish and English plan matrices. The plan
+summary mismatch recorded below was corrected in that source. Publication of the
+updated documentation and production availability remain unverified. The historical
+findings below retain their original review date and evidence level.
+
 | Severity | Evidence | Impact | Resolution |
 |---|---|---|---|
 | Critical | SKILL.md said all routes were V1 and non-VES pairs were unsupported. Official V2 introduction and endpoints document multiple countries. | New integrations could select the wrong API or reject supported use cases. | V2-first skill and modular V2 contract; preserve V1 reference. |
@@ -16,7 +24,7 @@
 - **Code and tests:** Existing V1 backend evidence in `skills/cotizave/assets/backend-contract-review.json` records an earlier local revision and 43 passed tests. No V2 backend source was accessed in this audit.
 - **Production:** No authenticated calls, key usage or quota consumption; no production behavior confirmed.
 - **Unverified announcements:** Event delivery and other product features appear on global marketing pages. Consult the relevant official guide before implementing signatures or events.
-- **Documentation correction pending:** The [plans page](https://docs.cotizave.com/api/v2/plans.md) summary reports Pro counts below Free for AR/CO/PE/MX/AU/ES. The [per-ID matrix](https://docs.cotizave.com/api/v2/rates-by-plan.md) and maintainer clarification indicate full inherited access outside Venezuela. Correct the summary counts at the documentation source. The global site now labels these markets available; a registered ID still does not guarantee a current observation.
+- **Documentation correction at audit time:** The [plans page](https://docs.cotizave.com/api/v2/plans.md) summary reported Pro counts below Free for AR/CO/PE/MX/AU/ES. The documentation source now has the inherited counts; deployment still needs verification. A registered ID still does not guarantee a current observation.
 
 ## Release-candidate audit of the current checkout
 
@@ -30,7 +38,7 @@
 | MEDIUM | `skills/cotizave/assets/fixtures/` | Only V1 response examples existed. | Added V2 synthetic restricted descriptor and temporary unavailability examples. | Structural validation passed; no live API call. |
 | LOW | `README.md` | No direct skills.sh install path or release authenticity guidance. | Added tested CLI path and release checklist. | Local install verified; public index position unverified. |
 
-Current official sources: [V2 endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [plans](https://docs.cotizave.com/api/v2/plans.md), [Claude manifest](https://code.claude.com/docs/en/plugins/manifest-reference), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), and [OpenAI submission](https://developers.openai.com/plugins/deploy/submission). The plan summary mismatch remains in published documentation; the earlier global market-status mismatch has been resolved on the live site. Neither a registered ID nor a synthetic fixture proves a live observation.
+Sources consulted for this audit: [V2 endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [plans](https://docs.cotizave.com/api/v2/plans.md), [Claude manifest](https://code.claude.com/docs/en/plugins/manifest-reference), [OpenAI packaging](https://developers.openai.com/plugins/build/plugins), and [OpenAI submission](https://developers.openai.com/plugins/deploy/submission). The earlier global market-status mismatch was resolved on the live site. Neither a registered ID nor a synthetic fixture proves a live observation.
 
 ## Maintainer-provided AU response comparison
 

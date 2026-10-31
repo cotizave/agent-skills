@@ -26,7 +26,7 @@ Use V2 for a new integration. Preserve V1 in existing consumers unless migration
 | HTTP failures, quotas and retries | [Errors and limits](references/errors-and-limits.md) |
 | Cache, ETag, age and fallback | [Caching and freshness](references/caching-and-freshness.md) |
 | Client design and money handling | [Integration patterns](references/integration-patterns.md) |
-| Source status and unresolved contradictions | [Contract evidence](references/contract-evidence.md) |
+| Historical V1 contract evidence and its limits | [Contract evidence](references/contract-evidence.md) |
 | Synthetic test data | [Fixtures](assets/fixtures/README.md) |
 
 ## Workflow

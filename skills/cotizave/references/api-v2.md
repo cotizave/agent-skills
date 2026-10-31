@@ -1,6 +1,6 @@
 # V2 HTTP contract
 
-Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md) and [plans](https://docs.cotizave.com/api/v2/plans.md), checked 2026-10-29. This is a compact route index, not a production test. Base `https://api.cotizave.com`, header `X-API-Key`; `{CC}` is an ISO two-letter country code. Use the returned canonical `id`. All registered routes accept `format=json|csv|xml`; CSV/XML require Growth. Unlisted or repeated query parameters return 400.
+Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [coverage](https://docs.cotizave.com/api/v2/coverage.md) and [plans](https://docs.cotizave.com/api/v2/plans.md). The 2026-10-31 local documentation source and backend launch registry agree on 29 published countries; verify the deployed API separately. This is a compact route index, not a production test. Base `https://api.cotizave.com`, header `X-API-Key`; `{CC}` is an ISO two-letter country code for a published country. Use the returned canonical `id`. All registered routes accept `format=json|csv|xml`; CSV/XML require Growth. Unlisted or repeated query parameters return 400.
 
 | Operation | Method and route | Key inputs / constraints |
 |---|---|---|
@@ -20,6 +20,8 @@ Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md
 | Stable references | `GET /v2/crypto`, `GET /v2/crypto/{id}` | Individual details need Growth; these USD references cannot be used as local-currency `via`. |
 
 For countries other than Venezuela, the maintainer confirms that Free can request every published rate; published access does not guarantee a current observation. Venezuela retains per-rate restrictions. Verify the account response because legacy entitlements may differ.
+
+Published country-rate routes and conversion support are separate. A currency pair can be convertible without its country being listed in `/v2/countries` or having `/v2/fx/{CC}/rates`; do not present a conversion-only country as published rate coverage. Check the current coverage page and the API response rather than carrying a saved country list into an integration.
 
 Free rate fields are not the Growth schema: `id`, `market`, `type`, `mid`, `updated_at` are the core of an available rate; `base`, `effective_date`, `bid`, `ask` and `stale_after_sec` depend on source and legacy rules. Basic adds identity/freshness fields; Growth adds descriptions, tags and analysis, some nullable. A restricted VE row can be an ID-only descriptor without price. The same rate ID can have different field sets by plan; parse optional values by presence and use the `stale_after_sec` returned with that observation rather than a fixed country or plan threshold. If it differs across plans, do not assume the source price or entitlement changed. `fetched_at` is the collection retrieval time; `updated_at` is source time; `effective_date` is value date. See [plan matrix](https://docs.cotizave.com/api/v2/plans.md) before consuming optional fields.
 

@@ -1,6 +1,10 @@
 # Evidencia del contrato
 
-API `/v1`, skill `0.2.0`. La revisión pública del 2026-10-15 está identificada en
+Registro histórico de API `/v1` para la skill `0.2.0`; no describe la cobertura ni
+los permisos actuales de V2. Para una integración nueva consulta [el contrato V2](api-v2.md)
+y [la cobertura publicada](https://docs.cotizave.com/api/v2/coverage.md).
+
+La revisión pública del 2026-10-15 está identificada en
 el [registro de fuentes](../assets/contract-review.json). La revisión del backend
 local del 2026-10-16 conserva revisión de código, hashes de entradas y resultados en
 el [registro de verificación](../assets/backend-contract-review.json).

@@ -12,12 +12,14 @@ Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md
 | Route | `GET /v2/fx/{CC}/route` | Pro; required `from`, `to`, `amount`; optional `direction=send|receive`, `max_staleness` seconds. Supported pairs vary. |
 | Bank board | `GET /v2/fx/{CC}/bank-rates` | Optional `bank`; 404 `bank_rates_not_available` where absent. |
 | Convert | `GET /v2/fx/convert` | Required `from`, `to`, positive `amount` ≤ 1e12; optional `via`, `date`; `market` is a VE V1 alias. Historical conversion needs Growth. Default is a compatible reference: choose `via` explicitly when meaning matters. |
+| Cross-currency conversion | `GET /v2/fx/convert` | For supported pairs without a direct quote, omit `via`: the response includes `legs`. An explicit `via` for such a pair returns `400 invalid_format`; do not assume a single direct rate. |
 | Bulk convert | `POST /v2/fx/convert` | Pro; JSON `{"conversions":[{"from","to","amount","via"?,"date"?}]}` (1–50). Also accepts the V1 body. Each `results` item has `index` and either `conversion` or `error`; HTTP 200 can include item failures. No-store. |
 | Country/currency catalogues | `GET /v2/countries`, `GET /v2/countries/{CC}`, `GET /v2/currencies`, `GET /v2/currencies/{code}` | Pro. These enumerate published countries/ISO currencies; absence of Pro does not block country rates. |
 | Bank catalogue | `GET /v2/banks/{CC}`, `GET /v2/banks/{CC}/{code}` | Optional `q` on collection. Bank catalogue and bank board are different resources. |
 | Holidays | `GET /v2/holidays/{CC}` | Basic; at most one of `year`, `date`, `from`. |
 | Business days | `GET /v2/holidays/{CC}/business-days` | Basic; required `days` 0–3650, optional `from`. |
 | Stable references | `GET /v2/crypto`, `GET /v2/crypto/{id}` | Individual details need Growth; these USD references cannot be used as local-currency `via`. |
+| Official issuers | `GET /v2/issuers` | Authenticated; available from Free. Returns issuer metadata, not a live rate. |
 
 For countries other than Venezuela, the maintainer confirms that Free can request every published rate; published access does not guarantee a current observation. Venezuela retains per-rate restrictions. Verify the account response because legacy entitlements may differ.
 

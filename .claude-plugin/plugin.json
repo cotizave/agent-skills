@@ -1,6 +1,6 @@
 {
   "name": "cotizave",
-  "version": "0.3.2",
+  "version": "0.3.3",
   "description": "Integrate Cotizave V2 multi-country FX API and preserve V1 Venezuela clients.",
   "author": {
     "name": "Cotizave",

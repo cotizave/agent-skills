@@ -62,8 +62,8 @@ endpoint distinto que consultes.
 
 | Plan | TTL para `/v1/fx/rates` (1 endpoint) |
 |---|---|
-| Gratis, Inicio | 1800–3600 s |
-| Esencial o superior | desde 300 s |
+| Free, Basic | 1800–3600 s |
+| Growth o superior | desde 300 s |
 | No lo sabes | **1800 s** (default seguro) |
 
 | Uso | Qué cachear | TTL |

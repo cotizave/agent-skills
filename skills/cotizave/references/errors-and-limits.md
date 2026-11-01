@@ -47,7 +47,7 @@ Todos los errores son JSON (también cuando pediste CSV o XML), con
 | 404 | `bcv_snapshot_unavailable` | Publicación diaria del BCV aún no disponible | Manejar como "sin dato" |
 | 406 | `format_not_available` | CSV de una respuesta con 2 colecciones (`/v1/fx/route`); `field: "format"` | Usar JSON o XML |
 | 422 | `reference_unavailable` / `compared_unavailable` | `/v1/fx/spread`: una de las dos tasas está, pero sin valor válido | Reintentar en unos minutos (no en bucle) |
-| 429 | `rate_limit_exceeded` | Burst, cuota mensual u otro tope (ver abajo) | Según `X-RateLimit-Scope` |
+| 429 | `rate_limit_exceeded` | Límite temporal, cuota mensual u otro tope (ver abajo) | Inspecciona `Retry-After`, cabeceras y detalles disponibles |
 | 500 | `internal_error` | Error de Cotizave | Reintentos GET acotados con backoff + jitter; luego respaldo solo si cumple la política de vigencia |
 | 503 | `service_unavailable` | No disponible temporalmente (trae `Retry-After`), o el market pedido no tiene cotización válida (`/convert`, `/bulk/convert`) | Respetar `Retry-After`, reintentos acotados |
 | 504 | `query_timeout` | Consulta de histórico demasiado lenta | Acota el rango (`from`/`to`); no repitas la misma consulta en bucle |
@@ -58,105 +58,47 @@ valor inventado o "por defecto".
 
 ## Planes y cuotas
 
-| Plan (id) | Requests/mes | rps sostenido | Burst | Histórico | Extras |
-|---|---|---|---|---|---|
-| Gratis (`free`) | 1.500 | 2 | 5 | 14 días | — |
-| Inicio (`lite`) | 3.500 | 3 | 6 | 30 días | — |
-| Esencial (`hobby`) | 20.000 | 3 | 8 | 90 días | CSV/XML, `paypal`, `zelle` |
-| Profesional (`indie`) | 60.000 | 5 | 15 | 180 días | + `syklo`, `yadio`, `zoom`, `western_union` |
-| Escala (`pro`) | 150.000 | 10 | 25 | 365 días | + `cash`, `cucuta`, `/route`, `/bulk/convert` |
+Los IDs internos de los planes públicos no son sus nombres comerciales. Las cuotas y límites se comparten entre V1 y V2 y pueden cambiar: contrástalos con [cuotas oficiales](https://docs.cotizave.com/api/rate-limits.md), el catálogo del producto y la respuesta de la cuenta antes de fijarlos en una integración.
 
-Son los planes públicos; pueden cambiar. Precios vigentes:
-https://cotizave.com/precios. En tiempo de ejecución, lo que manda es el `402` con
-`details.feature`. Cada cuenta tiene 1 API key; la cuota es por cuenta.
+| Plan (id) | Solicitudes/mes | Solicitudes/minuto | Histórico |
+|---|---:|---:|---:|
+| Free (`free`) | 800 | 60 | 3 días |
+| Basic (`hobby`) | 10.000 | 120 | 90 días |
+| Growth (`indie`) | 40.000 | 180 | 180 días |
+| Pro (`pro`) | 100.000 | 240 | 365 días |
+| Pro Plus (`pro_extra`) | 250.000 | 360 | Verificar en el catálogo vigente |
 
-- **El ciclo mensual se ancla al día de activación del plan** (en Gratis, al día de
-  creación de la cuenta), no al día 1 del mes. `X-RateLimit-Reset` trae la fecha.
-- **Cuentan:** los `2xx` y cualquier `4xx` salvo `401`, `402`, `403` y `429` (o sea,
-  `400`, `404`, `406`, `422`… sí cuentan). **No cuentan:** `401`, `402`, `403`, `429`
-  ni ningún `5xx`.
-- `/v1/fx/bulk/convert` cuenta 1 por llamada (hasta 50 montos) y además tiene un tope
-  de 300 llamadas por hora.
+CSV/XML y conversión histórica requieren Growth; rutas y bulk requieren Pro. Los permisos de una cuenta heredada pueden variar. La cuota es por cuenta, compartida entre claves: no presupongas una sola clave. Un `402` con `details.feature` informa una restricción de la cuenta, no un error transitorio.
+
+- **El ciclo mensual se ancla a la activación del plan** (en Free, a la creación de la cuenta), no al día 1 del mes. Consulta `X-RateLimit-Reset`.
+- **Cuentan:** los `2xx` y los errores de validación o recurso como `400`, `404`, `406` y `422`. **No cuentan:** `401`, `402`, `403`, `429` ni `5xx`.
+- `/v1/fx/bulk/convert` cuenta 1 por llamada (hasta 50 montos) y tiene además un tope de 300 llamadas por hora.
 
 ### Presupuesto de polling
 
-| Intervalo | Requests/mes (1 endpoint) | Cabe en |
-|---|---|---|
-| cada 1 min | ~43.200 | Profesional+ |
-| cada 5 min | ~8.640 | Esencial+ |
-| cada 15 min | ~2.880 | Inicio+ |
-| cada 30 min | ~1.440 | Gratis (justo) |
-| cada 60 min | ~720 | Todos |
-
-Multiplica por el número de endpoints distintos que consultas y por el número de
-procesos si cada uno llama por su cuenta (evalúa coordinación si el presupuesto agregado no alcanza).
+Con un endpoint y un ciclo de 30 días: cada minuto consume ~43.200 llamadas; cada 5 minutos ~8.640; cada 15 minutos ~2.880; cada 30 minutos ~1.440; cada hora ~720. Free solo cubre aproximadamente una llamada por hora si no hay otros consumos. Multiplica por endpoints, procesos y reintentos; usa caché o coordinación según el caso.
 
 ## Headers
 
-En las respuestas que pasan la autenticación y el limitador (los `2xx` y casi todos los
-`4xx`). **No** vienen en `401`, en los `403` de cuenta (`account_inactive`,
-`email_not_verified`), en el `429` por keys inválidas ni en el `402` por formato: tu
-código debe tolerar que falten.
+Una respuesta puede omitir las cabeceras del limitador, en particular ante fallos de autenticación o del proxy. No hagas depender el parser de su presencia.
 
 | Header | Significado |
 |---|---|
 | `X-RateLimit-Limit` | Cuota mensual del plan |
-| `X-RateLimit-Remaining` | Requests que quedan en el ciclo |
-| `X-RateLimit-Reset` | ISO 8601 del próximo reinicio del ciclo |
-
-Solo en un `429`:
-
-| Header | Significado |
-|---|---|
-| `X-RateLimit-Scope` | `burst` (velocidad) o `monthly` (cuota) |
-| `Retry-After` | Segundos enteros (mínimo 1). En `monthly`, segundos hasta el reset: **pueden ser semanas** |
-| `X-RateLimit-Retry-After-Ms` | Espera exacta en ms (solo `burst`) |
-| `X-RateLimit-Limit-Second` | rps sostenido del plan |
-| `X-RateLimit-Burst` | Tamaño de ráfaga del plan |
-
-Cuerpo del 429: `details.kind` repite el scope (`burst` | `monthly`) y
-`details.retry_after` los segundos; en `burst` trae además `retry_after_ms` y en
-`monthly`, `resets_at`.
-
-Un `429` **sin** `X-RateLimit-Scope` es otro tope: las 300 llamadas por hora de
-`/v1/fx/bulk/convert` (`Retry-After: 3600`) o demasiadas keys inválidas desde la
-misma IP (`Retry-After: 300`). Ninguno se resuelve reintentando enseguida.
-
-En un 429 por `burst`, `X-RateLimit-Remaining` sigue mostrando la cuota real: no la
-interpretes como agotada.
+| `X-RateLimit-Remaining` | Solicitudes restantes en el ciclo |
+| `X-RateLimit-Reset` | Siguiente reinicio del ciclo, ISO 8601 |
+| `Retry-After` | Espera indicada en un 429/503; admite segundos o fecha HTTP |
 
 ## Algoritmo para manejar un 429
 
-Resumen; la política completa de plazos y cancelación está en
-[integration-patterns.md](integration-patterns.md#reintentos-y-plazo-total).
-
-```text
-si status == 429:
-  scope = header X-RateLimit-Scope (o body.details.kind)
-  si scope == "burst":
-     espera = X-RateLimit-Retry-After-Ms  (o Retry-After * 1000)
-     si espera + jitter no caben en el plazo total o máximo de espera: fallar
-     esperar con cancelación (sin bloquear el event loop)
-     reintentar (máx. 3 intentos en total); si persiste, bajar la concurrencia
-  si scope == "monthly":
-     NO reintentar. Marcar "cuota agotada hasta X-RateLimit-Reset",
-     servir el último valor solo si su vigencia y el caso lo permiten; si no, fallar;
-     avisar a una persona
-     (log de error / alerta) y sugerir upgrade.
-  si no hay scope:
-     NO reintentar ahora; respetar Retry-After antes de volver a llamar.
-```
-
-Insistir contra el límite (429 sostenidos, reintentos sin backoff, rotar cuentas para
-evadir la cuota) puede terminar en throttling adicional o suspensión según los
-Términos. Un 429 ocasional bien manejado no tiene consecuencias.
+Distingue el límite de solicitudes por minuto, la cuota mensual y otros límites usando el código, cabeceras y detalles que efectivamente devuelva la respuesta. Para un límite temporal, respeta `Retry-After`, agrega jitter, reduce concurrencia y acota intentos y tiempo total. Si se agotó la cuota mensual, detén nuevas llamadas hasta el reinicio o un cambio confirmado de cuota. Para otro 429, como el tope horario de bulk o la protección por IP, evita reintentos inmediatos. Nunca deduzcas que la cuota mensual se agotó solo porque llegó un 429. La política de plazos y cancelación está en [patrones de integración](integration-patterns.md#reintentos-y-plazo-total).
 
 ## Formatos CSV y XML
 
 - Se piden con `?format=csv|xml|json` o con `Accept: text/csv`, `application/xml`,
   `text/xml`, `application/json`. Si mandas ambos, **gana el query**. Un `Accept` que
   pide HTML (lo que mandan los navegadores) se ignora.
-- Requieren plan **Esencial o superior**; en Gratis/Inicio → `402 feature_not_in_plan`
+- Requieren plan **Growth o superior**; en Free/Basic → `402 feature_not_in_plan`
   (`details.feature: "response_formats"`). `?format=json` siempre es gratis. Un
   `format` desconocido → `400 invalid_format` (`field: "format"`).
 - CSV (RFC 4180, coma separadora, punto decimal): si la respuesta tiene **una**

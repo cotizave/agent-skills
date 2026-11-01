@@ -6,6 +6,14 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.3] - 2026-11-01
+
+### Fixed
+
+- Align plan names, monthly quotas, minute limits and Free history retention with the current product catalogue.
+- Add the authenticated V2 issuer directory and cross-currency conversion behavior.
+- Remove public-route guidance and stale plan assumptions from V1 references and fixtures.
+
 ## [0.3.2] - 2026-10-31
 
 ### Changed

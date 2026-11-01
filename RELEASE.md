@@ -1,4 +1,10 @@
-# Release 0.3.2
+# Release 0.3.3
+
+`v0.3.3` updates the Cotizave Agent Skill for the current public plans and V2 contract. It corrects monthly quotas, minute limits and Free history retention; documents authenticated `/v2/issuers` and cross-currency conversion; and removes guidance about public API routes. The reference and synthetic fixtures were checked against the current docs and backend catalogue. The skill version is independent of API V2.
+
+The deterministic release package is `cotizave-plugin-0.3.3.zip` (SHA-256 `6e6357afbb8ffaa6d5ca5973974024cd6b7bd9e1c805a1525f27ba75b11eb59d`). Local static validation, Node tests, Codex isolated discovery, Claude strict validation, GitHub skill dry-run and ZIP/CRC verification passed. The GitHub Release will carry the ZIP and `SHA256SUMS`; publication does not imply vendor-directory approval.
+
+## Previous release: 0.3.2
 
 [`v0.3.2`](https://github.com/cotizave/agent-skills/releases/tag/v0.3.2) updates V2 discovery guidance for the 29 published countries and separates country-rate routes from currencies that are available only for conversion. It points integrations to the current coverage catalogue and marks older V1 contract evidence as historical. The documentation source lists 137 registered IDs in those countries; registration does not guarantee a current observation or production deployment. The skill includes no static country or rate list. This patch does not change the Cotizave API version or vendor-directory submission status. Model-driven evaluations remain unrun.
 

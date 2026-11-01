@@ -12,7 +12,7 @@ Reglas comunes:
   `message` lista los aceptados). El resto los ignora en silencio: no mandes
   parámetros que no estén en esta referencia.
 - `?format=csv|xml` (o header `Accept: text/csv` / `application/xml`) funciona en
-  todos estos endpoints desde el plan Esencial. Ver
+  todos estos endpoints desde el plan Growth. Ver
   [errors-and-limits.md](errors-and-limits.md#formatos-csv-y-xml).
 - Los valores son números JSON. Conserva precisión y aplica el redondeo del negocio
   al fijar importes; el formato visual es independiente. Ver
@@ -136,7 +136,7 @@ Convierte un monto. Todos los planes.
 
 ## POST /v1/fx/bulk/convert
 
-Hasta 50 montos con **una** tasa, 1 unidad de cuota. **Solo plan Escala**
+Hasta 50 montos con **una** tasa, 1 unidad de cuota. **Solo plan Pro o superior**
 (`402 feature_not_in_plan`, `details.feature: "bulk_convert"` en los demás). Límite
 adicional de 300 llamadas por hora: excederlo → `429 rate_limit_exceeded` **sin**
 `X-RateLimit-Scope` y con `Retry-After: 3600` (no reintentes antes).
@@ -267,8 +267,7 @@ con más de 3 días de antigüedad y revalida lo que incluya los últimos 3 día
 ## GET /v1/fx/route
 
 Mejor mercado ejecutable para un monto USD↔VES + alternativas ordenadas. **Solo plan
-Escala**: en los demás → `402 feature_not_in_plan` con `details.feature: "route"`
-(Profesional tampoco lo incluye).
+Pro o superior**: en los demás → `402 feature_not_in_plan` con `details.feature: "route"`
 
 | Param | Req. | Default | Notas |
 |---|---|---|---|

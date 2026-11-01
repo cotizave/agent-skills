@@ -78,9 +78,9 @@ la infraestructura existente. No sumes políticas del SDK, cola, job y llamador.
 | GET con fallo transitorio de transporte | Reintentar con backoff exponencial y jitter, dentro del presupuesto |
 | POST bulk con fallo de transporte después de enviar, o envío incierto | No reintentar automáticamente: puede haberse consumido cuota |
 | Cancelación, TLS o configuración inválida | Fallar sin reintentar |
-| 429 burst | Esperar ms del header; si falta, Retry-After; si ambos faltan, backoff con jitter |
-| 429 monthly | No reintentar; bloquear llamadas de esa cuenta hasta el reset ISO 8601 |
-| 429 sin scope | No reintentar automáticamente; respetar Retry-After antes de otra llamada |
+| 429 por límite temporal | Respetar `Retry-After` y reducir concurrencia; si falta, backoff con jitter acotado |
+| 429 por cuota mensual | No reintentar; bloquear llamadas de esa cuenta hasta el reset confirmado |
+| 429 de causa incierta | No reintentar automáticamente; respetar `Retry-After` antes de otra llamada |
 | 5xx en GET | Reintento acotado; Retry-After si es válido, si no backoff con jitter |
 | 5xx en POST bulk | Por defecto devolver el error; repetir requiere decidir explícitamente sobre resultado incierto y coste |
 | Otros 4xx o 3xx | Sin reintento automático |
@@ -120,13 +120,13 @@ pedir(método, ruta, parámetros, cuerpo, cancelación):
       si 3xx: fallar unexpected_redirect
       err = error con status y headers, aunque el body esté vacío o no sea JSON
       scope = header válido, o details.kind si el header está ausente
-      si 429 monthly:
+      si 429 identificado como cuota mensual:
         registrar bloqueo de esa cuenta hasta reset ISO 8601
         si reset inválido/ausente: devolver error y suspender polling para revisión
         fallar err
-      si 429 sin scope: registrar no-antes-de Retry-After válido; fallar err
-      si 429 burst:
-        espera = ms válidos, o Retry-After válido, o backoff(intento)
+      si 429 de causa incierta: registrar no-antes-de Retry-After válido; fallar err
+      si 429 identificado como límite temporal:
+        espera = Retry-After válido, o backoff(intento)
         espera = espera + jitter no negativo
       si 5xx:
         si método != GET o code == query_timeout: fallar err

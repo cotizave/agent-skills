@@ -5,8 +5,8 @@
     "Retry-After": "3600",
     "X-Bulk-RateLimit-Limit": "300",
     "X-Bulk-RateLimit-Remaining": "0",
-    "X-RateLimit-Limit": "150000",
-    "X-RateLimit-Remaining": "148700",
+    "X-RateLimit-Limit": "100000",
+    "X-RateLimit-Remaining": "98700",
     "X-RateLimit-Reset": "2026-11-03T00:00:00Z"
   },
   "body": { "code": "rate_limit_exceeded", "message": "Maximum of 300 bulk calls per hour reached. Try again later." }

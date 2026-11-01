@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.6] - 2026-11-01
+
+### Fixed
+
+- Correct V1 bulk validation guidance in the migration reference and clarify the V2 authenticated-route and raw-history scope.
+
 ## [0.3.5] - 2026-11-01
 
 ### Changed

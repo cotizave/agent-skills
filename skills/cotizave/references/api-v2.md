@@ -1,12 +1,12 @@
 # V2 HTTP contract
 
-Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [coverage](https://docs.cotizave.com/api/v2/coverage.md) and [plans](https://docs.cotizave.com/api/v2/plans.md). The 2026-10-31 local documentation source and backend launch registry agree on 29 published countries; verify the deployed API separately. This is a compact route index, not a production test. Base `https://api.cotizave.com`, header `X-API-Key`; `{CC}` is an ISO two-letter country code for a published country. Use the returned canonical `id`. All registered routes accept `format=json|csv|xml`; CSV/XML require Growth. Unlisted or repeated query parameters return 400.
+Documented in [official endpoints](https://docs.cotizave.com/api/v2/endpoints.md), [data dictionary](https://docs.cotizave.com/api/v2/data-dictionary.md), [coverage](https://docs.cotizave.com/api/v2/coverage.md) and [plans](https://docs.cotizave.com/api/v2/plans.md). The 2026-10-31 local documentation source and backend launch registry agree on 29 published countries; verify the deployed API separately. This is a compact route index, not a production test. Base `https://api.cotizave.com`, header `X-API-Key`; `{CC}` is an ISO two-letter country code for a published country. Use the returned canonical `id`. All authenticated routes accept `format=json|csv|xml`; CSV/XML require Growth. Unlisted or repeated query parameters return 400.
 
 | Operation | Method and route | Key inputs / constraints |
 |---|---|---|
 | Country rates | `GET /v2/fx/{CC}/rates` | Optional `tag`, `category`, `base`, `quote`; `markup` only VE with Growth and an active rule. A missing observation can omit a rate. |
 | One rate | `GET /v2/fx/{CC}/rates/{id}` | 402 inaccessible, 404 unknown/wrong country, 503 no current observation. |
-| History | `GET /v2/fx/{CC}/rates/{id}/history` | `date` alone for a point; `from`/`to`, optional `granularity=daily|raw`; raw only accepts `cursor`, `limit` (1–5000). Retention and series availability vary. |
+| History | `GET /v2/fx/{CC}/rates/{id}/history` | `date` alone for a point; `from`/`to`, optional `granularity=daily|raw`; only raw mode accepts `cursor`, `limit` (1–5000). Retention and series availability vary. |
 | Market catalogue | `GET /v2/fx/{CC}/markets` | Growth; includes conversion directions, availability and required plan, without prices. |
 | Spread | `GET /v2/fx/{CC}/spread` | Growth; optional `against`, `base`; country official reference comparison. |
 | Route | `GET /v2/fx/{CC}/route` | Pro; required `from`, `to`, `amount`; optional `direction=send|receive`, `max_staleness` seconds. Supported pairs vary. |

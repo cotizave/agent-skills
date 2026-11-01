@@ -1,4 +1,10 @@
-# Release 0.3.5
+# Release 0.3.6
+
+`v0.3.6` corrects the V1 bulk validation claim in the V1→V2 migration reference. Current V1 bulk rejects an incompatible EUR-base market or reverse one-way remittance with `400 invalid_format`; V2 validates `via` against each pair. It also clarifies that the V2 format rule applies to authenticated routes and that cursor/limit belong to raw history mode.
+
+The deterministic package is `cotizave-plugin-0.3.6.zip` (SHA-256 `c64eb0eec6e85640e67b0e86d9cdadad26d8e73e0f4a178367cc5ac8f24fc65e`). Local static validation, Node tests, skill validation and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.5
 
 `v0.3.5` updates the Free monthly quota from 800 to 500 in the skill reference and synthetic 429 fixture. Polling and cache guidance now budgets for 500 requests per month. This patch follows the owner's pending backend catalogue change; the deployed API may still report 800 until that rollout completes.
 

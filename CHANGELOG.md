@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.4] - 2026-11-01
+
+### Fixed
+
+- Align V1 spread access and bulk market validation with the current backend contract.
+
 ## [0.3.3] - 2026-11-01
 
 ### Fixed

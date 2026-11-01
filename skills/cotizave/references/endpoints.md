@@ -148,7 +148,7 @@ Body (JSON):
 | `from` | sí | `USD` o `VES` |
 | `to` | sí | `VES` o `USD`, distinto de `from` |
 | `amounts` | sí | `number[]`, de 1 a 50 elementos, cada uno > 0 y ≤ 1e12 |
-| `market` | no | default `reference`. Usa un market con base USD y, para VES→USD, nunca una remesa: **aquí la API no lo valida** (con `eur_reference` aplica la tasa EUR sin error) |
+| `market` | no | default `reference`. Debe cotizar en USD; para VES→USD debe admitir ambos sentidos. Una base EUR o una remesa en sentido inverso devuelve `400 invalid_format` (`field: "market"`). |
 
 ```json
 {
@@ -167,7 +167,7 @@ Body (JSON):
 `X-Bulk-Operations: <n>`, `X-Bulk-RateLimit-Limit` y `X-Bulk-RateLimit-Remaining`.
 Errores: más de 50 montos → `400 invalid_format` (`field: "amounts"`,
 `details: {max, got}`); lista vacía → `400 missing_field`; un monto ≤ 0 o > 1e12 →
-`400 invalid_format`; JSON inválido → `400 invalid_format`; `market` gateado → `402`;
+`400 invalid_format`; JSON inválido o `market` incompatible → `400 invalid_format`; `market` gateado → `402`;
 market sin cotización válida → `503`. **Los campos desconocidos del body se ignoran en
 silencio**: un `via` se descarta y se usa `reference`; `items` sin `amounts` → `400
 missing_field`. No existe `items` ni `via` en este endpoint: si ves ejemplos así, están
@@ -175,7 +175,7 @@ desactualizados.
 
 ## GET /v1/fx/spread
 
-Brecha entre BCV (`reference`) y otro market. Todos los planes.
+Brecha entre BCV (`reference`) y otro market. Growth o superior.
 
 | Param | Default | Valores |
 |---|---|---|

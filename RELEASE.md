@@ -1,4 +1,10 @@
-# Release 0.3.3
+# Release 0.3.4
+
+`v0.3.4` corrects the V1 reference after comparing it with the current backend: `/v1/fx/spread` requires Growth or higher in the public plans, and V1 bulk conversion rejects an incompatible EUR-base or one-way remittance market with `400 invalid_format`. The skill version remains independent of API V1 and V2.
+
+The deterministic package is `cotizave-plugin-0.3.4.zip` (SHA-256 `20bc31772757f7af7d9bfa41f91101e8afbc61f43a730cbe950e4ddbc7f2a1a5`). Local validation and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.3
 
 `v0.3.3` updates the Cotizave Agent Skill for the current public plans and V2 contract. It corrects monthly quotas, minute limits and Free history retention; documents authenticated `/v2/issuers` and cross-currency conversion; and removes guidance about public API routes. The reference and synthetic fixtures were checked against the current docs and backend catalogue. The skill version is independent of API V2.
 

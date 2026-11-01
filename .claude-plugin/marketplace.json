@@ -6,13 +6,13 @@
   },
   "metadata": {
     "description": "Official agent skill for Cotizave V2 multi-country FX API and V1 Venezuela.",
-    "version": "0.3.4"
+    "version": "0.3.5"
   },
   "plugins": [
     {
       "name": "cotizave",
       "description": "Integrate Cotizave V2 multi-country FX rates and preserve V1 Venezuela clients.",
-      "version": "0.3.4",
+      "version": "0.3.5",
       "author": {
         "name": "Cotizave",
         "email": "support@cotizave.com"

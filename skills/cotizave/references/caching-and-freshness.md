@@ -62,14 +62,15 @@ endpoint distinto que consultes.
 
 | Plan | TTL para `/v1/fx/rates` (1 endpoint) |
 |---|---|
-| Free, Basic | 1800–3600 s |
+| Free | 5400–7200 s para un endpoint y un proceso; 7200 s deja más margen |
+| Basic | 1800–3600 s |
 | Growth o superior | desde 300 s |
-| No lo sabes | **1800 s** (default seguro) |
+| No lo sabes | **7200 s** hasta conocer la cuota real de la cuenta |
 
 | Uso | Qué cachear | TTL |
 |---|---|---|
 | Mostrar tasas en una web, app o bot | respuesta de `/v1/fx/rates` | el de tu plan (tabla de arriba) |
-| Solo BCV (facturación, precios oficiales) | `/v1/fx/rates/reference` | 1800–3600 s (lo que cambia es qué tasa *rige*) |
+| Solo BCV (facturación, precios oficiales) | `/v1/fx/rates/reference` | Según el plan: en Free, 5400–7200 s para un único proceso; lo que cambia es qué tasa *rige* |
 | Precio en Bs de un catálogo | `/v1/fx/rates` una vez → multiplicar localmente | el de tu plan |
 | Tasas por banco / divisas BCV | `/v1/fx/bcv/*` | 1–6 h (1 publicación diaria) |
 | Histórico de fechas con **más de 3 días** de antigüedad | `/history?date=` o rangos que terminen antes | largo plazo (días o sin expiración) |

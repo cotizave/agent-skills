@@ -1,4 +1,10 @@
-# Release 0.3.4
+# Release 0.3.5
+
+`v0.3.5` updates the Free monthly quota from 800 to 500 in the skill reference and synthetic 429 fixture. Polling and cache guidance now budgets for 500 requests per month. This patch follows the owner's pending backend catalogue change; the deployed API may still report 800 until that rollout completes.
+
+The deterministic package is `cotizave-plugin-0.3.5.zip` (SHA-256 `5a9de674df012b404c65b1f3b210db9c9f04440287255c0f132a11a2bb7ed91d`). Local static validation, Node tests, skill validation, GitHub skill dry-run and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.4
 
 `v0.3.4` corrects the V1 reference after comparing it with the current backend: `/v1/fx/spread` requires Growth or higher in the public plans, and V1 bulk conversion rejects an incompatible EUR-base or one-way remittance market with `400 invalid_format`. The skill version remains independent of API V1 and V2.
 

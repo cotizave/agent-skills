@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.5] - 2026-11-01
+
+### Changed
+
+- Set the Free monthly quota to 500 and adjust polling and cache guidance accordingly.
+
 ## [0.3.4] - 2026-11-01
 
 ### Fixed

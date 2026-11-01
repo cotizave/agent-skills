@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.7] - 2026-11-01
+
+### Fixed
+
+- Distinguish the current Free quota of 800 from the planned 500 quota on December 1, 2026; align the current 429 fixture and future-safe polling guidance.
+
 ## [0.3.6] - 2026-11-01
 
 ### Fixed

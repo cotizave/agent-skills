@@ -62,11 +62,13 @@ Los IDs internos de los planes públicos no son sus nombres comerciales. Las cuo
 
 | Plan (id) | Solicitudes/mes | Solicitudes/minuto | Histórico |
 |---|---:|---:|---:|
-| Free (`free`) | 500 | 60 | 3 días |
+| Free (`free`) | 800 | 60 | 3 días |
 | Basic (`hobby`) | 10.000 | 120 | 90 días |
 | Growth (`indie`) | 40.000 | 180 | 180 días |
 | Pro (`pro`) | 100.000 | 240 | 365 días |
 | Pro Plus (`pro_extra`) | 250.000 | 360 | Verificar en el catálogo vigente |
+
+La cuota Free vigente es 800; está previsto reducirla a 500 el 1 de diciembre de 2026. Comprueba la cuota efectiva de cada cuenta en el catálogo y `X-RateLimit-Limit` tras el despliegue.
 
 CSV/XML y conversión histórica requieren Growth; rutas y bulk requieren Pro. Los permisos de una cuenta heredada pueden variar. La cuota es por cuenta, compartida entre claves: no presupongas una sola clave. Un `402` con `details.feature` informa una restricción de la cuenta, no un error transitorio.
 
@@ -76,7 +78,7 @@ CSV/XML y conversión histórica requieren Growth; rutas y bulk requieren Pro. L
 
 ### Presupuesto de polling
 
-Con un endpoint y un ciclo de 30 días: cada minuto consume ~43.200 llamadas; cada 5 minutos ~8.640; cada 15 minutos ~2.880; cada 30 minutos ~1.440; cada hora ~720. Con 500 llamadas al mes, Free puede consultar un solo endpoint cada 2 horas (~360 llamadas en 30 días) y conservar margen para otros usos; una consulta por hora (~720) excede la cuota. Multiplica por endpoints, procesos y reintentos; usa caché o coordinación según el caso.
+Con un endpoint y un ciclo de 30 días: cada minuto consume ~43.200 llamadas; cada 5 minutos ~8.640; cada 15 minutos ~2.880; cada 30 minutos ~1.440; cada hora ~720. Con la cuota vigente de 800, una consulta por hora (~720) deja poco margen. La pauta de una consulta cada 2 horas (~360) conserva margen también para la cuota de 500 prevista desde el 1 de diciembre de 2026. Multiplica por endpoints, procesos y reintentos; usa caché o coordinación según el caso.
 
 ## Headers
 

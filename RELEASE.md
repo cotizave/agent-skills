@@ -1,4 +1,10 @@
-# Release 0.3.6
+# Release 0.3.7
+
+`v0.3.7` corrects the Free quota timeline: 800 requests per month remains current, while a reduction to 500 is planned for December 1, 2026. The current synthetic 429 fixture again reports 800. The two-hour polling recommendation remains safe under the planned lower quota; integrations should read the effective account limit after rollout.
+
+The deterministic package is `cotizave-plugin-0.3.7.zip` (SHA-256 `1e6a307f6fcba267282d37164710295dd7e45e501eaec3bfacf9a5159f75aa58`). Local validation and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.6
 
 `v0.3.6` corrects the V1 bulk validation claim in the V1→V2 migration reference. Current V1 bulk rejects an incompatible EUR-base market or reverse one-way remittance with `400 invalid_format`; V2 validates `via` against each pair. It also clarifies that the V2 format rule applies to authenticated routes and that cursor/limit belong to raw history mode.
 

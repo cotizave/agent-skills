@@ -4,9 +4,9 @@
     "Content-Type": "application/json",
     "Retry-After": "1641600",
     "X-RateLimit-Scope": "monthly",
-    "X-RateLimit-Limit": "500",
+    "X-RateLimit-Limit": "800",
     "X-RateLimit-Remaining": "0",
     "X-RateLimit-Reset": "2026-11-03T00:00:00Z"
   },
-  "body": { "code": "rate_limit_exceeded", "message": "Monthly limit of 500 requests exceeded. Resets on 2026-11-03T00:00:00Z.", "details": { "retry_after": 1641600, "resets_at": "2026-11-03T00:00:00Z", "kind": "monthly" } }
+  "body": { "code": "rate_limit_exceeded", "message": "Monthly limit of 800 requests exceeded. Resets on 2026-11-03T00:00:00Z.", "details": { "retry_after": 1641600, "resets_at": "2026-11-03T00:00:00Z", "kind": "monthly" } }
 }

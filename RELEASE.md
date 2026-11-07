@@ -1,4 +1,10 @@
-# Release 0.3.9
+# Release 0.3.10
+
+`v0.3.10` clears the two findings the Claude plugin directory reported when validating `plugins/cotizave` at `ab26b40`: a policy hold on `assets/README.md` (a Markdown file under `assets/` that the scanner treated as a possibly runnable asset) and a warning on `references/integration-patterns.md` for a sentence that named shell execution commands. The asset note moved into the plugin README and the sentence was reworded. No skill behavior changes.
+
+The deterministic package is `cotizave-plugin-0.3.10.zip` (SHA-256 `a75c8d3017468cc86f1a84975d8e7248b73c9bdbd37dac68de097c0a4e3addc1`); it contains the plugin folder only. Local static validation, Node tests, installable-copy smoke test and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.9
 
 `v0.3.9` moves the plugin into `plugins/cotizave/` so the Claude plugin directory reads only documentation, data and images; the directory refused `v0.3.8` because the repository root also holds maintainer scripts, which unverified organizations may not ship. Claude and Codex marketplace entries point to the new folder, `skills.sh.json` declares the skill path for the skills CLI, and the local validator now enforces the directory's file policy. The directory submission must be recreated with plugin path `plugins/cotizave`, because the portal does not allow changing a submission's folder.
 

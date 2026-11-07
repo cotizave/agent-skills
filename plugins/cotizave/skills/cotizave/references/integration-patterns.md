@@ -144,8 +144,8 @@ a promise of a total response in 10 seconds.
 
 - Load only the key the client needs from the application's trusted configuration
   (its secret manager or deployment settings), trim surrounding whitespace and reject
-  characters outside `[A-Za-z0-9_]`. Do not execute configuration files with `source`
-  or `eval`, and do not dump the whole configuration to debug.
+  characters outside `[A-Za-z0-9_]`. Read configuration files as data, never as
+  shell scripts, and do not dump the whole configuration to debug.
 - The service key is not distributed to browsers, mobile or desktop apps. Use your own
   endpoint; limit routes, parameters, sizes and rate. Apply authentication and
   authorization according to the data and users it serves, not only rate limiting.

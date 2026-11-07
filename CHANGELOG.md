@@ -6,6 +6,13 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.10] - 2026-11-07
+
+### Changed
+
+- Remove `assets/README.md` from the plugin folder; the directory's scanner held a Markdown file under `assets/` as a possible runnable asset. The provenance note for the icon and logo now lives in the plugin README.
+- Reword the configuration-handling rule in the integration patterns so it no longer names shell execution commands, which the directory flagged as a download-and-run pattern.
+
 ## [0.3.9] - 2026-11-07
 
 ### Changed

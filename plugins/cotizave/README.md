@@ -7,6 +7,7 @@ Official Agent Skill that guides AI coding agents to integrate the [Cotizave](ht
 - `skills/cotizave/SKILL.md`: the skill, with a short workflow and a table that tells the agent which reference to read for each task.
 - `skills/cotizave/references/`: the V2 contract, rate discovery, errors and quotas, caching and freshness, integration patterns for any language, and the V1 to V2 migration procedure.
 - `skills/cotizave/assets/fixtures/`: synthetic HTTP responses for local tests. They are illustrative and never replace the live API.
+- `assets/`: the Cotizave icon and logo used by the directory listing, taken from Cotizave's public site (`global.cotizave.com`).
 
 ## Install
 

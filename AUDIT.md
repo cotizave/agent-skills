@@ -2,7 +2,7 @@
 
 ## Follow-up — 2026-10-31
 
-The documentation source now lists the maintainer-selected 29 published V2 countries
+The documentation source now lists the maintainer-selected 22 published V2 countries
 and 137 registered IDs, with matching Spanish and English plan matrices. The plan
 summary mismatch recorded below was corrected in that source. Publication of the
 updated documentation and production availability remain unverified. The historical

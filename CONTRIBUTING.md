@@ -4,10 +4,10 @@
 
 1. Confirma el cambio contra la documentación pública (https://cotizave.com/docs) o el
    equipo de Cotizave. La skill solo describe comportamiento público.
-2. Actualiza la referencia afectada en `skills/cotizave/references/` y, si cambia una
+2. Actualiza la referencia afectada en `plugins/cotizave/skills/cotizave/references/` y, si cambia una
    decisión ("qué endpoint uso", una trampa frecuente), `SKILL.md`.
 3. Si cambia la forma de una respuesta o de un error, actualiza el fixture en
-   `skills/cotizave/assets/fixtures/`. Registra fuente y fecha del contrato; no
+   `plugins/cotizave/skills/cotizave/assets/fixtures/`. Registra fuente y fecha del contrato; no
    declares validación del backend sin evidencia ni uses producción para los tests.
 
 ## Validar y probar

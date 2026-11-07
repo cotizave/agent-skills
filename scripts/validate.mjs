@@ -19,6 +19,10 @@ const scanAt = process.argv.indexOf("--scan");
 const SCAN = scanAt === -1 ? [] : process.argv.slice(scanAt + 1);
 const SKIP_DIRS = new Set([".git", "node_modules", "target", "bin", "obj", "__pycache__", "vendor"]);
 const TEXT_EXT = /\.(md|json|ya?ml|ts|mjs|js|py|go|mod|java|php|cs|csproj|sh|txt|xml|toml)$|^(LICENSE|\.gitignore)$/;
+// Carpeta del plugin: lo único que instala el directorio de Claude y lo que empaqueta package-release.py.
+const PLUGIN = "plugins/cotizave";
+// Política del directorio para organizaciones no verificadas: solo documentación, datos e imágenes.
+const PLUGIN_ALLOWED = /\.(md|txt|json|ya?ml|png|jpe?g|gif|webp|ico)$|^(LICENSE|README|\.gitignore)$/;
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -61,8 +65,9 @@ if (SCAN.length) {
 // El parser rechaza el YAML fuera del subconjunto documentado en CONTRIBUTING.md.
 const SEMVER = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-[0-9A-Za-z.-]+)?(?:\+[0-9A-Za-z.-]+)?$/;
 
-const skillFiles = files.filter((f) => /^skills\/[^/]+\/SKILL\.md$/.test(f));
-if (skillFiles.length === 0) fail("skills/", "no hay ninguna SKILL.md");
+const SKILL_RE = new RegExp(`^${PLUGIN}/skills/[^/]+/SKILL\\.md$`);
+const skillFiles = files.filter((f) => SKILL_RE.test(f));
+if (skillFiles.length === 0) fail(`${PLUGIN}/skills/`, "no hay ninguna SKILL.md");
 const skillVersions = new Map();
 for (const f of skillFiles) {
   const text = read(f);
@@ -128,21 +133,22 @@ if (releaseVersion) {
 }
 
 // Cross-platform manifests and release assets.
-for (const f of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "plugin.json", "ge" + "mini-extension.json"]) {
+const CLAUDE_MANIFEST = `${PLUGIN}/.claude-plugin/plugin.json`;
+const CODEX_MANIFEST = `${PLUGIN}/.codex-plugin/plugin.json`;
+for (const f of [CLAUDE_MANIFEST, CODEX_MANIFEST, "plugin.json", "ge" + "mini-extension.json"]) {
   if (!existsSync(join(ROOT, f))) { fail(f, "missing manifest"); continue; }
   const m = parseManifest(f);
   if (!m) continue;
   if (m.version !== releaseVersion) fail(f, `version ${m.version} ≠ ${releaseVersion}`);
   if (m.name !== "cotizave") fail(f, "name must be cotizave");
-  if (f === "plugin.json" || f === ".codex-plugin/plugin.json") {
-    if (m.skills !== "./skills" && m.skills !== "./skills/") fail(f, "skills must point to ./skills");
-  }
-  if (f === ".codex-plugin/plugin.json") {
+  if (f === "plugin.json" && m.skills !== `./${PLUGIN}/skills`) fail(f, `skills must point to ./${PLUGIN}/skills`);
+  if (f === CODEX_MANIFEST && m.skills !== "./skills" && m.skills !== "./skills/") fail(f, "skills must point to ./skills");
+  if (f === CODEX_MANIFEST) {
     const ui = m.interface;
     if (!ui || !ui.composerIcon || !ui.logo) fail(f, "missing composerIcon or logo");
     for (const field of ["composerIcon", "logo"]) {
       const value = ui?.[field];
-      if (typeof value !== "string" || !/^\.\/assets\/[A-Za-z0-9_-]+\.(png|svg)$/.test(value) || !existsSync(join(ROOT, value)))
+      if (typeof value !== "string" || !/^\.\/assets\/[A-Za-z0-9_-]+\.(png|svg)$/.test(value) || !existsSync(join(ROOT, PLUGIN, value)))
         fail(f, `${field} must point to an included image`);
     }
     for (const field of ["displayName", "shortDescription", "longDescription", "developerName", "category"]) {
@@ -154,15 +160,33 @@ for (const f of [".claude-plugin/plugin.json", ".codex-plugin/plugin.json", "plu
 function parseManifest(f) {
   try { return JSON.parse(read(f)); } catch (e) { fail(f, `invalid JSON: ${e.message}`); return null; }
 }
-const claudePlugin = existsSync(join(ROOT, ".claude-plugin/plugin.json")) ? parseManifest(".claude-plugin/plugin.json") : null;
-if (claudePlugin && releaseVersion && claudePlugin.version !== releaseVersion) fail(".claude-plugin/plugin.json", "version mismatch");
-for (const image of ["assets/cotizave-icon.png", "assets/cotizave-logo.png"]) {
+for (const image of [`${PLUGIN}/assets/cotizave-icon.png`, `${PLUGIN}/assets/cotizave-logo.png`]) {
   if (!existsSync(join(ROOT, image))) fail(image, "missing image");
   else {
     const b = readFileSync(join(ROOT, image));
     if (b.length > 5 * 1024 * 1024 || b.toString("hex", 0, 8) !== "89504e470d0a1a0a" || b.readUInt32BE(16) !== b.readUInt32BE(20) || b.readUInt32BE(16) < 48)
       fail(image, "must be a square PNG of at least 48 px and at most 5 MiB");
   }
+}
+
+// Requisitos del directorio de Claude sobre la carpeta del plugin (ver docs/plugins/pre-submission-checklist).
+for (const f of files.filter((f) => f.startsWith(`${PLUGIN}/`))) {
+  if (!PLUGIN_ALLOWED.test(basename(f))) fail(f, "tipo de archivo no permitido en la carpeta del plugin (política del directorio)");
+  const bytes = readFileSync(join(ROOT, f));
+  if (bytes.subarray(0, 2).toString() === "#!") fail(f, "un archivo del plugin no puede empezar por #!");
+  if (TEXT_EXT.test(basename(f)) && bytes.includes(0)) fail(f, "archivo de texto con bytes NUL");
+}
+const PLUGIN_README = `${PLUGIN}/README.md`;
+if (!existsSync(join(ROOT, PLUGIN_README))) fail(PLUGIN_README, "el directorio exige un README en la carpeta del plugin");
+else if (read(PLUGIN_README).replace(/```[\s\S]*?```/g, "").split(/\s+/).filter(Boolean).length < 40)
+  fail(PLUGIN_README, "el README del plugin necesita al menos 40 palabras fuera de bloques de código");
+if (!existsSync(join(ROOT, `${PLUGIN}/LICENSE`))) fail(`${PLUGIN}/LICENSE`, "el directorio exige LICENSE en la carpeta del plugin");
+const SKILLS_SH = "skills.sh.json";
+if (!existsSync(join(ROOT, SKILLS_SH))) fail(SKILLS_SH, "falta (rutas de skills para el skills CLI)");
+else {
+  const sh = parseManifest(SKILLS_SH);
+  if (!Array.isArray(sh?.paths) || sh.paths.length === 0) fail(SKILLS_SH, "`paths` debe ser un array no vacío");
+  for (const p of sh?.paths ?? []) if (typeof p !== "string" || !p.startsWith("./") || !existsSync(join(ROOT, p))) fail(SKILLS_SH, `ruta inválida o inexistente: ${p}`);
 }
 
 // ── 3. Links relativos y anclas ─────────────────────────────────────────────
@@ -188,7 +212,8 @@ for (const f of mdFiles) {
     if (/^(https?:|mailto:)/.test(target)) continue;
     const [path, anchor] = target.split("#");
     const abs = path ? resolve(ROOT, dirname(f), path) : join(ROOT, f);
-    if (relative(ROOT, abs).startsWith("..") || (f.startsWith("skills/") && !abs.startsWith(resolve(ROOT, f.split("/").slice(0, 2).join("/")) + sep))) {
+    const skillRoot = f.startsWith(`${PLUGIN}/skills/`) ? resolve(ROOT, f.split("/").slice(0, 4).join("/")) : null;
+    if (relative(ROOT, abs).startsWith("..") || (skillRoot && !abs.startsWith(skillRoot + sep))) {
       fail(f, "link fuera del paquete o repositorio"); continue;
     }
     if (!existsSync(abs)) {
@@ -212,7 +237,7 @@ if (existsSync(join(ROOT, "evals/evals.json"))) {
   const ev = parseJson("evals/evals.json");
   if (!ev || typeof ev !== "object" || Array.isArray(ev)) fail("evals/evals.json", "debe ser un objeto");
   else {
-    if (!skillFiles.some((f) => f === `skills/${ev.skill_name}/SKILL.md`)) fail("evals/evals.json", `skill_name desconocido: ${ev.skill_name}`);
+    if (!skillFiles.some((f) => f === `${PLUGIN}/skills/${ev.skill_name}/SKILL.md`)) fail("evals/evals.json", `skill_name desconocido: ${ev.skill_name}`);
     const ids = new Set();
     if (!Array.isArray(ev.evals) || ev.evals.length === 0) fail("evals/evals.json", "evals debe ser un array no vacío");
     for (const e of Array.isArray(ev.evals) ? ev.evals : []) {
@@ -231,7 +256,7 @@ if (existsSync(join(ROOT, "evals/trigger-evals.json"))) {
 }
 
 // Fixtures empaquetadas: envoltorio HTTP válido, sin afirmar correspondencia con producción.
-const fixtureFiles = files.filter(f => /^skills\/[^/]+\/assets\/fixtures\/.*\.json$/.test(f));
+const fixtureFiles = files.filter(f => new RegExp(`^${PLUGIN}/skills/[^/]+/assets/fixtures/.*\\.json$`).test(f));
 if (!fixtureFiles.length) fail("fixtures", "faltan fixtures instalables");
 for (const f of fixtureFiles) {
   const value = parseJson(f);

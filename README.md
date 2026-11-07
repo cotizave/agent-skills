@@ -14,13 +14,15 @@ npx skills add cotizave/agent-skills
 
 Then ask the agent: **“Use the Cotizave skill to integrate Colombia TRM into my Python backend.”** Name the country, currency pair and purpose when relevant. For an existing Venezuela V1 client, ask for migration explicitly if you want it.
 
-For an existing integration, ask: **“Use the Cotizave skill to migrate this project's V1 integration to V2 while preserving the responses my clients use.”** The agent should inspect the code, choose the matching V2 routes and IDs, adapt the project in its current language, and run local regression tests. It should identify any V1 operation with no identical V2 response and report account-specific access that local tests cannot verify. You do not need to prepare a route mapping or supply an API key in chat; see the [migration procedure](skills/cotizave/references/migration-v1-v2.md).
+For an existing integration, ask: **“Use the Cotizave skill to migrate this project's V1 integration to V2 while preserving the responses my clients use.”** The agent should inspect the code, choose the matching V2 routes and IDs, adapt the project in its current language, and run local regression tests. It should identify any V1 operation with no identical V2 response and report account-specific access that local tests cannot verify. You do not need to prepare a route mapping or supply an API key in chat; see the [migration procedure](plugins/cotizave/skills/cotizave/references/migration-v1-v2.md).
 
 `skills.sh` is a website, not a script you run or a place where maintainers upload a package. Its [Cotizave page](https://skills.sh/cotizave/agent-skills/cotizave) is already live. The command above uses the [skills CLI](https://github.com/vercel-labs/skills) to install files from this public GitHub repository. According to the [skills.sh FAQ](https://www.skills.sh/docs/faq), listings come from installs with that CLI; there is no separate submission step. The page does not imply approval by an agent vendor.
 
 For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested in an isolated project; the copy retained its references and fixtures. Use `npx skills list` to inspect installed skills, `npx skills check` to check for updates, and `npx skills remove cotizave` to uninstall a skills CLI copy. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for global installs and other agents.
 
-**Current distribution status:** [v0.3.2 GitHub Release](https://github.com/cotizave/agent-skills/releases/tag/v0.3.2) and skills.sh page live; Claude directory submission under security review; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+**Current distribution status:** [latest GitHub Release](https://github.com/cotizave/agent-skills/releases/latest) and skills.sh page live; Claude directory submission in progress with the plugin folder `plugins/cotizave`; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+
+The plugin itself lives in [`plugins/cotizave`](plugins/cotizave): manifests, the skill, brand assets, license and the plugin README. Everything else in this repository (validation scripts, evaluations, CI) is maintainer tooling and is not installed with the plugin.
 
 ## Other installation routes
 
@@ -58,7 +60,7 @@ Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotiza
 
 ### Manual fallback
 
-From a checkout of this repository, copy the *whole* `skills/cotizave` folder, including references and assets. For one project, copy to `.agents/skills/cotizave` (Codex and compatible agents) or `.claude/skills/cotizave` (Claude Code). For a user-wide Codex install, copy to `~/.agents/skills/cotizave`. Verify with `node scripts/smoke-install.mjs --codex` from this repository; it uses a temporary project and starts no model turn. Remove the installed folder to uninstall a manual copy.
+From a checkout of this repository, copy the *whole* `plugins/cotizave/skills/cotizave` folder, including references and assets. For one project, copy to `.agents/skills/cotizave` (Codex and compatible agents) or `.claude/skills/cotizave` (Claude Code). For a user-wide Codex install, copy to `~/.agents/skills/cotizave`. Verify with `node scripts/smoke-install.mjs --codex` from this repository; it uses a temporary project and starts no model turn. Remove the installed folder to uninstall a manual copy.
 
 The [Agent Skills specification](https://agentskills.io/specification) defines the common format. Repository and CLI installation are distinct from approval in any platform's official directory.
 
@@ -66,7 +68,7 @@ The [Agent Skills specification](https://agentskills.io/specification) defines t
 
 Name Cotizave as the chosen provider. For a new V2 project, specify country, currency pair and purpose (official reference, market display, card pricing, etc.). For an existing V1 project, request migration explicitly if desired. Generic FX questions and integrations with another chosen provider do not activate this skill.
 
-Store `COTIZAVE_API_KEY` only on a trusted server or secret manager. Never put it in browser code, URLs, logs or chat. Tests use synthetic fixtures and local mocks. [V2 route reference](skills/cotizave/references/api-v2.md), [rate discovery](skills/cotizave/references/rate-discovery.md), [migration from V1](skills/cotizave/references/migration-v1-v2.md).
+Store `COTIZAVE_API_KEY` only on a trusted server or secret manager. Never put it in browser code, URLs, logs or chat. Tests use synthetic fixtures and local mocks. [V2 route reference](plugins/cotizave/skills/cotizave/references/api-v2.md), [rate discovery](plugins/cotizave/skills/cotizave/references/rate-discovery.md), [migration from V1](plugins/cotizave/skills/cotizave/references/migration-v1-v2.md).
 
 ### Data handling
 

@@ -10,6 +10,6 @@ useDefault = true
 description = "Hashes SHA-256 en manifiestos de evidencia"
 paths = [
   '''evals/results/[^/]+/skill-final-sha256\.json$''',
-  '''skills/cotizave/assets/contract-review\.json$''',
-  '''skills/cotizave/assets/backend-contract-review\.json$''',
+  '''plugins/cotizave/skills/cotizave/assets/contract-review\.json$''',
+  '''plugins/cotizave/skills/cotizave/assets/backend-contract-review\.json$''',
 ]

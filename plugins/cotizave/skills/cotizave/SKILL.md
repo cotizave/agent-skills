@@ -13,7 +13,7 @@ description: >-
 license: MIT
 metadata:
   author: cotizave
-  version: "0.3.8"
+  version: "0.3.9"
 ---
 
 # Cotizave integration

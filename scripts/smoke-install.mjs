@@ -64,7 +64,7 @@ async function discover(cwd, expectedPath) {
 }
 
 try {
-  const source = join(root, 'skills/cotizave');
+  const source = join(root, 'plugins/cotizave/skills/cotizave');
   const paths = files(source);
   for (const target of ['.agents/skills', '.claude/skills']) {
     const installed = join(temp, target, 'cotizave');

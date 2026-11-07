@@ -1,4 +1,10 @@
-# Release 0.3.8
+# Release 0.3.9
+
+`v0.3.9` moves the plugin into `plugins/cotizave/` so the Claude plugin directory reads only documentation, data and images; the directory refused `v0.3.8` because the repository root also holds maintainer scripts, which unverified organizations may not ship. Claude and Codex marketplace entries point to the new folder, `skills.sh.json` declares the skill path for the skills CLI, and the local validator now enforces the directory's file policy. The directory submission must be recreated with plugin path `plugins/cotizave`, because the portal does not allow changing a submission's folder.
+
+The deterministic package is `cotizave-plugin-0.3.9.zip` (SHA-256 `336ebf4fbbff678f875e6f8a5e399bb6b6ee1916b2627797007cb2d07d9f2ae7`); it now contains the plugin folder only. Local static validation, Node tests, installable-copy smoke test and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.8
 
 `v0.3.8` makes V2 the entry point for every published country and keeps V1 only in the migration workflow. It unifies the skill content in English, rewrites the description with concrete activation contexts, aligns the integration patterns with the V2 contract, and describes API-key handling as supplied by the integrating backend's own configuration, following the plugin directory's pre-submission checklist. This patch is intended to clear the directory-policy hold recorded on v0.3.7.
 

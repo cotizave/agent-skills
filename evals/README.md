@@ -2,7 +2,7 @@
 
 Comprueba si un agente **con** la skill integra Cotizave mejor que **sin** ella, en
 cualquier lenguaje. Lo que se evalúa es el comportamiento del agente, que no es
-determinista; los ejemplos de contrato están en `skills/cotizave/assets/fixtures/`.
+determinista; los ejemplos de contrato están en `plugins/cotizave/skills/cotizave/assets/fixtures/`.
 La matriz activa evalúa integraciones V2 y migraciones solicitadas de V1 a V2. Los resultados antiguos de V1 se conservan únicamente como historial.
 
 | Archivo | Qué contiene |
@@ -109,7 +109,7 @@ Defectos que aparecieron **con** la skill:
 The V2 cases in `evals.json` and activation cases in `trigger-evals.json` are prompts and grading criteria, not recorded model results. Run the same frozen project fixtures and prompts with no skill, the V1-era skill at tag/commit 0.2.0, and this skill. Record agent name, version, settings, skill revision, outputs, compilation/tests, contract accuracy, credential handling, capability selection and false activations. Do not compare scores without preserving these artifacts. Local static validation only checks scenario shape.
 
 For the V1 to V2 migration scenarios, use the paired synthetic VE snapshots in
-`skills/cotizave/assets/fixtures/` and the partial-bulk response. Include an
+`plugins/cotizave/skills/cotizave/assets/fixtures/` and the partial-bulk response. Include an
 existing V1 client with a stable application-facing result and at least one old
 persisted invoice. Grade the generated code by running its project tests against
 both old and new records, absent price fields, a per-item bulk failure and a

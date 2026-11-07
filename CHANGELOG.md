@@ -6,6 +6,14 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.9] - 2026-11-07
+
+### Changed
+
+- Move the plugin into `plugins/cotizave/` (manifests, skill, brand assets, license and a plugin README) so the Claude plugin directory reads only documentation, data and images; maintainer scripts, evaluations and CI stay at the repository root. Marketplace entries for Claude and Codex point to the new folder, `skills.sh.json` declares the skill path for the skills CLI, and the release ZIP now packages the plugin folder only.
+- Validate the directory's file policy locally: only Markdown, text, JSON, YAML and image files inside the plugin folder, no shebang lines, a README of at least 40 words and a LICENSE.
+- Unify the manifest homepage as `https://docs.cotizave.com` and correct the published country count in the audit notes to 22.
+
 ## [0.3.8] - 2026-11-07
 
 ### Changed

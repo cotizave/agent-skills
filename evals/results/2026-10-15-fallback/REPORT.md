@@ -54,4 +54,4 @@ No se conservó un snapshot de la primera lectura de la skill; el
 El identificador exacto del modelo y métricas de consumo no están disponibles.
 Las fixtures se copiaron al comienzo y se conservaron. No hubo llamadas a la API
 de Cotizave ni uso de credenciales. La documentación pública se consultó por separado
-para la [revisión del contrato](../../../skills/cotizave/references/contract-evidence.md).
+para la [revisión del contrato](../../../plugins/cotizave/skills/cotizave/references/contract-evidence.md).

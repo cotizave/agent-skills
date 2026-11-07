@@ -1,4 +1,10 @@
-# Release 0.3.7
+# Release 0.3.8
+
+`v0.3.8` makes V2 the entry point for every published country and keeps V1 only in the migration workflow. It unifies the skill content in English, rewrites the description with concrete activation contexts, aligns the integration patterns with the V2 contract, and describes API-key handling as supplied by the integrating backend's own configuration, following the plugin directory's pre-submission checklist. This patch is intended to clear the directory-policy hold recorded on v0.3.7.
+
+The deterministic package is `cotizave-plugin-0.3.8.zip` (SHA-256 `3ee3e21e2f578aab2ca11189e7037f4687344aa21aae26059ad1d5b9d53a5ce0`). Local static validation, Node tests, installable-copy smoke test and ZIP/CRC verification passed. The GitHub Release includes the ZIP and `SHA256SUMS`.
+
+## Previous release: 0.3.7
 
 `v0.3.7` corrects the Free quota timeline: 800 requests per month remains current, while a reduction to 500 is planned for December 1, 2026. The current synthetic 429 fixture again reports 800. The two-hour polling recommendation remains safe under the planned lower quota; integrations should read the effective account limit after rollout.
 

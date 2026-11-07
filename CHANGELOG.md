@@ -6,6 +6,17 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.8] - 2026-11-07
+
+### Changed
+
+- Make V2 the entry point for every published country, mark V1 as deprecated, and add the official all-country rates, historical board, statistics, moving averages and historical-limits routes to the skill's compact contract.
+- Keep V1 guidance only in the migration workflow; rewrite shared error and freshness references for V2 and separate legacy fixtures from V2 examples.
+- Remove V1-only integration expectations from the active evaluation matrix; keep V1 scenarios only when the task is migration.
+- Describe API-key handling as supplied by the integrating backend's own configuration; remove wording that read a credential from the user's environment, per the plugin directory's pre-submission checklist.
+- Unify the skill content in English: translate the V1 endpoint snapshot, integration patterns, contract evidence and fixtures guide; rename the remaining Spanish section headings and their anchors; rewrite the skill description with concrete activation contexts (BCV, parallel dollar, Binance P2P, TRM).
+- Align the integration patterns with V2: defer the base currency to the returned `base` or the rate's documentation, use the current 429 vocabulary in the test checklist, and fold the duplicated V2 fixture notes into the fixtures table. Point the V1 `market` field to the migration ID table.
+
 ## [0.3.7] - 2026-11-01
 
 ### Fixed

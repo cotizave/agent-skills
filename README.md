@@ -1,6 +1,6 @@
 # Cotizave Agent Skills
 
-Official [Agent Skill](https://agentskills.io) for integrating the [Cotizave API](https://docs.cotizave.com) in coding projects. It guides an agent through V2 multi-country rate discovery, conversion, history, plan permissions and secure HTTP behavior. Existing Venezuela V1 clients remain supported.
+Official [Agent Skill](https://agentskills.io) for integrating the [Cotizave API](https://docs.cotizave.com) in coding projects. It guides an agent through V2 multi-country rate discovery, conversion, history, statistics, plan permissions and secure HTTP behavior. Deprecated V1 integrations remain documented for migration.
 
 For example: “Integrate Colombia TRM from Cotizave V2 into my Python backend.” The agent should discover the country's canonical rate ID, use a server-side `X-API-Key`, account for optional Free-plan fields, and keep the source and effective date with the applied rate.
 
@@ -66,7 +66,7 @@ The [Agent Skills specification](https://agentskills.io/specification) defines t
 
 Name Cotizave as the chosen provider. For a new V2 project, specify country, currency pair and purpose (official reference, market display, card pricing, etc.). For an existing V1 project, request migration explicitly if desired. Generic FX questions and integrations with another chosen provider do not activate this skill.
 
-Store `COTIZAVE_API_KEY` only on a trusted server or secret manager. Never put it in browser code, URLs, logs or chat. Tests use synthetic fixtures and local mocks. [V2 route reference](skills/cotizave/references/api-v2.md), [V1 route reference](skills/cotizave/references/endpoints.md), [rate discovery](skills/cotizave/references/rate-discovery.md), [migration](skills/cotizave/references/migration-v1-v2.md).
+Store `COTIZAVE_API_KEY` only on a trusted server or secret manager. Never put it in browser code, URLs, logs or chat. Tests use synthetic fixtures and local mocks. [V2 route reference](skills/cotizave/references/api-v2.md), [rate discovery](skills/cotizave/references/rate-discovery.md), [migration from V1](skills/cotizave/references/migration-v1-v2.md).
 
 ### Data handling
 

@@ -3,6 +3,7 @@
 Comprueba si un agente **con** la skill integra Cotizave mejor que **sin** ella, en
 cualquier lenguaje. Lo que se evalúa es el comportamiento del agente, que no es
 determinista; los ejemplos de contrato están en `skills/cotizave/assets/fixtures/`.
+La matriz activa evalúa integraciones V2 y migraciones solicitadas de V1 a V2. Los resultados antiguos de V1 se conservan únicamente como historial.
 
 | Archivo | Qué contiene |
 |---|---|

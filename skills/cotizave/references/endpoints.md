@@ -1,26 +1,28 @@
-# Referencia de endpoints
+# Endpoint reference
 
-Base URL `https://api.cotizave.com`. Todos requieren `X-API-Key: $COTIZAVE_API_KEY`.
-Las respuestas de ejemplo están recortadas; los números son ilustrativos.
-Consulta la [evidencia del contrato](contract-evidence.md) para el alcance de la
-revisión pública y sus diferencias con ejemplos heredados.
+> **For V1 → V2 migration only.** V1 is deprecated. This snapshot exists to identify the contract of an old client while following the [migration guide](migration-v1-v2.md). Every new integration uses [V2](api-v2.md); do not implement V1 endpoints from this reference.
 
-Reglas comunes:
+Base URL `https://api.cotizave.com`. Every route requires the `X-API-Key` header with the key that the application's backend obtains from its own configuration or secret manager.
+Example responses are trimmed; the numbers are illustrative.
+See the [contract evidence](contract-evidence.md) for the scope of the public
+review and its differences from legacy examples.
 
-- `/convert`, `/spread`, `/route` y `/history` rechazan parámetros de query
-  desconocidos con `400 unknown_parameter` (el `field` nombra el parámetro y el
-  `message` lista los aceptados). El resto los ignora en silencio: no mandes
-  parámetros que no estén en esta referencia.
-- `?format=csv|xml` (o header `Accept: text/csv` / `application/xml`) funciona en
-  todos estos endpoints desde el plan Growth. Ver
-  [errors-and-limits.md](errors-and-limits.md#formatos-csv-y-xml).
-- Los valores son números JSON. Conserva precisión y aplica el redondeo del negocio
-  al fijar importes; el formato visual es independiente. Ver
-  [dinero y persistencia](integration-patterns.md#dinero-y-persistencia).
-- Todas las tasas expresan **VES por 1 unidad de la moneda base** (USD, salvo
-  `eur_reference`, que es EUR).
+Common rules:
 
-Índice:
+- `/convert`, `/spread`, `/route` and `/history` reject unknown query parameters
+  with `400 unknown_parameter` (the `field` names the parameter and the
+  `message` lists the accepted ones). The rest ignore them silently: do not send
+  parameters that are not in this reference.
+- `?format=csv|xml` (or the `Accept: text/csv` / `application/xml` header) works on
+  all of these endpoints from the Growth plan up. See
+  [errors-and-limits.md](errors-and-limits.md#csv-and-xml-formats).
+- Values are JSON numbers. Preserve precision and apply the business rounding
+  when fixing amounts; display formatting is independent. See
+  [money and persistence](integration-patterns.md#money-and-persistence).
+- Every rate expresses **VES per 1 unit of the base currency** (USD, except
+  `eur_reference`, which is EUR).
+
+Contents:
 [/v1/fx/rates](#get-v1fxrates) ·
 [/v1/fx/rates/:market](#get-v1fxratesmarket) ·
 [/v1/fx/convert](#get-v1fxconvert) ·
@@ -36,8 +38,8 @@ Reglas comunes:
 
 ## GET /v1/fx/rates
 
-Snapshot completo: todas las tasas que tu plan incluye + Cotizave Index. Es el
-endpoint principal. Sin parámetros (salvo `format`).
+Full snapshot: every rate your plan includes + Cotizave Index. It is the main
+endpoint. No parameters (except `format`).
 
 ```json
 {
@@ -64,50 +66,50 @@ endpoint principal. Sin parámetros (salvo `format`).
 }
 ```
 
-Campos de cada `rates[]`:
+Fields of each `rates[]` element:
 
-| Campo | Notas |
+| Field | Notes |
 |---|---|
-| `market` | Identificador (ver la tabla de markets en SKILL.md). |
-| `type` | `reference`, `parallel`, `p2p`; los markets de pago también pueden ser `remittance`, `cash`, `exchange_house`, entre otros. Trata valores desconocidos sin romper. |
-| `base` | `USD` o `EUR`. Puede faltar: si falta, asume USD salvo en `eur_reference`. |
-| `ask` / `bid` | Solo en los markets que publican compra y venta (paralelo, P2P). Omitidos en `reference`. |
-| `mid` | Siempre presente. Usa este. |
-| `updated_at` | ISO 8601 de actualización. No exijas una hora fija en BCV ni lo confundas con la descarga local; usa `effective_date` para fecha valor. |
-| `effective_date` | `YYYY-MM-DD`, solo en `reference`/`eur_reference`. Fecha valor. |
-| `stale_after_sec` | Opcional. Umbral de frescura del market, en segundos; si viene, manda sobre cualquier umbral por defecto. |
+| `market` | Identifier (see the [Venezuela market IDs](migration-v1-v2.md#venezuela-market-ids) table for the V2 equivalents). |
+| `type` | `reference`, `parallel`, `p2p`; payment markets can also be `remittance`, `cash`, `exchange_house`, among others. Handle unknown values without breaking. |
+| `base` | `USD` or `EUR`. May be missing: if it is, assume USD except for `eur_reference`. |
+| `ask` / `bid` | Only on the markets that publish buy and sell (parallel, P2P). Omitted on `reference`. |
+| `mid` | Always present. Use this one. |
+| `updated_at` | ISO 8601 update timestamp. Do not require a fixed time for BCV and do not confuse it with the local download time; use `effective_date` for the value date. |
+| `effective_date` | `YYYY-MM-DD`, only on `reference`/`eur_reference`. Value date. |
+| `stale_after_sec` | Optional. Freshness threshold of the market, in seconds; if present, it overrides any default threshold. |
 
-- El orden de `rates[]` no está garantizado: busca por `market`.
-- Los markets fuera de tu plan se omiten en silencio (aquí no hay 402).
-- Un P2P sin cotización en ese momento puede no aparecer, y pueden aparecer markets o
-  `type` nuevos: no valides contra una lista cerrada.
+- The order of `rates[]` is not guaranteed: look up by `market`.
+- Markets outside your plan are omitted silently (there is no 402 here).
+- A P2P with no quote at that moment may not appear, and new markets or
+  `type` values may appear: do not validate against a closed list.
 
 ## GET /v1/fx/rates/:market
 
-Una sola tasa. Mismo objeto que un elemento de `rates[]`. Sin parámetros de query.
+A single rate. Same object as one element of `rates[]`. No query parameters.
 
 ```json
 { "market": "reference", "type": "reference", "base": "USD", "mid": 877.9023,
   "updated_at": "2026-10-14T04:00:00Z", "effective_date": "2026-10-14" }
 ```
 
-Errores: `404 resource_not_found` (market inexistente o ausente del snapshot),
-`402 feature_not_in_plan` (market gateado: `details.feature` = `remittance`,
-`extended_markets` o `cash_markets`, y `details.market`).
+Errors: `404 resource_not_found` (nonexistent market or absent from the snapshot),
+`402 feature_not_in_plan` (gated market: `details.feature` = `remittance`,
+`extended_markets` or `cash_markets`, plus `details.market`).
 
-Regla práctica de los docs: 1–2 tasas → este endpoint; más → `/v1/fx/rates`.
+Rule of thumb from the docs: 1–2 rates → this endpoint; more → `/v1/fx/rates`.
 
 ## GET /v1/fx/convert
 
-Convierte un monto. Todos los planes.
+Converts an amount. All plans.
 
-| Param | Req. | Valores |
+| Param | Req. | Values |
 |---|---|---|
-| `from` | sí | `USD`, `EUR`, `VES` |
-| `to` | sí | `USD`, `EUR`, `VES` (≠ `from`; uno de los dos **debe** ser `VES`) |
-| `amount` | sí | número > 0 y ≤ 1e12 |
-| `via` | no | cualquier market del snapshot. **Default: `reference` (BCV) para USD, `eur_reference` para EUR** |
-| `market` | no | alias de `via` (si vienen ambos, gana `via`) |
+| `from` | yes | `USD`, `EUR`, `VES` |
+| `to` | yes | `USD`, `EUR`, `VES` (≠ `from`; one of the two **must** be `VES`) |
+| `amount` | yes | number > 0 and ≤ 1e12 |
+| `via` | no | any market in the snapshot. **Default: `reference` (BCV) for USD, `eur_reference` for EUR** |
+| `market` | no | alias of `via` (if both are sent, `via` wins) |
 
 ```json
 {
@@ -123,32 +125,32 @@ Convierte un monto. Todos los planes.
 }
 ```
 
-- `to.amount = amount × rate` si vas hacia VES; `amount / rate` si sales de VES.
-- `effective_date` solo con `reference`/`eur_reference`: archívala si facturas.
-- `staleness_sec` = edad en segundos; `stale` = superó el umbral de ese market.
-- `400 invalid_format` con `field: "via"` si el market cotiza en otra moneda
-  (p. ej. `eur_reference` con `from=USD`) o si pides VES→USD por un market de remesa
+- `to.amount = amount × rate` when converting into VES; `amount / rate` when converting out of VES.
+- `effective_date` only with `reference`/`eur_reference`: archive it if you invoice.
+- `staleness_sec` = age in seconds; `stale` = it exceeded that market's threshold.
+- `400 invalid_format` with `field: "via"` if the market quotes in another currency
+  (e.g. `eur_reference` with `from=USD`) or if you request VES→USD through a remittance market
   (`paypal`, `zelle`, `western_union`).
-- Otros errores: `400 missing_field` (falta `from` o `to`), `400 invalid_format`
-  (`amount` no numérico, ≤ 0 o > 1e12; monedas no soportadas o iguales),
-  `402 feature_not_in_plan` (`via` gateado), `404 resource_not_found` (`via` inexistente).
-- Si conviertes muchos montos por minuto, trae `/v1/fx/rates` una vez y multiplica tú.
+- Other errors: `400 missing_field` (`from` or `to` missing), `400 invalid_format`
+  (`amount` not numeric, ≤ 0 or > 1e12; unsupported or identical currencies),
+  `402 feature_not_in_plan` (gated `via`), `404 resource_not_found` (nonexistent `via`).
+- If you convert many amounts per minute, fetch `/v1/fx/rates` once and multiply yourself.
 
 ## POST /v1/fx/bulk/convert
 
-Hasta 50 montos con **una** tasa, 1 unidad de cuota. **Solo plan Pro o superior**
-(`402 feature_not_in_plan`, `details.feature: "bulk_convert"` en los demás). Límite
-adicional de 300 llamadas por hora: excederlo → `429 rate_limit_exceeded` **sin**
-`X-RateLimit-Scope` y con `Retry-After: 3600` (no reintentes antes).
+Up to 50 amounts with **one** rate, 1 quota unit. **Pro plan or higher only**
+(`402 feature_not_in_plan`, `details.feature: "bulk_convert"` on the others). Additional
+limit of 300 calls per hour: exceeding it → `429 rate_limit_exceeded` **without**
+`X-RateLimit-Scope` and with `Retry-After: 3600` (do not retry before then).
 
 Body (JSON):
 
-| Campo | Req. | Notas |
+| Field | Req. | Notes |
 |---|---|---|
-| `from` | sí | `USD` o `VES` |
-| `to` | sí | `VES` o `USD`, distinto de `from` |
-| `amounts` | sí | `number[]`, de 1 a 50 elementos, cada uno > 0 y ≤ 1e12 |
-| `market` | no | default `reference`. Debe cotizar en USD; para VES→USD debe admitir ambos sentidos. Una base EUR o una remesa en sentido inverso devuelve `400 invalid_format` (`field: "market"`). |
+| `from` | yes | `USD` or `VES` |
+| `to` | yes | `VES` or `USD`, different from `from` |
+| `amounts` | yes | `number[]`, 1 to 50 elements, each > 0 and ≤ 1e12 |
+| `market` | no | default `reference`. Must quote in USD; for VES→USD it must support both directions. An EUR base or a remittance in the reverse direction returns `400 invalid_format` (`field: "market"`). |
 
 ```json
 {
@@ -163,24 +165,24 @@ Body (JSON):
 }
 ```
 
-`results[i]` corresponde a `amounts[i]`. Headers: `X-RateLimit-Cost: 1`,
-`X-Bulk-Operations: <n>`, `X-Bulk-RateLimit-Limit` y `X-Bulk-RateLimit-Remaining`.
-Errores: más de 50 montos → `400 invalid_format` (`field: "amounts"`,
-`details: {max, got}`); lista vacía → `400 missing_field`; un monto ≤ 0 o > 1e12 →
-`400 invalid_format`; JSON inválido o `market` incompatible → `400 invalid_format`; `market` gateado → `402`;
-market sin cotización válida → `503`. **Los campos desconocidos del body se ignoran en
-silencio**: un `via` se descarta y se usa `reference`; `items` sin `amounts` → `400
-missing_field`. No existe `items` ni `via` en este endpoint: si ves ejemplos así, están
-desactualizados.
+`results[i]` corresponds to `amounts[i]`. Headers: `X-RateLimit-Cost: 1`,
+`X-Bulk-Operations: <n>`, `X-Bulk-RateLimit-Limit` and `X-Bulk-RateLimit-Remaining`.
+Errors: more than 50 amounts → `400 invalid_format` (`field: "amounts"`,
+`details: {max, got}`); empty list → `400 missing_field`; an amount ≤ 0 or > 1e12 →
+`400 invalid_format`; invalid JSON or incompatible `market` → `400 invalid_format`; gated `market` → `402`;
+market without a valid quote → `503`. **Unknown body fields are ignored
+silently**: a `via` is discarded and `reference` is used; `items` without `amounts` → `400
+missing_field`. Neither `items` nor `via` exists on this endpoint: if you see examples like that, they are
+outdated.
 
 ## GET /v1/fx/spread
 
-Brecha entre BCV (`reference`) y otro market. Growth o superior.
+Gap between BCV (`reference`) and another market. Growth or higher.
 
-| Param | Default | Valores |
+| Param | Default | Values |
 |---|---|---|
-| `against` | `parallel` | `parallel`, cualquier P2P (`binance`, `bybit`, …) u otro market de tu plan; no `reference` |
-| `base` | `USD` | solo `USD` |
+| `against` | `parallel` | `parallel`, any P2P (`binance`, `bybit`, …) or another market in your plan; not `reference` |
+| `base` | `USD` | `USD` only |
 
 ```json
 {
@@ -191,16 +193,16 @@ Brecha entre BCV (`reference`) y otro market. Growth o superior.
 }
 ```
 
-`direction`: `higher` | `lower` | `equal`. Errores: `400 invalid_against` (market
-inexistente, `reference`, con base EUR **o ausente del snapshot en ese momento**, p. ej.
-un P2P que no está cotizando), `400 invalid_base`, `402 feature_not_in_plan` (market
-gateado), `422 reference_unavailable` / `422 compared_unavailable` (la tasa está pero
-sin un valor válido).
+`direction`: `higher` | `lower` | `equal`. Errors: `400 invalid_against` (nonexistent
+market, `reference`, EUR-based **or absent from the snapshot at that moment**, e.g.
+a P2P that is not quoting), `400 invalid_base`, `402 feature_not_in_plan` (gated
+market), `422 reference_unavailable` / `422 compared_unavailable` (the rate is present but
+without a valid value).
 
 ## GET /v1/fx/index
 
-Cotizave Index: VES por 1 USD ponderado BCV 30 % + paralelo 20 % + mediana P2P 50 %.
-Todos los planes. Sin parámetros. También viene embebido en `/v1/fx/rates` (`index`).
+Cotizave Index: VES per 1 USD weighted BCV 30 % + parallel 20 % + P2P median 50 %.
+All plans. No parameters. Also embedded in `/v1/fx/rates` (`index`).
 
 ```json
 {
@@ -213,27 +215,27 @@ Todos los planes. Sin parámetros. También viene embebido en `/v1/fx/rates` (`i
 }
 ```
 
-`flags` (todos opcionales): `bcv_stale` (BCV > 132 h sin renovarse; su peso se
-redistribuye y `weights` cambia), `degraded` (< 4 exchanges P2P), `missing_sources`,
-`outliers_excluded`. Lee los `weights` efectivos, no asumas 30/20/50.
+`flags` (all optional): `bcv_stale` (BCV > 132 h without renewal; its weight is
+redistributed and `weights` changes), `degraded` (< 4 P2P exchanges), `missing_sources`,
+`outliers_excluded`. Read the effective `weights`; do not assume 30/20/50.
 
 ## GET /v1/fx/rates/:market/history
 
-Histórico de un market. Todos los planes; **la profundidad depende del plan** (ver la
-columna "Histórico" en [errors-and-limits.md](errors-and-limits.md#planes-y-cuotas)).
+History of a market. All plans; **depth depends on the plan** (see the
+"History" column in [errors-and-limits.md](errors-and-limits.md#plans-and-quotas)).
 
-`:market`: cualquier market del catálogo (`reference`, `eur_reference`, `parallel`,
-los P2P…). Los gateados piden su feature (`402`). Con `?date=` y sin registros →
-`404`; en modo colección, un rango sin datos (o un market inexistente) responde `200`
-con `count: 0` y `points: []`: no asumas que hay datos.
+`:market`: any market in the catalog (`reference`, `eur_reference`, `parallel`,
+the P2Ps…). Gated ones require their feature (`402`). With `?date=` and no records →
+`404`; in collection mode, a range without data (or a nonexistent market) responds `200`
+with `count: 0` and `points: []`: do not assume there is data.
 
-| Param | Modo | Notas |
+| Param | Mode | Notes |
 |---|---|---|
-| `date` | punto | `YYYY-MM-DD` (UTC). Devuelve **1 objeto**: el último registro capturado **en o antes** de esa fecha. No puede ser futura. |
-| `from`, `to` | colección | `YYYY-MM-DD`, inclusivos. Por defecto: desde lo más antiguo que permite tu plan hasta hoy. Un `to` futuro se recorta a hoy. |
-| `granularity` | colección | `daily` (default, un cierre por día) o `raw` (cada captura, máx. 5.000 puntos: se conservan los **más recientes**, `truncated: true` y el `from` de la respuesta pasa al primer punto devuelto). |
+| `date` | point | `YYYY-MM-DD` (UTC). Returns **1 object**: the last record captured **on or before** that date. Cannot be in the future. |
+| `from`, `to` | collection | `YYYY-MM-DD`, inclusive. Default: from the oldest your plan allows up to today. A future `to` is clamped to today. |
+| `granularity` | collection | `daily` (default, one close per day) or `raw` (every capture, max. 5,000 points: the **most recent** are kept, `truncated: true` and the response's `from` moves to the first returned point). |
 
-Sin parámetros → colección con toda tu ventana de retención.
+No parameters → collection with your whole retention window.
 
 ```json
 { "market": "reference", "date": "2026-10-04", "rate": 870.12,
@@ -250,31 +252,31 @@ Sin parámetros → colección con toda tu ventana de retención.
 }
 ```
 
-Para BCV, el `rate` de un día es la tasa que estaba publicada al capturarse: revisa
-su `updated_at` (fecha valor) antes de asumir que rige ese mismo día. En el ejemplo, el
-domingo 4 rige la tasa con fecha valor del viernes 2. `date` se interpreta en UTC,
-mientras que la fecha valor del BCV es del calendario de Caracas (UTC−4).
+For BCV, a day's `rate` is the rate that was published when captured: check
+its `updated_at` (value date) before assuming it applies on that same day. In the example,
+Sunday the 4th is governed by the rate with value date Friday the 2nd. `date` is interpreted in UTC,
+while the BCV value date follows the Caracas calendar (UTC−4).
 
-Errores: `400 invalid_format` (fecha mal formada o futura, `from > to`, granularity
-inválida), `403 history_out_of_retention` (más vieja que lo que permite tu plan;
-`details.max_days`), `404 resource_not_found` (sin registros en o antes de esa fecha),
-`503 service_unavailable` (histórico no disponible temporalmente), `504 query_timeout`
-(rango demasiado pesado: acótalo).
-Los datos de los últimos días pueden ajustarse: cachea a largo plazo solo las fechas
-con más de 3 días de antigüedad y revalida lo que incluya los últimos 3 días (TTL
+Errors: `400 invalid_format` (malformed or future date, `from > to`, invalid
+granularity), `403 history_out_of_retention` (older than your plan allows;
+`details.max_days`), `404 resource_not_found` (no records on or before that date),
+`503 service_unavailable` (history temporarily unavailable), `504 query_timeout`
+(range too heavy: narrow it).
+Data from the last few days may be adjusted: cache long-term only the dates
+older than 3 days and revalidate anything that includes the last 3 days (TTL
 ≤ 1 h).
 
 ## GET /v1/fx/route
 
-Mejor mercado ejecutable para un monto USD↔VES + alternativas ordenadas. **Solo plan
-Pro o superior**: en los demás → `402 feature_not_in_plan` con `details.feature: "route"`
+Best executable market for a USD↔VES amount + sorted alternatives. **Pro plan
+or higher only**: on the others → `402 feature_not_in_plan` with `details.feature: "route"`
 
-| Param | Req. | Default | Notas |
+| Param | Req. | Default | Notes |
 |---|---|---|---|
-| `from`, `to` | sí | — | `USD`/`VES` |
-| `amount` | sí | — | > 0 y ≤ 1e12 |
-| `direction` | no | `send` | `send` = maximizar el monto de destino; `receive` = ordenar por el menor monto de destino |
-| `max_staleness` | no | `0` | segundos; `0` = sin filtro |
+| `from`, `to` | yes | — | `USD`/`VES` |
+| `amount` | yes | — | > 0 and ≤ 1e12 |
+| `direction` | no | `send` | `send` = maximize the destination amount; `receive` = sort by the lowest destination amount |
+| `max_staleness` | no | `0` | seconds; `0` = no filter |
 
 ```json
 {
@@ -289,17 +291,17 @@ Pro o superior**: en los demás → `402 feature_not_in_plan` con `details.featu
 }
 ```
 
-`skipped[].reason`: `not_executable` (referencias del BCV y casas de cambio no son un
-mercado), `currency_mismatch` (`eur_reference`), `feature_not_in_plan`,
-`one_way_market` (remesas en VES→USD), `no_quote`, `stale` (superó `max_staleness`).
-`skipped` se omite cuando está vacío.
-Si ningún market califica → `503 service_unavailable`. En CSV responde `406` (dos
-colecciones); usa JSON o XML.
+`skipped[].reason`: `not_executable` (BCV references and exchange houses are not a
+market), `currency_mismatch` (`eur_reference`), `feature_not_in_plan`,
+`one_way_market` (remittances in VES→USD), `no_quote`, `stale` (exceeded `max_staleness`).
+`skipped` is omitted when empty.
+If no market qualifies → `503 service_unavailable`. In CSV it responds `406` (two
+collections); use JSON or XML.
 
 ## GET /v1/fx/bcv/banks
 
-Compra/venta USD por institución, tal como lo publica el BCV, 1 vez al día. Todos los
-planes. Sin parámetros.
+USD buy/sell per institution, as published by the BCV, once a day. All
+plans. No parameters.
 
 ```json
 {
@@ -313,14 +315,14 @@ planes. Sin parámetros.
 }
 ```
 
-- La lista de bancos **varía de un día a otro** (el BCV rota entidades): no asumas una
-  lista fija ni normalices nombres (`bank` llega tal como lo publica el BCV).
-- `404 bcv_snapshot_unavailable` si la publicación del día todavía no está disponible.
+- The list of banks **varies from day to day** (the BCV rotates institutions): do not assume a
+  fixed list and do not normalize names (`bank` arrives as published by the BCV).
+- `404 bcv_snapshot_unavailable` if the day's publication is not available yet.
 
 ## GET /v1/fx/bcv/currencies
 
-Tasas oficiales BCV de EUR, CNY, TRY y RUB (VES por unidad). USD no viene aquí (está
-en `/v1/fx/rates/reference`). Misma publicación diaria que `/bcv/banks`. Todos los planes.
+Official BCV rates for EUR, CNY, TRY and RUB (VES per unit). USD is not here (it is
+in `/v1/fx/rates/reference`). Same daily publication as `/bcv/banks`. All plans.
 
 ```json
 {
@@ -331,14 +333,14 @@ en `/v1/fx/rates/reference`). Misma publicación diaria que `/bcv/banks`. Todos 
 }
 ```
 
-Para contabilidad usa `reference_value_date` (fecha valor), no `captured_at`.
+For accounting use `reference_value_date` (value date), not `captured_at`.
 
 ---
 
-## Fuera de esta referencia
+## Outside this reference
 
-Existen otras utilidades de Venezuela (catálogo de bancos, validación de RIF y de
-cuenta bancaria, feriados y días hábiles) que **no** forman parte de la referencia
-pública de la API y pueden no estar habilitadas para tu cuenta (responden
-`403 endpoint_disabled`). No las uses sin confirmar antes en
-https://cotizave.com/docs o con support@cotizave.com.
+Other Venezuela utilities exist (bank catalog, RIF and bank account
+validation, holidays and business days) that are **not** part of the public
+API reference and may not be enabled for your account (they respond
+`403 endpoint_disabled`). Do not use them without first confirming at
+https://cotizave.com/docs or with support@cotizave.com.

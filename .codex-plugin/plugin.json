@@ -1,7 +1,7 @@
 {
   "name": "cotizave",
-  "version": "0.3.7",
-  "description": "Integrate Cotizave V2 multi-country FX API and V1 Venezuela.",
+  "version": "0.3.8",
+  "description": "Integrate Cotizave V2 across countries and migrate deprecated V1 clients.",
   "author": {
     "name": "Cotizave",
     "email": "support@cotizave.com",
@@ -22,7 +22,7 @@
   "interface": {
     "displayName": "Cotizave",
     "shortDescription": "Integrate Cotizave FX API",
-    "longDescription": "Guides V2 rate discovery, conversion, history, permissions and secure server integration while preserving V1 clients.",
+    "longDescription": "Guides V2 rate discovery, conversion, history, statistics and secure server integration, with migration support for deprecated V1 clients.",
     "developerName": "Cotizave",
     "category": "Developer Tools",
     "capabilities": [

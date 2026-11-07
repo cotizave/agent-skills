@@ -1,46 +1,27 @@
-# Evidencia del contrato
+# Contract evidence
 
-Registro histórico de API `/v1` para la skill `0.2.0`; no describe la cobertura ni
-los permisos actuales de V2. Para una integración nueva consulta [el contrato V2](api-v2.md)
-y [la cobertura publicada](https://docs.cotizave.com/api/v2/coverage.md).
+Historical record of the `/v1` API, kept only as evidence for migrations; it does not describe current V2 coverage or permissions. For a new integration, read [the V2 contract](api-v2.md) and the [published coverage](https://docs.cotizave.com/api/v2/coverage.md).
 
-La revisión pública del 2026-10-15 está identificada en
-el [registro de fuentes](../assets/contract-review.json). La revisión del backend
-local del 2026-10-16 conserva revisión de código, hashes de entradas y resultados en
-el [registro de verificación](../assets/backend-contract-review.json).
+The public review of 2026-10-15 is identified in the [source register](../assets/contract-review.json). The local backend review of 2026-10-16 keeps the code revision, input hashes and results in the [verification register](../assets/backend-contract-review.json).
 
-## Contraste resuelto con el código del proveedor
+## Resolved against the provider's code
 
-| Tema | Resultado |
+| Topic | Result |
 |---|---|
-| Frescura | BCV 132 h; paralelo 26 h; P2P 30 min; remesas 6 h; efectivo 3 h; casas de cambio 26 h. Un umbral específico del market prevalece; Western Union usa 26 h |
-| Ausencia de una fuente | Se puede conservar el último dato con su fecha original; no hay una exclusión general a los diez minutos. Marcar `stale` y retirar un market son decisiones distintas |
-| Fecha BCV | La fecha valor es `effective_date`. Una ruta de obtención deriva esa fecha de medianoche de Caracas, pero el consumidor no debe exigir una hora fija para validar `updated_at` |
-| Cuota | El cómputo excluye 401, 402, 403, 429 y 5xx; los demás estados pasan por la regla de cómputo |
-| Bulk | Límite adicional de 300 llamadas por hora; su 429 no usa scope mensual/burst |
+| Freshness | BCV 132 h; parallel 26 h; P2P 30 min; remittances 6 h; cash 3 h; exchange houses 26 h. A market-specific threshold prevails; Western Union uses 26 h |
+| Missing source | The last value may be kept with its original date; there is no general ten-minute cut-off. Marking `stale` and withdrawing a market are different decisions |
+| BCV date | The value date is `effective_date`. One retrieval path derives it from Caracas midnight, but the consumer must not require a fixed time to validate `updated_at` |
+| Quota | Counting excludes 401, 402, 403, 429 and 5xx; every other status follows the counting rule |
+| Bulk | Additional limit of 300 calls per hour; its 429 uses neither the monthly nor the burst scope |
 
-Pasaron 43 tests y subtests de frescura, conservación de timestamps, fecha valor y
-contabilización, en tres paquetes del backend, usando dobles y servicios locales.
-El tope bulk y el cómputo específico de 406/422 se confirmaron por inspección de
-código, no mediante nuevas pruebas de esos casos. No se modificó el backend.
+43 tests and subtests on freshness, timestamp preservation, value date and counting passed in three backend packages, using test doubles and local services. The bulk cap and the specific counting of 406/422 were confirmed by code inspection, not by new tests for those cases. The backend was not modified.
 
-## Documentación pública
+## Public documentation
 
-Se consultaron [tasas](https://cotizave.com/docs/api/endpoints/get-rates),
-[tasa individual](https://cotizave.com/docs/api/endpoints/get-rate-by-market),
-[cuotas](https://cotizave.com/docs/api/rate-limits),
-[planes](https://cotizave.com/precios) y
-[facturación](https://cotizave.com/docs/guides/electronic-invoicing-bcv).
+Consulted: [rates](https://cotizave.com/docs/api/endpoints/get-rates), [single rate](https://cotizave.com/docs/api/endpoints/get-rate-by-market), [quotas](https://cotizave.com/docs/api/rate-limits), [plans](https://cotizave.com/precios) and [invoicing](https://cotizave.com/docs/guides/electronic-invoicing-bcv).
 
-Se corrigió localmente la fuente de la web para retirar la exclusión universal a
-los diez minutos, alinear los ejemplos BCV con fecha valor y exigir vigencia al
-facturar con respaldo. Esos cambios necesitan su publicación independiente: esta
-revisión no acredita que la web desplegada ya los incluya.
+The website source was corrected locally to remove the universal ten-minute exclusion, align the BCV examples with the value date and require validity when invoicing with a fallback. Those changes need their own publication: this review does not certify that the deployed website already includes them.
 
-## Límites de la evidencia
+## Limits of the evidence
 
-Se verificó el código local identificado, no el despliegue de producción. Los
-hashes de las páginas identifican lo consultado, no son snapshots completos. Los
-tests no consumieron cuota ni usaron credenciales de Cotizave. Las fixtures siguen
-siendo sintéticas; sus importes y fechas no representan valores actuales ni son
-capturas del backend. Otros detalles de endpoints quedan fuera de esta revisión.
+The identified local code was verified, not the production deployment. Page hashes identify what was consulted; they are not full snapshots. The tests consumed no quota and used no Cotizave credentials. The fixtures remain synthetic; their amounts and dates are neither current values nor backend captures. Other endpoint details are outside this review.

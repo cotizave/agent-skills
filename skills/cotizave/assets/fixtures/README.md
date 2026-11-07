@@ -1,83 +1,64 @@
-# Fixtures del contrato
+# V2 and migration fixtures
 
-Ejemplos del contrato de Cotizave, para probar una
-integración en **cualquier** lenguaje sin llamar a la API real. Cada archivo es:
+Synthetic examples for testing V2 integrations in **any** language without calling the real API. Fixtures without the `v2-` prefix are old V1 snapshots and are used **only to compare behavior during a V1 → V2 migration**; they are not examples for a new integration. Each file is:
 
 ```json
 { "status": 200, "headers": { "...": "..." }, "body": { } }
 ```
 
-`raw` reemplaza a `body` cuando la respuesta no es JSON válido. Sírvelas desde un
-servidor HTTP falso (o el mock de tu framework) y apunta el cliente a él con una key de
-prueba como `ctz_live_test`.
+`raw` replaces `body` when the response is not valid JSON. Serve the files from a fake HTTP server (or your framework's HTTP mock) and point the client at it with a placeholder key such as `test_api_key`.
 
-| Fixture | Qué debe hacer el cliente |
+## V2 cases
+
+| Fixture | What the client must do |
 |---|---|
-| `rates.200.json` | Parsear; buscar por `market`; `eur_reference` tiene base EUR |
-| `rate-reference.200.json` | Parsear una tasa; `ask`/`bid` ausentes no son `0` |
-| `rate-eur-reference-no-base.200.json` | Sin `base`: el helper de moneda base devuelve `EUR` |
-| `convert.200.json` | Leer `to.amount`, `effective_date` y `stale` |
-| `bulk-convert.200.json` | `results[i]` corresponde a `amounts[i]` |
-| `history-point.200.json`, `history-collection.200.json` | Modo punto (objeto) y colección (`points[]`) |
-| `malformed.200.json` | Un `2xx` con JSON roto es un error, no "sin datos" |
-| `redirect-302.json` | No seguir la redirección; la key no llega a otro host |
-| `error-400-unknown-parameter.json` | Error tipado con `code` y `field`; sin reintento |
-| `error-401-invalid-api-key.json` | Sin reintento; la key no aparece en el error |
-| `error-402-feature-not-in-plan.json` | Sin reintento; exponer `details.feature` |
-| `error-429-burst.json` | Reintentar tras `X-RateLimit-Retry-After-Ms` (40 ms), acotado |
-| `error-429-burst-scope-in-body.json` | Sin header de scope: tomarlo de `details.kind` y reintentar |
-| `error-429-monthly.json` | **No** reintentar; exponer `X-RateLimit-Reset` |
-| `error-429-no-scope.json` | No reintentar; exponer `Retry-After` (3600) |
-| `error-500-internal.json` | Reintento acotado con backoff + jitter |
-| `error-503-service-unavailable.json` | Reintentar tras `Retry-After` (1 s), acotado |
-| `error-503-retry-after-long.json` | `Retry-After` (120 s) mayor que la espera máxima: fallar sin dormir |
+| `v2-ve-restricted.200.json` | Recognize an ID-only restricted row with no `mid` or timestamps; it is not a zero-valued rate |
+| `v2-rate-unavailable.503.json` | Preserve the HTTP status of a known rate without a current observation. The error body is illustrative: use the official error reference for exact codes and keep the status when an intermediary changes the body |
+| `v2-ve-rates-migration.200.json` | Read canonical IDs and optional fields from a V2 response |
+| `v2-bulk-partial.200.json` | Inspect every result: HTTP 200 can include a per-item error. Never report a partial success as a wholly successful V1-style result; amounts and error text are illustrative |
 
-Los números son ilustrativos. Casos que no necesitan fixture: una key con salto de
-línea final se limpia; una con caracteres inválidos no se envía; un error de red en el
-`POST` de bulk no se reintenta.
+For a migration, compare `rates.200.json` with `v2-ve-rates-migration.200.json`: the selected VE prices, markets, value dates and source times match in this synthetic pair, while V2 adds canonical IDs and may return fewer rows. Do not compare entire JSON bodies or require every V1 row in V2.
 
-La verificación contra el backend fue declarada por la revisión anterior, pero no
-se adjuntaron capturas ni un identificador del contrato. No constituyen una prueba
-de conformidad del servicio actual. Están versionadas junto a la skill; los números
-son ilustrativos y todos los tests deben ejecutarse contra transporte local.
+## V1 snapshots: migration only
 
-La [revisión documental del contrato](../../references/contract-evidence.md)
-identifica fuentes, alcance comprobado y discrepancias.
-
-
-## Secuencias para probar fallback y recuperación
-
-Usa reloj controlado y transporte local. La política de fallback pertenece a la
-aplicación: estas secuencias no añaden campos ni endpoints a Cotizave.
-
-| Secuencia | Resultado esperado |
+| Fixture | What to compare with the old client |
 |---|---|
-| `rates.200.json` → `error-503-service-unavailable.json`, con respaldo dentro de tolerancia para mostrar | Reintentos dentro del presupuesto y luego último dato bueno identificado, conservando market, moneda y fechas |
-| La misma secuencia, avanzando el reloj más allá de la tolerancia | Indisponibilidad; no devolver cero ni presentar el respaldo como actual |
-| `error-503-service-unavailable.json` con cache vacío | Error recuperable y ninguna tasa inventada |
-| `rates.200.json` → `malformed.200.json` | Error de protocolo; no sobrescribir el último dato bueno con contenido inválido |
-| `rates.200.json` → `error-429-monthly.json` → otra consulta antes del reset | No enviar otra petición upstream; usar respaldo solo si la política lo permite |
-| Fallo → `rates.200.json`, cuando esté permitido consultar de nuevo | Validar respuesta, actualizar cache y salir del estado degradado si el dato cumple vigencia |
-| Respuestas 200 sucesivas con el mismo `updated_at` antiguo | No renovar la tolerancia del dato por haberlo descargado otra vez |
-| Respaldo sin vigencia acreditada al fijar un importe | No emitir la factura; preservar documentos previamente emitidos |
+| `rates.200.json` | Parse; look up by `market`; `eur_reference` has base EUR |
+| `rate-reference.200.json` | Parse one rate; absent `ask`/`bid` are not `0` |
+| `rate-eur-reference-no-base.200.json` | Without `base`, the base-currency helper returns `EUR` |
+| `convert.200.json` | Read `to.amount`, `effective_date` and `stale` |
+| `bulk-convert.200.json` | `results[i]` corresponds to `amounts[i]` |
+| `history-point.200.json`, `history-collection.200.json` | Point mode (object) and collection mode (`points[]`) |
+| `malformed.200.json` | A `2xx` with broken JSON is an error, not "no data" |
+| `redirect-302.json` | Do not follow the redirect; the key never reaches another host |
+| `error-400-unknown-parameter.json` | Typed error with `code` and `field`; no retry |
+| `error-401-invalid-api-key.json` | No retry; the key does not appear in the error |
+| `error-402-feature-not-in-plan.json` | No retry; expose `details.feature` |
+| `error-429-burst.json` | Retry after `X-RateLimit-Retry-After-Ms` (40 ms), bounded |
+| `error-429-burst-scope-in-body.json` | No scope header: take it from `details.kind` and retry |
+| `error-429-monthly.json` | **Do not** retry; expose `X-RateLimit-Reset` |
+| `error-429-no-scope.json` | Do not retry; expose `Retry-After` (3600) |
+| `error-500-internal.json` | Bounded retry with backoff + jitter |
+| `error-503-service-unavailable.json` | Retry after `Retry-After` (1 s), bounded |
+| `error-503-retry-after-long.json` | `Retry-After` (120 s) exceeds the maximum wait: fail without sleeping |
 
-Fija el reloj respecto a las fechas de la fixture, no a la fecha real del test.
-Prueba también la frontera exacta del límite acordado y una cancelación: no debe
-iniciar nuevas consultas ni convertir la operación cancelada en un éxito con cache.
-Estas son pruebas a implementar y ejecutar en el cliente consumidor, no resultados
-ya comprobados por este paquete.
+Numbers are illustrative. Cases that need no fixture: a key with a trailing newline is trimmed; a key with invalid characters is not sent; a network error on the bulk `POST` is not retried.
 
-V2 synthetic cases: `v2-ve-restricted.200.json` contains an ID-only restricted
-rate descriptor (no `mid` or timestamps); `v2-rate-unavailable.503.json`
-represents a known rate without a current observation. The error body is
-illustrative: use the official error reference for exact codes and preserve HTTP
-status when an intermediary changes the body.
+The earlier review declared verification against the backend, but no captures or contract identifier were attached, so these files are not proof of conformance of the current service. They are versioned with the skill; run every test against local transport. The [historical documentation review](../../references/contract-evidence.md) identifies the scope of the V1 snapshots; it does not certify the V2 contract.
 
-For V1 to V2 migration, compare `rates.200.json` with
-`v2-ve-rates-migration.200.json`: the selected VE prices, markets, value dates and
-source times match in this synthetic pair, while V2 adds canonical IDs and may
-return fewer rows. Do not compare entire JSON bodies or require all V1 rows in V2.
-`v2-bulk-partial.200.json` exercises a valid HTTP 200 with one conversion and one
-item error. Treat its amounts and error text as illustrative; check the indexed
-per-item structure and prevent a partial success from being reported as a wholly
-successful V1-style result.
+## Historical sequences for testing fallback during a migration
+
+These sequences use the old V1 fixtures. Use them only to preserve an application's behavior while it migrates to V2, with a controlled clock and local transport. The fallback policy belongs to the application: these sequences add no fields or endpoints to Cotizave.
+
+| Sequence | Expected result |
+|---|---|
+| `rates.200.json` → `error-503-service-unavailable.json`, with a fallback within the display tolerance | Retries within budget, then the last good value, identified and keeping market, currency and dates |
+| The same sequence with the clock advanced past the tolerance | Unavailable; do not return zero or present the fallback as current |
+| `error-503-service-unavailable.json` with an empty cache | Recoverable error and no invented rate |
+| `rates.200.json` → `malformed.200.json` | Protocol error; do not overwrite the last good value with invalid content |
+| `rates.200.json` → `error-429-monthly.json` → another query before the reset | Send no further upstream request; use the fallback only if the policy allows it |
+| Failure → `rates.200.json`, once querying again is allowed | Validate the response, update the cache and leave the degraded state if the value meets the validity rule |
+| Successive 200 responses with the same old `updated_at` | Do not renew the value's tolerance just because it was downloaded again |
+| A fallback without proven validity when fixing an amount | Do not issue the invoice; preserve previously issued documents |
+
+Pin the clock relative to the fixture dates, not to the real test date. Also test the exact boundary of the agreed limit and a cancellation: it must not start new queries or turn the cancelled operation into a success served from cache. These are tests to implement and run in the consuming client, not results already verified by this package.

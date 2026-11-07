@@ -1,265 +1,268 @@
-# Patrones de integración (cualquier lenguaje)
+# Integration patterns (any language)
 
-> The route-specific examples below describe V1 Venezuela. For new V2 integrations, use [V2 routes](api-v2.md) and adapt country, rate ID, permissions and source freshness. Do not carry V1 plan TTLs or market defaults into another country.
+> These examples use V2 for the published countries. To migrate an earlier integration, see the [migration guide](migration-v1-v2.md).
 
-Esta referencia enseña a consumir Cotizave dentro del proyecto existente. El contrato
-HTTP está en [endpoints.md](endpoints.md); no prescribe frameworks, ORM, bases de
-datos ni un estilo de clases. Adapta las decisiones al runtime y sus convenciones.
+This reference teaches how to consume Cotizave inside the existing project. The HTTP
+contract is in [api-v2.md](api-v2.md); it does not prescribe frameworks, ORMs,
+databases or a class style. Adapt the decisions to the runtime and its conventions.
 
-Contenido: [Diseño y alcance](#diseño-y-alcance) · [Contrato](#contrato-del-cliente) ·
-[HTTP](#política-http) · [Reintentos](#reintentos-y-plazo-total) ·
-[Algoritmo](#algoritmo-de-referencia) · [Credenciales](#credenciales-y-fronteras) ·
-[Cache](#cache-concurrencia-y-fallback) · [Dinero](#dinero-y-persistencia) ·
-[Operación](#operación-proporcional) · [Tests](#validación) · [Casos de uso](#casos-de-uso)
+Contents: [Design and scope](#design-and-scope) · [Contract](#client-contract) ·
+[HTTP](#http-policy) · [Retries](#retries-and-total-deadline) ·
+[Algorithm](#reference-algorithm) · [Credentials](#credentials-and-boundaries) ·
+[Cache](#cache-concurrency-and-fallback) · [Money](#money-and-persistence) ·
+[Operations](#proportional-operations) · [Tests](#validation) · [Use cases](#use-cases)
 
-## Diseño y alcance
+## Design and scope
 
-Reutiliza cliente HTTP, configuración, cache, logger y herramientas de test. Una
-función puede bastar para una consulta puntual; un módulo puede separar transporte
-HTTP y decisiones de negocio cuando ambos evolucionan por motivos distintos.
+Reuse the HTTP client, configuration, cache, logger and test tooling. A single
+function can be enough for a one-off query; a module can separate HTTP transport
+from business decisions when both evolve for different reasons.
 
-- Introduce una interfaz o adaptador si permite aislar una frontera inestable,
-  probar un fallo relevante o respetar una abstracción del proyecto. No necesita
-  tener dos implementaciones actuales, pero sí un beneficio verificable.
-- Elimina duplicación cuando representa la misma regla de negocio; no unifiques
-  fragmentos similares que evolucionan por motivos distintos. Prefiere composición
-  y funciones pequeñas a jerarquías de herencia añadidas solo para el cliente.
-- Mantén las firmas, semántica de errores y consumidores existentes. Si deben cambiar,
-  identifica la transición y prueba ambos lados del contrato. No refactorices módulos
-  ajenos ni construyas extensiones hipotéticas.
-- Usa la biblioteca estándar cuando cubra HTTP, TLS y el manejo de recursos requerido.
-  Si no lo hace (p. ej. Rust o C++), permite una biblioteca mantenida y compatible
-  con el runtime, revisando versión, licencia y seguridad. No implementes TLS o HTTP
-  desde sockets para evitar una dependencia. Tampoco agregues otra si ya hay una adecuada.
+- Introduce an interface or adapter if it isolates an unstable boundary, lets you
+  test a relevant failure or respects an abstraction of the project. It does not need
+  two current implementations, but it does need a verifiable benefit.
+- Remove duplication when it represents the same business rule; do not unify
+  similar fragments that evolve for different reasons. Prefer composition and small
+  functions over inheritance hierarchies added only for the client.
+- Keep existing signatures, error semantics and consumers. If they must change,
+  identify the transition and test both sides of the contract. Do not refactor
+  unrelated modules or build hypothetical extensions.
+- Use the standard library when it covers HTTP, TLS and the required resource handling.
+  If it does not (e.g. Rust or C++), allow a maintained library compatible with the
+  runtime, reviewing version, license and security. Do not implement TLS or HTTP
+  from sockets to avoid a dependency. Do not add another one if a suitable one already exists.
 
-Dimensiona por exposición, impacto monetario, concurrencia, disponibilidad y posibilidad
-de recuperar datos, no por número de archivos o tamaño del equipo. Un script que fija
-facturas exige más validación de datos que una web grande que solo muestra cotizaciones.
+Size the work by exposure, monetary impact, concurrency, availability and the ability
+to recover data, not by number of files or team size. A script that fixes invoice
+amounts demands more data validation than a large website that only displays quotes.
 
-## Contrato del cliente
+## Client contract
 
-- Configuración confiable: key, origen, timeout por intento, plazo total, máximo de
-  intentos (3 como punto de partida), espera máxima y tamaño máximo de respuesta.
-- Devuelve datos validados con tipos idiomáticos cuando existan. Campos opcionales
-  pueden faltar: no confundas ausencia con cero. Tolera campos y markets nuevos;
-  valida los campos utilizados para tomar decisiones, no todo el catálogo con un enum cerrado.
-- Conserva status y datos estructurados de error: `code`, `field`, `details`, `scope`,
-  `Retry-After`, `X-RateLimit-Reset`. Si no hay JSON válido, conserva status y headers
-  seguros en un error de protocolo; nunca convierte el fallo en un resultado vacío.
-- Usa excepciones, valores de error o tipos resultado según el proyecto. La cancelación
-  debe propagarse como tal, sin convertirse en error transitorio ni reintentarse.
-- Moneda base: usa `base`; si falta, EUR para `eur_reference` y USD para el resto.
+- Trusted configuration: key, origin, per-attempt timeout, total deadline, maximum
+  attempts (3 as a starting point), maximum wait and maximum response size.
+- Return validated data with idiomatic types when they exist. Optional fields may be
+  missing: do not confuse absence with zero. Tolerate new fields and markets;
+  validate the fields used to make decisions, not the whole catalog with a closed enum.
+- Preserve status and structured error data: `code`, `field`, `details`, `scope`,
+  `Retry-After`, `X-RateLimit-Reset`. If there is no valid JSON, keep the status and
+  safe headers in a protocol error; never turn the failure into an empty result.
+- Use exceptions, error values or result types according to the project. Cancellation
+  must propagate as such, without becoming a transient error or being retried.
+- Base currency: use the `base` field when the response includes it. If it is absent, take the base from the rate ID's official documentation rather than assuming USD; the V1 alias rule (EUR for `eur_reference`, USD otherwise) applies only to legacy V1 snapshots during a [migration](migration-v1-v2.md).
 
-## Política HTTP
+## HTTP policy
 
-| Tema | Decisión |
+| Topic | Decision |
 |---|---|
-| Headers | `X-API-Key`, `Accept: application/json`; si envías JSON, serialízalo y usa `Content-Type: application/json` |
-| Parámetros | Codifica query y segmentos del path con el cliente; envía solo parámetros documentados |
-| Destino | Origen fijo `https://api.cotizave.com`; un override debe ser configuración confiable, nunca input del usuario. En tests usa loopback y una key ficticia |
-| TLS y redirects | Verificación TLS activa; no seguir redirecciones con la credencial |
-| Tiempo | Timeout por intento y plazo total que incluya conexión, lectura y esperas; respeta cancelación durante todos ellos |
-| Recursos | Reutiliza conexiones mediante el mecanismo soportado por el runtime; libera cuerpos, streams, sockets y tareas en éxito, error y cancelación |
-| Respuestas | Limita bytes leídos incluso sin Content-Length; valida status antes de interpretar cuerpo; JSON inválido en 2xx es error |
+| Headers | `X-API-Key`, `Accept: application/json`; if you send JSON, serialize it and use `Content-Type: application/json` |
+| Parameters | Encode query and path segments with the client; send only documented parameters |
+| Destination | Fixed origin `https://api.cotizave.com`; an override must be trusted configuration, never user input. In tests use loopback and a fake key |
+| TLS and redirects | TLS verification enabled; do not follow redirects with the credential |
+| Time | Per-attempt timeout and a total deadline covering connection, read and waits; honor cancellation during all of them |
+| Resources | Reuse connections through the mechanism the runtime supports; release bodies, streams, sockets and tasks on success, error and cancellation |
+| Responses | Limit bytes read even without Content-Length; validate status before interpreting the body; invalid JSON in a 2xx is an error |
 
-Reutilizar conexiones no exige un objeto global por proceso. Respeta seguridad de
-threads, afinidad al event loop y el ciclo de vida del framework; una factory que
-reutiliza handlers/pools es válida. En runtimes async, la espera debe suspender la
-tarea, no bloquear el event loop. En Go cierra el body; en C++ usa RAII; en otros
-runtimes emplea su mecanismo equivalente. Son ejemplos, no una arquitectura obligatoria.
+Reusing connections does not require one global object per process. Respect thread
+safety, event loop affinity and the framework's lifecycle; a factory that reuses
+handlers/pools is valid. In async runtimes, waiting must suspend the task, not block
+the event loop. In Go close the body; in C++ use RAII; in other runtimes use their
+equivalent mechanism. These are examples, not a mandatory architecture.
 
-## Reintentos y plazo total
+## Retries and total deadline
 
-Un único componente controla el presupuesto de reintentos: puede ser el cliente o
-la infraestructura existente. No sumes políticas del SDK, cola, job y llamador.
+A single component controls the retry budget: it can be the client or the existing
+infrastructure. Do not stack policies from the SDK, queue, job and caller.
 
-| Resultado | Acción |
+| Outcome | Action |
 |---|---|
-| GET con fallo transitorio de transporte | Reintentar con backoff exponencial y jitter, dentro del presupuesto |
-| POST bulk con fallo de transporte después de enviar, o envío incierto | No reintentar automáticamente: puede haberse consumido cuota |
-| Cancelación, TLS o configuración inválida | Fallar sin reintentar |
-| 429 por límite temporal | Respetar `Retry-After` y reducir concurrencia; si falta, backoff con jitter acotado |
-| 429 por cuota mensual | No reintentar; bloquear llamadas de esa cuenta hasta el reset confirmado |
-| 429 de causa incierta | No reintentar automáticamente; respetar `Retry-After` antes de otra llamada |
-| 5xx en GET | Reintento acotado; Retry-After si es válido, si no backoff con jitter |
-| 5xx en POST bulk | Por defecto devolver el error; repetir requiere decidir explícitamente sobre resultado incierto y coste |
-| Otros 4xx o 3xx | Sin reintento automático |
+| GET with transient transport failure | Retry with exponential backoff and jitter, within the budget |
+| Bulk POST with transport failure after sending, or uncertain send | Do not retry automatically: quota may have been consumed |
+| Cancellation, TLS or invalid configuration | Fail without retrying |
+| 429 for a temporary limit | Honor `Retry-After` and reduce concurrency; if absent, bounded backoff with jitter |
+| 429 for monthly quota | Do not retry; block calls for that account until the confirmed reset |
+| 429 of uncertain cause | Do not retry automatically; honor `Retry-After` before another call |
+| 5xx on GET | Bounded retry; Retry-After if valid, otherwise backoff with jitter |
+| 5xx on bulk POST | Return the error by default; repeating requires an explicit decision about the uncertain result and cost |
+| Other 4xx or 3xx | No automatic retry |
 
-Para `504 query_timeout` del histórico, reduce el rango o revisa la consulta en vez
-de repetir una petición demasiado pesada sin cambios. No acortes una espera pedida
-por el servidor para hacerla caber: si no cabe, devuelve el error.
+For a `504 query_timeout` from history, reduce the range or review the query instead
+of repeating an overly heavy request unchanged. Do not shorten a wait requested by
+the server to make it fit: if it does not fit, return the error.
 
-Cotizave documenta Retry-After en segundos enteros. Un intermediario puede usar una
-fecha HTTP: si tu cliente la admite, conviértela a duración no negativa; un valor
-inválido no debe provocar un bucle ni una espera ilimitada. Distingue cero de ausente.
+Cotizave documents Retry-After in whole seconds. An intermediary may use an HTTP
+date: if your client supports it, convert it to a non-negative duration; an invalid
+value must not cause a loop or an unbounded wait. Distinguish zero from absent.
 
-### Algoritmo de referencia
+### Reference algorithm
 
-Este pseudocódigo expresa invariantes, no clases ni APIs que deban copiarse literalmente.
-`leer_acotado` y `enviar` respetan el plazo y liberan recursos en cualquier salida;
-`esperar_cancelable` usa el mecanismo de espera del runtime y un reloj monotónico.
+This pseudocode expresses invariants, not classes or APIs to copy literally.
+`read_bounded` and `send` honor the deadline and release resources on any exit;
+`wait_cancellable` uses the runtime's wait mechanism and a monotonic clock.
 
 ```text
-pedir(método, ruta, parámetros, cuerpo, cancelación):
-  validar destino confiable, credencial y parámetros documentados
-  deadline = reloj_monotónico() + plazo_total
-  si cuenta bloqueada hasta reset: devolver error de cuota, sin enviar
-  para intento en 1..max_intentos:
-    comprobar cancelación y tiempo restante
-    resultado = enviar y leer_acotado(
-      timeout = min(timeout_por_intento, tiempo_restante),
-      sin redirecciones, TLS verificado,
-      JSON serializado y Content-Type si hay cuerpo)
-    cerrar/liberar respuesta antes de esperar o salir
-    si cancelación o configuración/TLS inválidos: fallar sin reintentar
-    si fallo de transporte:
-      si método != GET o no transitorio: fallar
-      espera = backoff_con_jitter(intento)
-    si hay respuesta HTTP:
-      si 2xx: validar JSON y campos requeridos; devolver resultado o error de protocolo
-      si 3xx: fallar unexpected_redirect
-      err = error con status y headers, aunque el body esté vacío o no sea JSON
-      scope = header válido, o details.kind si el header está ausente
-      si 429 identificado como cuota mensual:
-        registrar bloqueo de esa cuenta hasta reset ISO 8601
-        si reset inválido/ausente: devolver error y suspender polling para revisión
-        fallar err
-      si 429 de causa incierta: registrar no-antes-de Retry-After válido; fallar err
-      si 429 identificado como límite temporal:
-        espera = Retry-After válido, o backoff(intento)
-        espera = espera + jitter no negativo
-      si 5xx:
-        si método != GET o code == query_timeout: fallar err
-        espera = Retry-After válido + jitter, o backoff_con_jitter(intento)
-      si otro status: fallar err
-    si último intento, espera > max_espera o espera >= tiempo_restante: fallar
-    esperar_cancelable(espera, deadline)
+request(method, path, params, body, cancellation):
+  validate trusted destination, credential and documented params
+  deadline = monotonic_clock() + total_deadline
+  if account blocked until reset: return quota error, without sending
+  for attempt in 1..max_attempts:
+    check cancellation and remaining time
+    result = send and read_bounded(
+      timeout = min(per_attempt_timeout, remaining_time),
+      no redirects, TLS verified,
+      serialized JSON and Content-Type if there is a body)
+    close/release response before waiting or exiting
+    if cancellation or invalid configuration/TLS: fail without retrying
+    if transport failure:
+      if method != GET or not transient: fail
+      wait = backoff_with_jitter(attempt)
+    if there is an HTTP response:
+      if 2xx: validate JSON and required fields; return result or protocol error
+      if 3xx: fail unexpected_redirect
+      err = error with status and headers, even if the body is empty or not JSON
+      scope = valid header, or details.kind if the header is absent
+      if 429 identified as monthly quota:
+        record block for that account until ISO 8601 reset
+        if reset invalid/absent: return error and suspend polling for review
+        fail err
+      if 429 of uncertain cause: record not-before from valid Retry-After; fail err
+      if 429 identified as temporary limit:
+        wait = valid Retry-After, or backoff(attempt)
+        wait = wait + non-negative jitter
+      if 5xx:
+        if method != GET or code == query_timeout: fail err
+        wait = valid Retry-After + jitter, or backoff_with_jitter(attempt)
+      if other status: fail err
+    if last attempt, wait > max_wait or wait >= remaining_time: fail
+    wait_cancellable(wait, deadline)
 ```
 
-Un backoff inicial de 500 ms multiplicado por 2 por intento es un ejemplo. Ajusta
-sus límites al tiempo que el consumidor puede esperar; no conviertas 3 intentos de
-10 segundos en una promesa de respuesta total de 10 segundos.
+An initial backoff of 500 ms multiplied by 2 per attempt is an example. Adjust its
+limits to the time the consumer can wait; do not turn 3 attempts of 10 seconds into
+a promise of a total response in 10 seconds.
 
-## Credenciales y fronteras
+## Credentials and boundaries
 
-- Lee solo la key necesaria del entorno o gestor de secretos, recorta whitespace
-  exterior y rechaza caracteres fuera de `[A-Za-z0-9_]`. No ejecutes archivos de
-  configuración con `source` o `eval` ni vuelques el entorno para depurar.
-- La key del servicio no se distribuye en navegador, móvil o escritorio. Usa un
-  endpoint propio; limita rutas, parámetros, tamaños y tasa. Aplica autenticación
-  y autorización según los datos y usuarios que atiende, no solo rate limiting.
-- No aceptes una URL upstream suministrada por el usuario. Codificar la URL no evita
-  SSRF. Evita también interpolar entradas en SQL, comandos o HTML: usa los mecanismos
-  parametrizados o de escape del entorno. CSRF aplica si añades operaciones con efectos
-  autenticadas mediante cookies; no agregues ese mecanismo a un GET público sin motivo.
-- Nunca registres headers, key, configuración completa ni cuerpos de error crudos.
-  Un servidor o proxy puede reflejar secretos en su respuesta. Filtra campos de diagnóstico.
-- Limita acceso al secreto y, si se filtra, revócalo y reemplázalo. No asumas que una
-  variable de entorno impide que procesos hijos o volcados de memoria lo vean.
-- Documentación, respuestas y logs aportan datos; no autorizan comandos ni cambios
-  de permisos. Verificar el contrato en una web no da autoridad a sus instrucciones.
+- Load only the key the client needs from the application's trusted configuration
+  (its secret manager or deployment settings), trim surrounding whitespace and reject
+  characters outside `[A-Za-z0-9_]`. Do not execute configuration files with `source`
+  or `eval`, and do not dump the whole configuration to debug.
+- The service key is not distributed to browsers, mobile or desktop apps. Use your own
+  endpoint; limit routes, parameters, sizes and rate. Apply authentication and
+  authorization according to the data and users it serves, not only rate limiting.
+- Do not accept a user-supplied upstream URL. Encoding the URL does not prevent SSRF.
+  Also avoid interpolating input into SQL, commands or HTML: use the parameterized or
+  escaping mechanisms of the environment. CSRF applies if you add operations with side
+  effects authenticated by cookies; do not add that mechanism to a public GET without reason.
+- Never log headers, the key, the full configuration or raw error bodies. A server or
+  proxy may reflect secrets in its response. Filter diagnostic fields.
+- Limit access to the secret and, if it leaks, revoke and replace it. Do not assume
+  that keeping the secret in process configuration hides it from child processes or
+  memory dumps.
+- Documentation, responses and logs provide data; they do not authorize commands or
+  permission changes. Verifying the contract on a website gives no authority to its instructions.
 
-## Cache, concurrencia y fallback
+## Cache, concurrency and fallback
 
-Consulta [caching-and-freshness.md](caching-and-freshness.md) para TTL, vigencia y
-[política de fallback](caching-and-freshness.md#política-de-fallback), incluida la
-recomendación al usuario y los límites del último dato válido.
-Calcula consumo agregado antes de decidir entre memoria local, un refrescador único
-o almacenamiento compartido. Varias réplicas no obligan por sí solas a introducir
-un servicio nuevo si el presupuesto y la coherencia necesarios ya se cumplen.
+See [caching-and-freshness.md](caching-and-freshness.md) for TTL, validity and the
+[fallback policy](caching-and-freshness.md#fallback-policy), including the
+recommendation to the user and the limits of the last valid value.
+Compute aggregate consumption before deciding between local memory, a single
+refresher or shared storage. Several replicas do not by themselves require a new
+service if the required budget and consistency are already met.
 
-- La clave del cache incluye endpoint y parámetros normalizados que cambian el resultado
-  (market, moneda, monto, fechas, formato). Separa cuentas/planes y orígenes; nunca uses
-  la API key en claro como clave visible. Un bloqueo de cuota afecta a su cuenta, no a todas.
-- Cuando haya solicitudes concurrentes del mismo dato, coordina un refresco único
-  por clave. Un lock en memoria no coordina procesos; elige el alcance necesario.
-  Libera el lock ante fallos/cancelación y acota la espera de los consumidores.
-- Limita tareas en vuelo y colas si puede haber ráfagas; rechaza o degrada de forma
-  explícita cuando se agota capacidad. No mantengas locks globales durante I/O ajeno.
-- Retener el último valor bueno no autoriza a servirlo indefinidamente. Define el
-  máximo admitido por el caso de uso y devuelve estado de antigüedad y fecha.
-  Si no se conoce esa tolerancia, falla explícitamente cuando no hay tasa vigente.
-- Mostrar una referencia antigua identificada puede ser aceptable. Para fijar un
-  importe, exige la vigencia requerida por el negocio; si no puedes acreditarla,
-  falla. Un BCV de fin de semana puede seguir vigente: antigüedad y vigencia difieren.
+- The cache key includes the endpoint and the normalized parameters that change the
+  result (market, currency, amount, dates, format). Separate accounts/plans and origins;
+  never use the plaintext API key as a visible key. A quota block affects its account, not all of them.
+- When there are concurrent requests for the same data, coordinate a single refresh
+  per key. An in-memory lock does not coordinate processes; choose the scope required.
+  Release the lock on failure/cancellation and bound the consumers' wait.
+- Limit in-flight tasks and queues if bursts are possible; reject or degrade explicitly
+  when capacity is exhausted. Do not hold global locks during unrelated I/O.
+- Retaining the last good value does not authorize serving it indefinitely. Define
+  the maximum allowed by the use case and return the age status and date.
+  If that tolerance is unknown, fail explicitly when there is no current rate.
+- Showing an identified old reference can be acceptable. To fix an amount, require
+  the validity the business demands; if you cannot prove it, fail. A weekend BCV rate
+  may still be valid: age and validity differ.
 
-## Dinero y persistencia
+## Money and persistence
 
-Las respuestas contienen números JSON. Decide representación y redondeo por precisión
-requerida, rango y contrato del negocio, no por si el proyecto ya usa decimales.
-Para importes que se cobrarán o persistirán, usa decimal o punto fijo con escala
-explícita; verifica overflow y evita perder precisión al parsear primero a flotante.
-No implementes aritmética decimal propia para eludir una biblioteca justificada.
+Responses contain JSON numbers. Decide representation and rounding by the required
+precision, range and business contract, not by whether the project already uses decimals.
+For amounts that will be charged or persisted, use decimal or fixed point with an
+explicit scale; check for overflow and avoid losing precision by parsing to float first.
+Do not implement your own decimal arithmetic to sidestep a justified library.
 
-Mantén precisión en pasos intermedios. Redondea al fijar el importe según la regla
-acordada (escala, modo y momento) y aplica aparte el formato visual. No decidas igualdad
-monetaria con flotantes sin una representación o tolerancia definida por el contrato.
+Keep precision in intermediate steps. Round when fixing the amount according to the
+agreed rule (scale, mode and moment) and apply visual formatting separately. Do not
+decide monetary equality with floats without a representation or tolerance defined by the contract.
 
-Al guardar una factura, conserva importe, moneda, tasa, market y fecha valor cuando
-corresponda, de forma consistente con el documento. Si introduces escrituras relacionadas,
-usa la transacción del almacén cuando sea necesaria para evitar estados parciales; no
-mantengas una transacción abierta durante reintentos HTTP. Una migración debe preservar
-consumidores y registros anteriores, comprobar el backfill y permitir recuperación sin
-pérdida. No cambies el esquema si el trabajo solicitado no lo requiere.
+When saving an invoice, keep amount, currency, rate, market and value date when
+applicable, consistently with the document. If you introduce related writes, use the
+store's transaction when needed to avoid partial states; do not hold a transaction
+open during HTTP retries. A migration must preserve previous consumers and records,
+check the backfill and allow recovery without loss. Do not change the schema if the
+requested work does not require it.
 
-## Operación proporcional
+## Proportional operations
 
-Mide latencia, errores por code/scope y consumo de cuota cuando la integración sea
-operativa. Usa el logger y las métricas existentes, sin labels de alta cardinalidad
-como montos, usuarios o URLs completas. Tracea la dependencia si el sistema ya usa
-tracing o necesitas localizar latencia entre servicios; no instales una plataforma
-solo para una consulta puntual.
+Measure latency, errors by code/scope and quota consumption when the integration is
+operational. Use the existing logger and metrics, without high-cardinality labels
+such as amounts, users or full URLs. Trace the dependency if the system already uses
+tracing or you need to locate latency between services; do not install a platform
+just for a one-off query.
 
-Alertas requieren una acción concreta: no conviertas cada 402 esperado en una alarma.
-Un bloqueo por cuota es una política de admisión, no un circuito completo. Un circuit
-breaker para fallos sostenidos necesita umbrales, recuperación de prueba y beneficio
-medible; no se añade por defecto.
+Alerts require a concrete action: do not turn every expected 402 into an alarm.
+A quota block is an admission policy, not a full circuit. A circuit breaker for
+sustained failures needs thresholds, trial recovery and a measurable benefit; it is
+not added by default.
 
-Antes de optimizar, mide llamadas, latencia y recursos. Reutilizar un snapshot puede
-eliminar N llamadas sin añadir infraestructura. Para cambios con riesgo operativo,
-prueba configuración, compatibilidad y rollback; usa feature flags solo si facilitan
-una transición real y define su retirada. Conserva los checks del CI del proyecto.
+Before optimizing, measure calls, latency and resources. Reusing a snapshot can
+eliminate N calls without adding infrastructure. For changes with operational risk,
+test configuration, compatibility and rollback; use feature flags only if they ease
+a real transition and define their removal. Keep the project's CI checks.
 
-## Validación
+## Validation
 
-Usa las [fixtures incluidas](../assets/fixtures/README.md) con servidor falso o mock
-HTTP y key ficticia. No llames a producción ni añadas dependencias de testing que el
-proyecto no necesita. Elige pruebas por comportamiento cambiado:
+Use the [included fixtures](../assets/fixtures/README.md) with a fake server or HTTP
+mock and a fake key. Do not call production or add testing dependencies the project
+does not need. Choose tests by the behavior that changed:
 
-- Contrato: parámetros, JSON del POST, moneda base, campos ausentes, markets nuevos,
-  JSON roto en éxito y errores no JSON. Comprueba status y headers sin exponer cuerpo crudo.
-- Fallos: burst/monthly/sin scope, esperas largas o inválidas, deadline y cancelación
-  durante envío/lectura/backoff; POST de resultado incierto no se repite.
-- Seguridad: redirección no seguida, destino no confiable rechazado y secreto ausente
-  de logs/errores. El proxy valida entradas y aísla cuentas cuando corresponde.
-- Concurrencia: varios consumidores producen un refresco por clave, una falla libera
-  coordinación y no mezcla tenants. Usa sincronización determinista, no sleeps frágiles.
-- Dinero: límites, redondeo y fecha valor en el momento de fijar un importe; no entregar
-  una factura con fallback inválido. Property-based testing aporta valor si hay muchas
-  combinaciones de importes/monedas; no hace falta para un cambio de texto.
-- Regresión: reproduce el defecto corregido y verifica consumidores afectados. Las
-  pruebas unitarias aíslan decisiones; las de integración verifican transporte y recursos.
+- Contract: parameters, POST JSON, base currency, missing fields, new markets,
+  broken JSON on success and non-JSON errors. Check status and headers without exposing the raw body.
+- Failures: temporary limit, monthly quota and a 429 of uncertain cause; long or invalid
+  waits; deadline and cancellation during send, read and backoff; an uncertain POST is not repeated.
+- Security: redirect not followed, untrusted destination rejected and secret absent
+  from logs/errors. The proxy validates input and isolates accounts where applicable.
+- Concurrency: several consumers produce one refresh per key, one failure releases
+  coordination and tenants are not mixed. Use deterministic synchronization, not fragile sleeps.
+- Money: limits, rounding and value date at the moment of fixing an amount; do not deliver
+  an invoice with an invalid fallback. Property-based testing adds value if there are many
+  amount/currency combinations; it is not needed for a text change.
+- Regression: reproduce the fixed defect and verify the affected consumers. Unit tests
+  isolate decisions; integration tests verify transport and resources.
 
-Inyecta reloj, espera o transporte cuando permita observar estos comportamientos sin
-esperas reales. No exige una interfaz nueva si una función o herramienta existente basta.
-Compila/ejecuta en el runtime objetivo: un pseudocódigo correcto no demuestra portabilidad.
+Inject the clock, wait or transport when it allows observing these behaviors without
+real waits. Do not require a new interface if an existing function or tool is enough.
+Compile/run on the target runtime: correct pseudocode does not prove portability.
 
 
-## Casos de uso
+## Use cases
 
-Estos ejemplos conectan objetivos con decisiones; adapta la implementación al
-proyecto y consulta [endpoints.md](endpoints.md) para el contrato exacto.
+These examples connect goals with decisions; adapt the implementation to the
+project and see [api-v2.md](api-v2.md) for the exact contract.
 
-| Objetivo | Camino mínimo | Error que evita |
+| Goal | Minimal path | Error it avoids |
 |---|---|---|
-| Mostrar un catálogo en VES | Obtener `/v1/fx/rates` una vez, seleccionar market y base y reutilizar el snapshot para los productos | Una llamada por producto o mezclar tasas USD y EUR |
-| Fijar una factura con BCV | Consultar `/v1/fx/rates/reference`; comprobar vigencia y persistir tasa y fecha valor junto al importe y su redondeo | Recalcular documentos antiguos con la cotización actual |
-| Graficar un histórico | Usar `/v1/fx/rates/:market/history`, confirmar rango, formato y límites del plan | Inventar puntos ausentes o interpretar una colección vacía como tasa cero |
-| Mostrar brecha entre mercados | Usar `/v1/fx/spread?against=` con el market elegido y manejar su ausencia | Sustituir silenciosamente un market sin cotización por otro |
+| Show prices in a country | Fetch `/v2/fx/{CC}/rates`, select the right ID and currencies and reuse the result on the server | One call per product or mixing bases and quotes |
+| Fix an amount | Query a V2 rate, check validity and persist ID, value and available dates together with the rounding applied | Recalculating old documents with the current quote |
+| Chart a history | Use `/v2/fx/{CC}/rates/{id}/history`, confirm the range and plan limits | Inventing missing points or interpreting an empty collection as a zero rate |
+| Compare markets | Use `/v2/fx/{CC}/spread` with a compatible reference and handle its absence | Silently substituting a rate without a quote with another one |
+| Show a past dashboard | Use `/v2/fx/{CC}/rates?date=YYYY-MM-DD` within the plan's retention | Presenting current quotes as if they were historical |
 
-Resuelve «hoy» o «últimos siete días» con un reloj actual y la zona aplicable; para
-fecha valor BCV usa el calendario de Caracas. En tests fija el reloj. No tomes las
-fechas ilustrativas de las fixtures como fechas actuales.
+Resolve "today" or "last seven days" with a current clock and the applicable time zone; for
+the value date use the calendar of the corresponding source. In tests fix the clock. Do not take the
+illustrative dates in the fixtures as current dates.
 
-Si el caso necesita continuidad, aplica la política de fallback existente o
-recomienda definirla; estos ejemplos no autorizan llamadas reales durante los tests.
+If the case needs continuity, apply the existing fallback policy or recommend
+defining one; these examples do not authorize real calls during tests.

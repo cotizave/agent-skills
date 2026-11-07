@@ -1,6 +1,6 @@
 # V1 to V2 migration
 
-[Official migration guide](https://docs.cotizave.com/api/v2/migration.md). Keep V1 active unless the user requests migration; test each consumer before switching.
+[Official migration guide](https://docs.cotizave.com/api/v2/migration.md). V1 is deprecated. Preserve an existing V1 consumer unless the user requests migration; test each consumer before switching.
 
 ## Procedure for an existing project
 
@@ -30,7 +30,7 @@ Use the project's existing release mechanism for a gradual switch when possible.
 | `/v1/fx/bcv/banks` | `/v2/fx/ve/bank-rates` |
 | `/v1/fx/index` | `index` inside `/v2/fx/ve/rates` |
 
-V2 adds global `id`; VE `market` remains a local identifier and some local aliases resolve on individual routes. Use the returned ID, since the mapping is not a string transform (`reference` maps to `ve-bcv`). V2 Free preserves key VE price/time fields, but higher plans add optional metadata. The flat V1 BCV currencies response has no identical V2 JSON. `required_plan` in V2 markets is an internal ID. `effective_date`, `updated_at` and `fetched_at` have different meanings. V2 bulk accepts a new per-item format and can return item errors inside HTTP 200. V2 historical retention, conversion permissions and errors must be checked against the account, not assumed from V1. See [V1 details](endpoints.md), [V2 details](api-v2.md), and [official guide](https://docs.cotizave.com/api/v2/migration.md).
+V2 adds global `id`; VE `market` remains a local identifier and some local aliases resolve on individual routes. Use the returned ID, since the mapping is not a string transform (`reference` maps to `ve-bcv`). V2 Free preserves key VE price/time fields, but higher plans add optional metadata. The flat V1 BCV currencies response has no identical V2 JSON. `required_plan` in V2 markets is an internal ID. `effective_date`, `updated_at` and `fetched_at` have different meanings. V2 bulk accepts a new per-item format and can return item errors inside HTTP 200. V2 historical retention, conversion permissions and errors must be checked against the account, not assumed from V1. For an existing consumer's old shape, consult the [migration-only V1 snapshot](endpoints.md); implement against [V2 details](api-v2.md) and the [official migration guide](https://docs.cotizave.com/api/v2/migration.md).
 
 ## Venezuela market IDs
 

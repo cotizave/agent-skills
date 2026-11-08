@@ -1,4 +1,10 @@
-# Release 0.3.13
+# Release 0.3.14
+
+`v0.3.14` scopes the Skill's website guidance to Cotizave Global, which covers all published countries, including Venezuela. The historical reference now directs country-specific dates only to Global's historical product page. The Venezuela-specific `.com` site is outside this website guidance.
+
+The deterministic package is `cotizave-plugin-0.3.14.zip` (SHA-256 `bd62c26b0124a890515a9ac6c1a75e08be9d0eb573449d18ed4738dcd6d66dd2`). Local static validation, Node tests (6 passed, 1 skipped), skill validation, Claude plugin validation and ZIP/CRC verification passed. Vendor directory review remains separate.
+
+## Previous release: 0.3.13
 
 `v0.3.13` clarifies the website boundary in the Cotizave Skill: `cotizave.com` describes Venezuelan rates and BCV observations from 2018-08-20; `global.cotizave.com` publishes the multi-country observations from 2010. The historical-coverage reference points to the matching page on each site.
 

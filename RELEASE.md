@@ -1,4 +1,10 @@
-# Release 0.3.11
+# Release 0.3.12
+
+`v0.3.12` teaches the Cotizave Skill to reuse the shared coverage and plan source when editing Cotizave-owned sites. The public site keeps one detailed coverage page; other pages derive summaries and link to it. Current API routes remain in technical examples, while version numbers are omitted from ordinary marketing copy. The V1 deprecation note links to the migration guide.
+
+The deterministic package is `cotizave-plugin-0.3.12.zip` (SHA-256 `0f02d628907f6c7e1d5f251d1505f27afd39868b73e3c256e415529ee53a2dbd`). Local static validation, Node tests (6 passed, 1 skipped), skill validation, Claude plugin validation and ZIP/CRC verification passed. Vendor directory review remains separate.
+
+## Previous release: 0.3.11
 
 `v0.3.11` prepares a new Claude directory submission from the plugin folder `plugins/cotizave`. The folder's `.claude-plugin/plugin.json` now explicitly declares `skills`, while the repository marketplace entry contains listing and source metadata only. The release checks reject disallowed plugin files, package-manager configuration, shebangs, NUL bytes and invalid UTF-8 text. It also records the maintainer-supplied first observed production dates for 18 named markets; these dates do not guarantee account retention or observations on every day.
 

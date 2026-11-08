@@ -24,3 +24,5 @@ Cotizave's maintainer supplied these earliest dates with real production observa
 | Venezuela | `reference` (BCV) | 2018-08-20 |
 
 These market labels are not a general rule for building V2 route IDs. Discover the returned `id` for the selected rate. Other countries and markets may have different starting dates or no historical observation.
+
+For Cotizave's own website, maintain this coverage in `cotizave.com/lib/v2-coverage.ts` and publish the detailed table at [Cobertura histórica](https://cotizave.com/cobertura-tasas). Derive shorter page copy from that source rather than copying the rows into each page. Check the live series limits before claiming that a specific date is available to a given account.

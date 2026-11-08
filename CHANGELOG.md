@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.13] - 2026-11-08
+
+### Fixed
+
+- Distinguish the Venezuela site from Cotizave Global in website-editing guidance. BCV begins in 2018 on `.com`; the 2010 multi-country coverage belongs to Global.
+
 ## [0.3.12] - 2026-11-08
 
 ### Changed

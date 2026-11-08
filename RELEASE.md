@@ -1,4 +1,10 @@
-# Release 0.3.12
+# Release 0.3.13
+
+`v0.3.13` clarifies the website boundary in the Cotizave Skill: `cotizave.com` describes Venezuelan rates and BCV observations from 2018-08-20; `global.cotizave.com` publishes the multi-country observations from 2010. The historical-coverage reference points to the matching page on each site.
+
+The deterministic package is `cotizave-plugin-0.3.13.zip` (SHA-256 `38a2b1c94b0ff3e8d5ff2ecaa832181aeed56360381f85aabde3cae22fe535df`). Local static validation, Node tests (6 passed, 1 skipped), skill validation, Claude plugin validation and ZIP/CRC verification passed. Vendor directory review remains separate.
+
+## Previous release: 0.3.12
 
 `v0.3.12` teaches the Cotizave Skill to reuse the shared coverage and plan source when editing Cotizave-owned sites. The public site keeps one detailed coverage page; other pages derive summaries and link to it. Current API routes remain in technical examples, while version numbers are omitted from ordinary marketing copy. The V1 deprecation note links to the migration guide.
 

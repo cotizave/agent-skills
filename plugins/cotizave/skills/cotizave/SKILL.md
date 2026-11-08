@@ -13,7 +13,7 @@ description: >-
 license: MIT
 metadata:
   author: cotizave
-  version: "0.3.10"
+  version: "0.3.11"
 ---
 
 # Cotizave integration
@@ -25,6 +25,7 @@ Use V2 for Cotizave integrations across every published country. V1 is deprecate
 | New country/rate integration, exact V2 routes and plan gates | [V2 contract](references/api-v2.md) |
 | Migrate an existing V1 consumer to V2 | [Migration procedure](references/migration-v1-v2.md) |
 | Discover a rate and choose its meaning | [Rate discovery](references/rate-discovery.md) |
+| Check the first observed historical date for a listed market | [Historical coverage](references/historical-coverage.md) |
 | HTTP failures, quotas and retries | [Errors and limits](references/errors-and-limits.md) |
 | Cache, ETag, age and fallback | [Caching and freshness](references/caching-and-freshness.md) |
 | Client design and money handling | [Integration patterns](references/integration-patterns.md) |

@@ -6,4 +6,6 @@
 4. Match meaning: an official rate suits a requirement for that authority's reference; P2P and market values describe other markets; card rates describe card use. Compare only compatible base/quote and effective periods. A quote need not be executable.
 5. Handle 402, 404, 503 and missing rows separately. A registered ID, plan permission and a current observation are distinct. Do not switch to another source automatically.
 
+For a historical request, consult the [earliest observed production dates](historical-coverage.md) for the listed markets, then check the account's `/v2/fx/historical-limits` response and retention. The market label in that table is not necessarily the V2 route `id`.
+
 Examples of intent: Colombia TRM for a specified official reference; Australian or Peruvian rates require country discovery before choosing an ID; a multi-country dashboard stores each returned ID and source metadata. The country list grows without changing this procedure.

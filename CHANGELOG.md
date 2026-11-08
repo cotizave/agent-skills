@@ -6,10 +6,13 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.11] - 2026-11-08
+
 ### Changed
 
-- Remove the `skills` list from the Claude marketplace entry; the plugin's default `skills/` folder is discovered on its own and the directory requires components to be declared only in the plugin's `.claude-plugin/plugin.json`. The local validator now rejects component fields in marketplace entries and checks the plugin's `skills/` folder directly.
+- Remove the `skills` list from the Claude marketplace entry and declare it in the plugin's `.claude-plugin/plugin.json`, as the directory requires. The local validator rejects component fields in marketplace entries and checks the plugin's `skills/` folder directly.
 - Declare `policy.authentication` in the Codex marketplace entry, which the Codex plugin documentation requires on every entry.
+- Record the maintainer-supplied earliest production observations for 18 named official/reference markets and distinguish those dates from account retention and daily continuity.
 
 ## [0.3.10] - 2026-11-07
 

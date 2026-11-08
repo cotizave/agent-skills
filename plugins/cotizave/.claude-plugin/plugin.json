@@ -1,6 +1,6 @@
 {
   "name": "cotizave",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Integrate Cotizave V2 across countries and migrate deprecated V1 clients.",
   "author": {
     "name": "Cotizave",
@@ -17,6 +17,7 @@
     "bcv",
     "trm"
   ],
+  "skills": "./skills",
   "icon": "./assets/cotizave-logo.png",
   "documentationUrl": "https://docs.cotizave.com",
   "supportUrl": "https://global.cotizave.com/contact",

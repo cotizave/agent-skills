@@ -114,7 +114,7 @@ test('validación de paquete: fixtures, enlaces y esquemas inválidos fallan sin
     writeFileSync(join(dir, `${plugin}/README.md`), '# Cotizave\n\n' + 'word '.repeat(45) + '\n');
     writeFileSync(join(dir, 'skills.sh.json'), JSON.stringify({ paths: [`./${plugin}/skills`] }));
     const marketplace = { name: 'cotizave', owner: { name: 'Cotizave' }, metadata: { version: '0.1.0' }, plugins: [{ name: 'cotizave', source: `./${plugin}`, version: '0.1.0' }] };
-    writeFileSync(join(dir, `${plugin}/.claude-plugin/plugin.json`), JSON.stringify({ name: 'cotizave', version: '0.1.0' }));
+    writeFileSync(join(dir, `${plugin}/.claude-plugin/plugin.json`), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: './skills' }));
     writeFileSync(join(dir, 'plugin.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: `./${plugin}/skills` }));
     writeFileSync(join(dir, `${plugin}/.codex-plugin/plugin.json`), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: './skills', interface: { displayName: 'Cotizave', shortDescription: 'Cotizave', longDescription: 'Cotizave integration', developerName: 'Cotizave', category: 'Developer Tools', composerIcon: './assets/cotizave-icon.png', logo: './assets/cotizave-logo.png' } }));
     writeFileSync(join(dir, 'ge' + 'mini-extension.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0' }));
@@ -143,6 +143,12 @@ test('validación de paquete: fixtures, enlaces y esquemas inválidos fallan sin
     writeFileSync(join(dir, `${plugin}/tool.mjs`), 'export {};\n');
     assert.match(validate().stderr, /tipo de archivo no permitido/);
     rmSync(join(dir, `${plugin}/tool.mjs`));
+    writeFileSync(join(dir, `${plugin}/pnpm-workspace.yaml`), 'packages: []\n');
+    assert.match(validate().stderr, /gestor de paquetes/);
+    rmSync(join(dir, `${plugin}/pnpm-workspace.yaml`));
+    writeFileSync(join(dir, `${plugin}/note.md`), Buffer.from([0xff]));
+    assert.match(validate().stderr, /UTF-8 válido/);
+    rmSync(join(dir, `${plugin}/note.md`));
     symlinkSync(dir, join(dir, 'loop'));
     assert.match(validate().stderr, /enlace simbólico/);
   } finally { rmSync(dir, { recursive: true, force: true }); }

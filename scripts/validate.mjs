@@ -23,6 +23,8 @@ const TEXT_EXT = /\.(md|json|ya?ml|ts|mjs|js|py|go|mod|java|php|cs|csproj|sh|txt
 const PLUGIN = "plugins/cotizave";
 // Política del directorio para organizaciones no verificadas: solo documentación, datos e imágenes.
 const PLUGIN_ALLOWED = /\.(md|txt|json|ya?ml|png|jpe?g|gif|webp|ico)$|^(LICENSE|README|\.gitignore)$/;
+const PLUGIN_IMAGE = /\.(png|jpe?g|gif|webp|ico)$/;
+const PLUGIN_PACKAGE_CONFIG = /^(package(-lock)?\.json|pnpm-(workspace|lock)\.yaml|yarn\.lock|bun\.lockb?|npm-shrinkwrap\.json)$/;
 
 const errors = [];
 const fail = (file, msg) => errors.push(`${file}: ${msg}`);
@@ -149,6 +151,7 @@ for (const f of [CLAUDE_MANIFEST, CODEX_MANIFEST, "plugin.json", "ge" + "mini-ex
   if (m.version !== releaseVersion) fail(f, `version ${m.version} ≠ ${releaseVersion}`);
   if (m.name !== "cotizave") fail(f, "name must be cotizave");
   if (f === "plugin.json" && m.skills !== `./${PLUGIN}/skills`) fail(f, `skills must point to ./${PLUGIN}/skills`);
+  if (f === CLAUDE_MANIFEST && m.skills !== "./skills") fail(f, "skills must point to ./skills");
   if (f === CODEX_MANIFEST && m.skills !== "./skills" && m.skills !== "./skills/") fail(f, "skills must point to ./skills");
   if (f === CODEX_MANIFEST) {
     const ui = m.interface;
@@ -179,9 +182,14 @@ for (const image of [`${PLUGIN}/assets/cotizave-icon.png`, `${PLUGIN}/assets/cot
 // Requisitos del directorio de Claude sobre la carpeta del plugin (ver docs/plugins/pre-submission-checklist).
 for (const f of files.filter((f) => f.startsWith(`${PLUGIN}/`))) {
   if (!PLUGIN_ALLOWED.test(basename(f))) fail(f, "tipo de archivo no permitido en la carpeta del plugin (política del directorio)");
+  if (PLUGIN_PACKAGE_CONFIG.test(basename(f))) fail(f, "configuración de gestor de paquetes no permitida en la carpeta del plugin");
   const bytes = readFileSync(join(ROOT, f));
   if (bytes.subarray(0, 2).toString() === "#!") fail(f, "un archivo del plugin no puede empezar por #!");
-  if (TEXT_EXT.test(basename(f)) && bytes.includes(0)) fail(f, "archivo de texto con bytes NUL");
+  if (!PLUGIN_IMAGE.test(basename(f))) {
+    if (bytes.includes(0)) fail(f, "archivo de texto con bytes NUL");
+    try { new TextDecoder("utf-8", { fatal: true }).decode(bytes); }
+    catch { fail(f, "archivo de texto no codificado en UTF-8 válido"); }
+  }
 }
 const PLUGIN_README = `${PLUGIN}/README.md`;
 if (!existsSync(join(ROOT, PLUGIN_README))) fail(PLUGIN_README, "el directorio exige un README en la carpeta del plugin");

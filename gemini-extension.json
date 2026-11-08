@@ -1,5 +1,5 @@
 {
   "name": "cotizave",
-  "version": "0.3.11",
+  "version": "0.3.12",
   "description": "Integrate Cotizave V2 across countries and migrate deprecated V1 clients."
 }

@@ -6,6 +6,13 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.12] - 2026-11-08
+
+### Changed
+
+- Document the shared coverage and plan source for Cotizave-owned websites, with one detailed coverage page and derived summaries elsewhere.
+- Keep public site copy version-neutral while technical examples use V2 routes; point deprecated V1 integrations to the migration guide.
+
 ## [0.3.11] - 2026-11-08
 
 ### Changed

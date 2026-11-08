@@ -6,6 +6,12 @@ La versión de la skill es independiente de las versiones de API V1 y V2.
 
 ## [Unreleased]
 
+## [0.3.14] - 2026-11-08
+
+### Fixed
+
+- Scope website-editing guidance to Cotizave Global only, across all published countries. Remove instructions to maintain the Venezuela-specific `.com` site from the Skill.
+
 ## [0.3.13] - 2026-11-08
 
 ### Fixed

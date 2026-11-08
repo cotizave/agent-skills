@@ -113,15 +113,22 @@ else {
     releaseVersion = mk.metadata && mk.metadata.version;
     if (!releaseVersion || !SEMVER.test(releaseVersion)) fail(MARKET, "`metadata.version` debe ser SemVer");
     for (const p of Array.isArray(mk.plugins) ? mk.plugins : []) {
-      if (!p || typeof p !== "object" || !Array.isArray(p.skills)) { fail(MARKET, "plugin inválido o sin skills"); continue; }
+      if (!p || typeof p !== "object") { fail(MARKET, "plugin inválido"); continue; }
       if (typeof p.name !== "string" || !p.name || typeof p.source !== "string" || !p.source) { fail(MARKET, "cada plugin necesita name y source strings"); continue; }
       if (p.version !== releaseVersion) fail(MARKET, `plugin ${p.name}: version ${p.version} ≠ metadata.version ${releaseVersion}`);
-      for (const s of p.skills) {
-        if (typeof s !== "string") { fail(MARKET, "ruta de skill inválida"); continue; }
-        const dir = join(ROOT, p.source || ".", s);
-        if (!existsSync(join(dir, "SKILL.md"))) fail(MARKET, `plugin ${p.name}: ${s} no contiene SKILL.md`);
-        const v = skillVersions.get(s.replace(/\/$/, ""));
-        if (v && v !== releaseVersion) fail(MARKET, `${s}: metadata.version ${v} ≠ ${releaseVersion}`);
+      // Directory policy: components live in the plugin's own plugin.json (or its default
+      // folders), never in the marketplace entry ("Move skills into the entry's plugin.json").
+      for (const k of ["skills", "commands", "agents", "hooks", "outputStyles", "themes"]) {
+        if (k in p) fail(MARKET, `plugin ${p.name}: declara \`${k}\` en la entrada del marketplace; el directorio exige que viva en ${p.source}/.claude-plugin/plugin.json o en su carpeta por defecto`);
+      }
+      if (!existsSync(join(ROOT, p.source, ".claude-plugin/plugin.json"))) fail(MARKET, `plugin ${p.name}: falta ${p.source}/.claude-plugin/plugin.json`);
+      // The plugin's default skills/ scan must find at least one skill at the release version.
+      const skillsDir = join(ROOT, p.source, "skills");
+      const found = existsSync(skillsDir) ? readdirSync(skillsDir).filter((d) => existsSync(join(skillsDir, d, "SKILL.md"))) : [];
+      if (found.length === 0) fail(MARKET, `plugin ${p.name}: ${p.source}/skills/ no contiene ninguna SKILL.md`);
+      for (const d of found) {
+        const v = skillVersions.get(`./skills/${d}`);
+        if (v && v !== releaseVersion) fail(MARKET, `${p.source}/skills/${d}: metadata.version ${v} ≠ ${releaseVersion}`);
       }
     }
   }

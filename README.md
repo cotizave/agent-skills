@@ -20,7 +20,7 @@ For an existing integration, ask: **“Use the Cotizave skill to migrate this pr
 
 For a noninteractive Codex install, use `npx skills add cotizave/agent-skills -a codex -s cotizave --copy -y`. This was tested in an isolated project; the copy retained its references and fixtures. Use `npx skills list` to inspect installed skills, `npx skills check` to check for updates, and `npx skills remove cotizave` to uninstall a skills CLI copy. See the [CLI reference](https://github.com/vercel-labs/skills/blob/main/docs/commands.md) for global installs and other agents.
 
-**Current distribution status:** [latest GitHub Release](https://github.com/cotizave/agent-skills/releases/latest) and skills.sh page live; Claude directory submission in progress with the plugin folder `plugins/cotizave`; ChatGPT plugin directory submission not started; GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
+**Current distribution status:** [latest GitHub Release](https://github.com/cotizave/agent-skills/releases/latest), skills.sh page, and the Codex repository marketplace are live; Claude directory submission is in progress with the plugin folder `plugins/cotizave`; the OpenAI public directory draft passed checks but its skills-only submission needs attention because OpenAI is not accepting more skills-only submissions through that route at this time. GitHub Copilot can install directly from this repository. See [release status and remaining actions](RELEASE.md).
 
 The plugin itself lives in [`plugins/cotizave`](plugins/cotizave): manifests, the skill, brand assets, license and the plugin README. Everything else in this repository (validation scripts, evaluations, CI) is maintainer tooling and is not installed with the plugin.
 
@@ -56,7 +56,7 @@ codex plugin marketplace add cotizave/agent-skills
 codex plugin add cotizave@cotizave-agent-skills
 ```
 
-Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotizave V2 Colombia TRM into my backend.` Use `codex plugin list` to inspect the installed version. To update, run `codex plugin marketplace upgrade cotizave-agent-skills` and restart Codex; this refreshed an installed local plugin from 0.2.0 to 0.3.0 in Codex CLI 0.163.0. To uninstall, run `codex plugin remove cotizave@cotizave-agent-skills`. Codex also discovered the skill in an isolated `.agents/skills` install. This repository marketplace works independently of the ChatGPT plugin directory, where Cotizave has not been submitted.
+Restart Codex, then invoke `$cotizave`, for example: `$cotizave Integrate Cotizave V2 Colombia TRM into my backend.` Use `codex plugin list` to inspect the installed version. To update, run `codex plugin marketplace upgrade cotizave-agent-skills` and restart Codex; this refreshed an installed local plugin from 0.2.0 to 0.3.0 in Codex CLI 0.163.0. To uninstall, run `codex plugin remove cotizave@cotizave-agent-skills`. Codex also discovered the skill in an isolated `.agents/skills` install. This repository marketplace works independently of approval for the shared ChatGPT and Codex public plugin directory.
 
 ### Manual fallback
 

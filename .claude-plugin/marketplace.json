@@ -30,10 +30,7 @@
       ],
       "category": "development",
       "source": "./plugins/cotizave",
-      "strict": true,
-      "skills": [
-        "./skills/cotizave"
-      ]
+      "strict": true
     }
   ]
 }

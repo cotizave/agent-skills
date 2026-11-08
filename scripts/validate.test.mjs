@@ -113,7 +113,7 @@ test('validación de paquete: fixtures, enlaces y esquemas inválidos fallan sin
     writeFileSync(join(dir, `${plugin}/LICENSE`), 'MIT\n');
     writeFileSync(join(dir, `${plugin}/README.md`), '# Cotizave\n\n' + 'word '.repeat(45) + '\n');
     writeFileSync(join(dir, 'skills.sh.json'), JSON.stringify({ paths: [`./${plugin}/skills`] }));
-    const marketplace = { name: 'cotizave', owner: { name: 'Cotizave' }, metadata: { version: '0.1.0' }, plugins: [{ name: 'cotizave', source: `./${plugin}`, version: '0.1.0', skills: ['./skills/cotizave'] }] };
+    const marketplace = { name: 'cotizave', owner: { name: 'Cotizave' }, metadata: { version: '0.1.0' }, plugins: [{ name: 'cotizave', source: `./${plugin}`, version: '0.1.0' }] };
     writeFileSync(join(dir, `${plugin}/.claude-plugin/plugin.json`), JSON.stringify({ name: 'cotizave', version: '0.1.0' }));
     writeFileSync(join(dir, 'plugin.json'), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: `./${plugin}/skills` }));
     writeFileSync(join(dir, `${plugin}/.codex-plugin/plugin.json`), JSON.stringify({ name: 'cotizave', version: '0.1.0', skills: './skills', interface: { displayName: 'Cotizave', shortDescription: 'Cotizave', longDescription: 'Cotizave integration', developerName: 'Cotizave', category: 'Developer Tools', composerIcon: './assets/cotizave-icon.png', logo: './assets/cotizave-logo.png' } }));

@@ -65,13 +65,13 @@ Build locally with `node scripts/validate.mjs`, `node --test scripts/*.test.mjs`
 | Channel | What works now | Publication status / next action |
 |---|---|---|
 | [skills.sh](https://skills.sh/cotizave/agent-skills/cotizave) | GitHub-source CLI install tested; public page live | **Nothing to upload or submit.** The [FAQ](https://www.skills.sh/docs/faq) says the listing follows CLI installations. Ranking depends on install counts. |
-| Claude Code | Repository marketplace manifest and strict plugin validation passed; clean install not tested | Anthropic directory submission is pending security review; wait for its result. |
-| Codex | Repository marketplace and isolated skill discovery tested; release ZIP ready | ChatGPT plugin directory submission not started; requires developer dashboard review and publisher identity. |
+| Claude Code | Repository marketplace manifest and strict plugin validation passed; clean install not tested | The original submission (repository root, 29 Oct) is refused permanently because the root holds maintainer scripts; withdraw it. The new submission must use plugin path `plugins/cotizave`; its validation passed at `v0.3.10` and it awaits the legal attestations and final submit. |
+| Codex | Repository marketplace and isolated skill discovery tested; v0.3.10 release available | OpenAI public directory draft passed checks but is not published: the portal reports that it is not accepting more skills-only submissions through this route at this time. |
 | GitHub Copilot | `gh skill install` from GitHub tested in an isolated project; all references present | `gh skill publish` created the tag, GitHub Release and `agent-skills` topic; Code Search indexing is not verified. This is not a separate Copilot directory approval. |
 | Cursor, OpenCode | Standard folder documented; no clean runtime test in this review | Not verified |
 | Google CLI extension | Extension manifest present; runtime installation not tested | Gallery indexing not verified |
 
-The remaining publication decisions are separate: wait for Anthropic's review; submit the ZIP to OpenAI only if publisher identity and directory listing are desired. No action on skills.sh is needed. The GitHub repository description should describe multi-country V2 integration and V1 Venezuela compatibility. The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
+The remaining publication decisions are separate: wait for Anthropic's review; monitor the OpenAI public directory's skills-only intake or develop a real MCP integration if live tools are needed. An MCP submission has its own review requirements and does not guarantee acceptance. No action on skills.sh is needed. The GitHub repository description should describe multi-country V2 integration and V1 Venezuela compatibility. The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
 
 No MCP server is needed for this instruction-only skill. No model comparison was run for this candidate; `evals/` contains scenarios and criteria, not claimed scores.
 

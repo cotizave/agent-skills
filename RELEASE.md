@@ -2,7 +2,7 @@
 
 `v0.3.11` prepares a new Claude directory submission from the plugin folder `plugins/cotizave`. The folder's `.claude-plugin/plugin.json` now explicitly declares `skills`, while the repository marketplace entry contains listing and source metadata only. The release checks reject disallowed plugin files, package-manager configuration, shebangs, NUL bytes and invalid UTF-8 text. It also records the maintainer-supplied first observed production dates for 18 named markets; these dates do not guarantee account retention or observations on every day.
 
-The deterministic package is `cotizave-plugin-0.3.11.zip` (SHA-256 `09882bdbb5997d5323ed0402e8b0d34aebc5577da6c51a1ae3f962a385f1bbb0`); it contains the plugin folder only. Local static validation, Node tests (6 passed, 1 skipped), isolated Codex install, strict Claude validation on the plugin folder and ZIP/CRC verification passed. GitHub publication and vendor review remain pending.
+The deterministic package is `cotizave-plugin-0.3.11.zip` (SHA-256 `09882bdbb5997d5323ed0402e8b0d34aebc5577da6c51a1ae3f962a385f1bbb0`); it contains the plugin folder only. Local static validation, Node tests (6 passed, 1 skipped), isolated Codex install, strict Claude validation on the plugin folder and ZIP/CRC verification passed. Vendor directory review remains pending.
 
 ## Previous release: 0.3.10
 
@@ -72,12 +72,12 @@ Build locally with `node scripts/validate.mjs`, `node --test scripts/*.test.mjs`
 |---|---|---|
 | [skills.sh](https://skills.sh/cotizave/agent-skills/cotizave) | GitHub-source CLI install tested; public page live | **Nothing to upload or submit.** The [FAQ](https://www.skills.sh/docs/faq) says the listing follows CLI installations. Ranking depends on install counts. |
 | Claude Code | Strict validation passes on `plugins/cotizave`; clean install not tested | The submitted root-path version `1e4063b` was refused. Create a new directory submission with plugin path `plugins/cotizave`; pushing another commit to the root-path submission will not change its selected folder. Directory safety and policy review still apply. |
-| Codex | Repository marketplace and isolated skill discovery tested; v0.3.11 package prepared | OpenAI public directory draft passed checks but is not published: the portal reports that it is not accepting more skills-only submissions through this route at this time. |
+| Codex | Repository marketplace and isolated skill discovery tested; v0.3.11 release available | OpenAI public directory draft passed checks but is not published: the portal reports that it is not accepting more skills-only submissions through this route at this time. |
 | GitHub Copilot | `gh skill install` from GitHub tested in an isolated project; all references present | `gh skill publish` created the tag, GitHub Release and `agent-skills` topic; Code Search indexing is not verified. This is not a separate Copilot directory approval. |
 | Cursor, OpenCode | Standard folder documented; no clean runtime test in this review | Not verified |
 | Google CLI extension | Extension manifest present; runtime installation not tested | Gallery indexing not verified |
 
-The remaining publication steps are separate: publish the new GitHub version, create a new Anthropic directory submission with plugin path `plugins/cotizave`, and monitor the OpenAI public directory's skills-only intake or develop a real MCP integration if live tools are needed. An MCP submission has its own review requirements and does not guarantee acceptance. No action on skills.sh is needed. The GitHub repository description should describe multi-country V2 integration and V1 Venezuela compatibility. The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
+The remaining vendor publication steps are separate: create a new Anthropic directory submission with plugin path `plugins/cotizave`, and monitor the OpenAI public directory's skills-only intake or develop a real MCP integration if live tools are needed. An MCP submission has its own review requirements and does not guarantee acceptance. No action on skills.sh is needed. The GitHub repository description should describe multi-country V2 integration and V1 Venezuela compatibility. The `agent-skills` topic is set; optional additional topics: `exchange-rates`, `currency-conversion`, `foreign-exchange-api`, `cotizave`.
 
 No MCP server is needed for this instruction-only skill. No model comparison was run for this candidate; `evals/` contains scenarios and criteria, not claimed scores.
 

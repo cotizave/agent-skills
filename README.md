@@ -4,6 +4,22 @@ Official [Agent Skill](https://agentskills.io) for integrating the [Cotizave API
 
 For example: “Integrate Colombia TRM from Cotizave V2 into my Python backend.” The agent should discover the country's canonical rate ID, use a server-side `X-API-Key`, account for optional Free-plan fields, and keep the source and effective date with the applied rate.
 
+## Exchange-rate integration resources
+
+Use the skill with the [Cotizave Global exchange-rate platform](https://global.cotizave.com/) to build country-specific integrations. Start with [published market coverage](https://global.cotizave.com/markets), then choose the reference returned by the API. Official rates, parallel references and P2P rates are separate data series.
+
+| Integration task | Product and documentation |
+| --- | --- |
+| Currency conversion for an app, ERP or store | [Currency conversion API](https://global.cotizave.com/products/currency-conversion-api) |
+| Historical rates, statistics and moving averages | [Historical exchange-rate API](https://global.cotizave.com/products/historical-exchange-rates-api) |
+| P2P exchange-rate data | [P2P rate coverage](https://global.cotizave.com/products/p2p-exchange-rates-api) |
+| Notifications when a rate changes | [Exchange-rate webhooks](https://global.cotizave.com/products/exchange-rate-webhooks) |
+| TypeScript, Python, PHP or Go application | [Official SDKs and developer resources](https://global.cotizave.com/developers) |
+
+The underlying BCV series has observations from **20 August 2018**. Selected official series in other countries start in **2010**; inspect each rate's actual coverage and missing dates. Stored coverage does not override a plan's historical access window. The skill guides integration; it does not grant API access or redistribute the historical dataset.
+
+Official SDK repositories: [TypeScript / JavaScript](https://github.com/cotizave/cotizave-typescript), [Python](https://github.com/cotizave/cotizave-python), [PHP](https://github.com/cotizave/cotizave-php) and [Go](https://github.com/cotizave/cotizave-go). Follow each SDK's current README for installation and supported methods.
+
 ## Quick start
 
 Run this in your application repository, then choose your coding agent and the `cotizave` skill when prompted:
